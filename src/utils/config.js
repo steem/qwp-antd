@@ -1,0 +1,15 @@
+module.exports = {
+  name: 'AntD Admin',
+  prefix: 'antdAdmin',
+  footerText: 'Ant Design Admin  © 2017 zuiidea',
+  logo: '/logo.png',
+  iconFontCSS: '/iconfont.css',
+  iconFontJS: '/iconfont.js',
+  YQL: ['http://www.zuimeitianqi.com'],
+  CORS: [],
+  apiPrefix: '/?',
+  mockServicePrefix: '/mock/?',
+  servicePrefix: '/services/?',
+  useMockSerivce: true,
+  sitePrefix: '?',
+}
