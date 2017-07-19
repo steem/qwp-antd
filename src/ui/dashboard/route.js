@@ -1,12 +1,12 @@
 import registerModel from '../../utils/registerModel'
 
 export default {
-  path: 'user',
+  path: 'dashboard',
   getComponent (nextState, cb) {
     let app = this.app
     require.ensure([], require => {
-      registerModel(app, require('../../models/user'))
+      registerModel(app, require('../../models/dashboard'))
       cb(null, require('./'))
-    }, 'user')
+    }, 'dashboard')
   },
 }

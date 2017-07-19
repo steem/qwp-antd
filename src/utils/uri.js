@@ -20,7 +20,11 @@ function param(name) {
 }
 
 function component(m) {
-  return config.sitePrefix + m
+  if (arguments.length === 0) return config.sitePrefix
+  else if (arguments.length === 1) return config.sitePrefix + m
+  let p = []
+  for (let i = 0, cnt = arguments.length; i < cnt; ++i) p.push(arguments[i])
+  return config.sitePrefix + p.join('/')
 }
 
 function current() {
@@ -34,8 +38,24 @@ function ops ({ ops, p, m, mock }) {
   if (m) s = join(s, 'm=' + m)
   if (!p) p = param('p')
   if (p) s = join(s, 'p=' + p)
-  s = join(s, 'op=' + ops)
+  if (ops) s = join(s, 'op=' + ops)
   return (mock === false || !config.useMockSerivce ? config.servicePrefix : config.mockServicePrefix) + s
+}
+
+const passportComponent = component('passport')
+const isPassportComponent = () => { return current() === passportComponent }
+
+function defaultUri(isLogined, defaultComponent) {
+  if (isLogined) {
+    if (isPassportComponent()) return component(defaultComponent)
+  } else {
+    if (!isPassportComponent()) {
+      let from = location.pathname != '/' || location.search.length ? encodeURI(location.pathname) + encodeURI(location.search) : false
+      from = from ? `?from=${from}` : ''
+      return `${location.origin}${passportComponent}${from}`
+    }
+  }
+  return false
 }
 
 module.exports = {
@@ -44,6 +64,7 @@ module.exports = {
   component,
   current,
   ops,
-  passportComponent: component('passport'),
-  isPassportComponent() { return current() === component('passport') },
+  defaultUri,
+  passportComponent,
+  isPassportComponent,
 }

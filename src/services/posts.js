@@ -1,10 +1,14 @@
-import { request, config } from 'utils'
-const { api } = config
-const { posts } = api
+import { request, uri } from 'utils'
+let baseUri = {
+  m: 'posts',
+  p: null,
+  mock: true
+}
 
 export async function query (params) {
+  let ops = 'get'
   return request({
-    url: posts,
+    url: uri.ops({ ops, ...baseUri }),
     method: 'get',
     data: params,
   })

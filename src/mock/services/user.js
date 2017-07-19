@@ -1,5 +1,7 @@
 const qs = require('qs')
 const Mock = require('mockjs')
+const queryArray = require('../common')
+const { EnumRoleType, userPermission, adminUsers, NOTFOUND } = require('./data/passport')
 
 let usersListData = Mock.mock({
   'data|80-100': [
@@ -20,67 +22,11 @@ let usersListData = Mock.mock({
   ],
 })
 
-
 let database = usersListData.data
 
-const EnumRoleType = {
-  ADMIN: 'admin',
-  DEFAULT: 'guest',
-  DEVELOPER: 'developer',
-}
 
-const userPermission = {
-  DEFAULT: {
-    visit: ['1', '2', '21', '7', '5', '51', '52', '53'],
-    role: EnumRoleType.DEFAULT,
-  },
-  ADMIN: {
-    role: EnumRoleType.ADMIN,
-  },
-  DEVELOPER: {
-    role: EnumRoleType.DEVELOPER,
-  },
-}
 
-const adminUsers = [
-  {
-    id: 0,
-    username: 'admin',
-    password: 'admin',
-    permissions: userPermission.ADMIN,
-  }, {
-    id: 1,
-    username: 'guest',
-    password: 'guest',
-    permissions: userPermission.DEFAULT,
-  }, {
-    id: 2,
-    username: '吴彦祖',
-    password: '123456',
-    permissions: userPermission.DEVELOPER,
-  },
-]
-
-let inDebug = true
-
-const queryArray = (array, key, keyAlias = 'key') => {
-  if (!(array instanceof Array)) {
-    return null
-  }
-  let data
-
-  for (let item of array) {
-    if (item[keyAlias] === key) {
-      data = item
-      break
-    }
-  }
-
-  if (data) {
-    return data
-  }
-  return null
-}
+let inDebug = false
 
 function currentUser(req, res) {
   const cookie = req.headers.cookie || ''

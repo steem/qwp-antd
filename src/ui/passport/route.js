@@ -1,12 +1,12 @@
 import registerModel from '../../utils/registerModel'
 
 export default {
-  path: 'user',
+  path: 'passport',
   getComponent (nextState, cb) {
     let app = this.app
     require.ensure([], require => {
-      registerModel(app, require('../../models/user'))
+      registerModel(app, require('../../models/passport'))
       cb(null, require('./'))
-    }, 'user')
+    }, 'passport')
   },
 }

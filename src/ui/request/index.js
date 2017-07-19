@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './index.less'
 import Mock from 'mockjs'
-import { request, config } from 'utils'
+import { request, uri } from 'utils'
 import {
   Row,
   Col,
@@ -10,20 +10,19 @@ import {
   Input,
   Button,
 } from 'antd'
-const { api } = config
-const { dashboard, users, userLogin, user, v1test, v2test } = api
+let mock = true
 
 const requestOptions = [
   {
-    url: user.replace('/:id', ''),
+    url: uri.ops({m: 'user', mock, ops: 'current'}),
     desc: 'intercept request by mock.js',
   },
   {
-    url: dashboard,
+    url: uri.component('dashboard'),
     desc: 'intercept request by mock.js',
   },
   {
-    url: userLogin,
+    url: uri.ops({m: 'passport', mock, ops: 'login'}),
     method: 'post',
     data: {
       username: 'guest',
@@ -32,18 +31,18 @@ const requestOptions = [
     desc: 'intercept request by mock.js',
   },
   {
-    url: users,
+    url: uri.ops({m: 'users', mock, ops: 'list'}),
     desc: 'intercept request by mock.js',
   },
   {
-    url: user,
+    url: uri.ops({m: 'user', mock, ops: 'get'}),
     desc: 'intercept request by mock.js',
     data: Mock.mock({
       id: '@id',
     }),
   },
   {
-    url: user.replace('/:id', ''),
+    url: uri.ops({m: 'user', mock, ops: 'create'}),
     desc: 'intercept request by mock.js',
     method: 'post',
     data: Mock.mock({
@@ -60,29 +59,29 @@ const requestOptions = [
     }),
   },
   {
-    url: user,
+    url: uri.ops({m: 'user', mock, ops: 'edit'}),
     desc: 'intercept request by mock.js',
-    method: 'patch',
+    method: 'post',
     data: Mock.mock({
       id: '@id',
       name: '@cname',
     }),
   },
   {
-    url: user,
+    url: uri.ops({m: 'user', mock, ops: 'del'}),
     desc: 'intercept request by mock.js',
-    method: 'delete',
+    method: 'post',
     data: Mock.mock({
       id: '@id',
     }),
   },
   {
-    url: v1test,
+    url: uri.component('test'),
     desc: 'intercept request by mock.js',
     method: 'get',
   },
   {
-    url: v2test,
+    url: uri.component('test', 'v2'),
     desc: 'intercept request by mock.js',
     method: 'get',
   },

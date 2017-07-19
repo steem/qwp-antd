@@ -1,9 +1,8 @@
 import { login } from '../services/passport'
 import { routerRedux } from 'dva/router'
-import uri from '../utils/uri'
 
 export default {
-  namespace: 'login',
+  namespace: 'passport',
   state: {
     loginLoading: false,
   },

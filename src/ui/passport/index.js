@@ -8,21 +8,21 @@ import styles from './index.less'
 const FormItem = Form.Item
 
 const Passport = ({
-  login,
+  passport,
   dispatch,
   form: {
     getFieldDecorator,
     validateFieldsAndScroll,
   },
 }) => {
-  const { loginLoading } = login
+  const { loginLoading } = passport
 
   function handleOk () {
     validateFieldsAndScroll((errors, values) => {
       if (errors) {
         return
       }
-      dispatch({ type: 'login/login', payload: values })
+      dispatch({ type: 'passport/login', payload: values })
     })
   }
 
@@ -68,8 +68,8 @@ const Passport = ({
 
 Passport.propTypes = {
   form: PropTypes.object,
-  login: PropTypes.object,
+  passport: PropTypes.object,
   dispatch: PropTypes.func,
 }
 
-export default connect(({ login }) => ({ login }))(Form.create()(Passport))
+export default connect(({ passport }) => ({ passport }))(Form.create()(Passport))

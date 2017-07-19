@@ -1,5 +1,5 @@
 let database = {
-  defaults: 'dashboard',
+  default: 'user',
   list: [
   {
     id: '1',
@@ -156,12 +156,10 @@ let database = {
 ]}
 
 function acls(req, res) {
-    res.status(200).json(database)
-  }
+  res.status(200).json(database)
+}
 
 module.exports = {
   '/': acls,
-  ops: {
-    get: acls,
-  },
+  useHome: true,
 }

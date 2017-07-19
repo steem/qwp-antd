@@ -61,20 +61,19 @@ export default {
       payload,
     }, { call, put }) {
       const { success, user } = yield call(currentUser, payload)
+      let logined = false, defaultCompnent = null
       if (success && user) {
+        logined = true
         const userAcls = yield call(acls.query)
         const { permissions } = user
-        let list = userAcls.list
+        let menu = userAcls.list
         if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
           permissions.visit = userAcls.list.map(item => item.id)
         } else {
-          list = userAcls.list.filter(item => {
-            const cases = [
-              permissions.visit.includes(item.id),
-              item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true,
-              item.bpid ? permissions.visit.includes(item.bpid) : true,
-            ]
-            return cases.every(_ => _)
+          menu = userAcls.list.filter(item => {
+            return permissions.visit.includes(item.id) && 
+              (item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true) &&
+              (item.bpid ? permissions.visit.includes(item.bpid) : true)
           })
         }
         yield put({
@@ -82,18 +81,13 @@ export default {
           payload: {
             user,
             permissions,
-            list,
+            menu,
           },
         })
-        if (!uri.isPassportComponent()) {
-          yield put(routerRedux.push(uri.component('user')))
-        }
-      } else {
-        if (!uri.isPassportComponent()) {
-          let from = encodeURIComponent(location.search)
-          yield put(routerRedux.push(`${uri.passportComponent}&from=${from}`))
-        }
+        defaultCompnent = userAcls.default
       }
+      let p = uri.defaultUri(logined, defaultCompnent)
+      if (p !== false) yield put(routerRedux.push(p))
     },
 
     *logout ({

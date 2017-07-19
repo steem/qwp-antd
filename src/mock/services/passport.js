@@ -1,3 +1,5 @@
+const { adminUsers } = require('./data/passport')
+
 module.exports = {
   ops: {
     login: function (req, res) {

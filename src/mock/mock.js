@@ -1,10 +1,5 @@
 const mocks = require('./services')
 
-const NOTFOUND = {
-  message: 'Not Found',
-  documentation_url: 'http://localhost:8000/request',
-}
-
 function mockFns (req, res) {
   const { query } = req
   const { m, p, op } = query
@@ -14,6 +9,8 @@ function mockFns (req, res) {
     if (op) {
       if (mocks[m].ops && mocks[m].ops[op]) {
         fn = mocks[m].ops[op]
+      } else if (mocks[m].useHome) {
+        fn = mocks[m]['/']
       }
     } else if (mocks[m]['/']) {
       fn = mocks[m]['/']

@@ -1,6 +1,9 @@
-import { request, config } from 'utils'
-const { api } = config
-const { dashboard } = api
+import { request, uri } from 'utils'
+let baseUri = {
+  m: 'dashboard',
+  p: null,
+  mock: true
+}
 
 export async function myCity (params) {
   return request({
@@ -17,8 +20,9 @@ export async function queryWeather (params) {
 }
 
 export async function query (params) {
+  let ops = 'get'
   return request({
-    url: dashboard,
+    url: uri.ops({ ops, ...baseUri }),
     method: 'get',
     data: params,
   })

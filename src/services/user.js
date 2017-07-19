@@ -1,12 +1,14 @@
 import { request, uri } from 'utils'
-let m = 'user'
-let p = null
-let mock = true
+let baseUri = {
+  m: 'user',
+  p: null,
+  mock: true
+}
 
 export async function query (params) {
   let ops = 'get'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops, ...baseUri }),
     method: 'post',
     data: params,
   })
@@ -15,7 +17,7 @@ export async function query (params) {
 export async function create (params) {
   let ops = 'create'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops, ...baseUri }),
     method: 'post',
     data: params,
   })
@@ -24,7 +26,7 @@ export async function create (params) {
 export async function remove (params) {
   let ops = 'del'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops, ...baseUri }),
     method: 'post',
     data: params,
   })
@@ -33,7 +35,7 @@ export async function remove (params) {
 export async function update (params) {
   let ops = 'edit'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops, ...baseUri }),
     method: 'post',
     data: params,
   })

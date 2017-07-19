@@ -14,10 +14,17 @@ const Routers = function ({ history, app }) {
           o.app = app
           return o
         })
-      })(require.context('./', true, /^\.\/ui\/((?!\/)[\s\S])+\/route\.js$/)),
+      })(require.context('./', true, /^\.\/ui\/[\w|\/]+\/route\.js$/)),
     },
   ]
-
+  routes[0].childRoutes.push({
+    path: '*',
+    getComponent (nextState, cb) {
+      require.ensure([], require => {
+        cb(null, require('./ui/error/'))
+      }, 'error')
+    },
+  })
   return <Router history={history} routes={routes} />
 }
 

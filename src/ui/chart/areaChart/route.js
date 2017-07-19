@@ -1,12 +1,9 @@
-import registerModel from '../../utils/registerModel'
-
 export default {
-  path: 'user',
+  path: 'chart/areaChart',
   getComponent (nextState, cb) {
     let app = this.app
     require.ensure([], require => {
-      registerModel(app, require('../../models/user'))
       cb(null, require('./'))
-    }, 'user')
+    }, 'chart-areaChart')
   },
 }

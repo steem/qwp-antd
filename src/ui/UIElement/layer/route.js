@@ -1,12 +1,9 @@
-import registerModel from '../../utils/registerModel'
-
 export default {
-  path: 'user',
+  path: 'UIElement/layer',
   getComponent (nextState, cb) {
     let app = this.app
     require.ensure([], require => {
-      registerModel(app, require('../../models/user'))
       cb(null, require('./'))
-    }, 'user')
+    }, 'UIElement-layer')
   },
 }
