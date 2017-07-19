@@ -7,7 +7,7 @@ import styles from './index.less'
 
 const FormItem = Form.Item
 
-const Login = ({
+const Passport = ({
   login,
   dispatch,
   form: {
@@ -66,10 +66,10 @@ const Login = ({
   )
 }
 
-Login.propTypes = {
+Passport.propTypes = {
   form: PropTypes.object,
   login: PropTypes.object,
   dispatch: PropTypes.func,
 }
 
-export default connect(({ login }) => ({ login }))(Form.create()(Login))
+export default connect(({ login }) => ({ login }))(Form.create()(Passport))

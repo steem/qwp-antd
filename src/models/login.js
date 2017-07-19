@@ -1,4 +1,4 @@
-import { login } from '../services/login'
+import { login } from '../services/passport'
 import { routerRedux } from 'dva/router'
 import uri from '../utils/uri'
 
@@ -16,13 +16,7 @@ export default {
       const data = yield call(login, payload)
       yield put({ type: 'hideLoginLoading' })
       if (data.success) {
-        const from = uri.param('from')
-        yield put({ type: 'app/query' })
-        if (from) {
-          yield put(routerRedux.push(from))
-        } else {
-          yield put(routerRedux.push(uri.component('dashboard'))
-        }
+        yield put({ type: 'app/init' })
       } else {
         throw data
       }

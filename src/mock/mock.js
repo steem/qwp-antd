@@ -1,86 +1,4 @@
-const Mock = require('mockjs')
-const config = require('../utils/config')
-const uri = require('../utils/uri')
 const mocks = require('./services')
-
-let usersListData = Mock.mock({
-  'data|80-100': [
-    {
-      id: '@id',
-      name: '@name',
-      nickName: '@last',
-      phone: /^1[34578]\d{9}$/,
-      'age|11-99': 1,
-      address: '@county(true)',
-      isMale: '@boolean',
-      email: '@email',
-      createTime: '@datetime',
-      avatar () {
-        return Mock.Random.image('100x100', Mock.Random.color(), '#757575', 'png', this.nickName.substr(0, 1))
-      },
-    },
-  ],
-})
-
-
-let database = usersListData.data
-
-const EnumRoleType = {
-  ADMIN: 'admin',
-  DEFAULT: 'guest',
-  DEVELOPER: 'developer',
-}
-
-const userPermission = {
-  DEFAULT: {
-    visit: ['1', '2', '21', '7', '5', '51', '52', '53'],
-    role: EnumRoleType.DEFAULT,
-  },
-  ADMIN: {
-    role: EnumRoleType.ADMIN,
-  },
-  DEVELOPER: {
-    role: EnumRoleType.DEVELOPER,
-  },
-}
-
-const adminUsers = [
-  {
-    id: 0,
-    username: 'admin',
-    password: 'admin',
-    permissions: userPermission.ADMIN,
-  }, {
-    id: 1,
-    username: 'guest',
-    password: 'guest',
-    permissions: userPermission.DEFAULT,
-  }, {
-    id: 2,
-    username: '吴彦祖',
-    password: '123456',
-    permissions: userPermission.DEVELOPER,
-  },
-]
-
-const queryArray = (array, key, keyAlias = 'key') => {
-  if (!(array instanceof Array)) {
-    return null
-  }
-  let data
-
-  for (let item of array) {
-    if (item[keyAlias] === key) {
-      data = item
-      break
-    }
-  }
-
-  if (data) {
-    return data
-  }
-  return null
-}
 
 const NOTFOUND = {
   message: 'Not Found',
@@ -89,15 +7,16 @@ const NOTFOUND = {
 
 function mockFns (req, res) {
   const { query } = req
+  const { m, p, op } = query
   let fn = false
 
-  if (query.m && mocks[query.m]) {  
-    if (query.ops) {
-      if (mocks[query.m][query.ops]) {
-        fn = mocks[query.m][query.ops]
+  if (m && mocks[m]) {  
+    if (op) {
+      if (mocks[m].ops && mocks[m].ops[op]) {
+        fn = mocks[m].ops[op]
       }
-    } else if (mocks[query.m]['/']) {
-      fn = mocks[query.m]['/']
+    } else if (mocks[m]['/']) {
+      fn = mocks[m]['/']
     }
   }
   if (fn) fn(req, res)

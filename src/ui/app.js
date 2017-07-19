@@ -9,18 +9,18 @@ import '../themes/index.less'
 import './app.less'
 import NProgress from 'nprogress'
 import Error from './error'
-const { prefix, openPages } = config
-
+import uri from 'utils/uri'
+const { prefix } = config
 const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { error, user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions } = app
+  const { models, error, user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
   const current = menu.filter(item => pathToRegexp(item.route || '').exec(pathname))
-  const hasPermission = current.length ? permissions.visit.includes(current[0].id) : false
+  const hasPermission = true//current.length ? permissions.visit.includes(current[0].id) : false
   const href = window.location.href
 
   if (lastHref !== href) {
@@ -69,14 +69,13 @@ const App = ({ children, dispatch, app, loading, location }) => {
   const breadProps = {
     menu,
   }
-  if (openPages && openPages.includes(pathname)) {
+  /*if (!hasPermission && uri.isPassportComponent()) {
     return (<div>
-      <Loader spinning={loading.effects['app/query']} />
-      {children}
+      <Loader spinning={loading.effects['app/init']} />
+      <Passport />
     </div>)
-  }
+  }*/
   let errorProps = error
-  console.log(hasPermission)
   if (!hasPermission) errorProps = {
     error: `You don't have the permission, please contact your service administraotr`
   }

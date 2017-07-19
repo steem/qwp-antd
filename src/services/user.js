@@ -1,35 +1,40 @@
-import { request, config } from 'utils'
-const { api } = config
-const { user } = api
+import { request, uri } from 'utils'
+let m = 'user'
+let p = null
+let mock = true
 
 export async function query (params) {
+  let ops = 'get'
   return request({
-    url: user,
-    method: 'get',
+    url: uri.ops({ ops, p, m, mock }),
+    method: 'post',
     data: params,
   })
 }
 
 export async function create (params) {
+  let ops = 'create'
   return request({
-    url: user.replace('/:id', ''),
+    url: uri.ops({ ops, p, m, mock }),
     method: 'post',
     data: params,
   })
 }
 
 export async function remove (params) {
+  let ops = 'del'
   return request({
-    url: user,
-    method: 'delete',
+    url: uri.ops({ ops, p, m, mock }),
+    method: 'post',
     data: params,
   })
 }
 
 export async function update (params) {
+  let ops = 'edit'
   return request({
-    url: user,
-    method: 'patch',
+    url: uri.ops({ ops, p, m, mock }),
+    method: 'post',
     data: params,
   })
 }

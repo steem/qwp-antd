@@ -31,8 +31,8 @@ export default {
       {
         id: 3,
         icon: 'laptop',
-        name: loadingMenuName,
-        router: '/',
+        name: 'user',
+        router: '/user',
       }
     ],
     menuPopoverVisible: false,
@@ -62,13 +62,13 @@ export default {
     }, { call, put }) {
       const { success, user } = yield call(currentUser, payload)
       if (success && user) {
-        const { acls } = yield call(acls.query)
+        const userAcls = yield call(acls.query)
         const { permissions } = user
-        let list = acls.list
+        let list = userAcls.list
         if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-          permissions.visit = acls.list.map(item => item.id)
+          permissions.visit = userAcls.list.map(item => item.id)
         } else {
-          list = acls.list.filter(item => {
+          list = userAcls.list.filter(item => {
             const cases = [
               permissions.visit.includes(item.id),
               item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true,
@@ -85,13 +85,13 @@ export default {
             list,
           },
         })
-        if (isPassportComponent()) {
-          yield put(routerRedux.push(uri.component(acls.defaults)))
+        if (!uri.isPassportComponent()) {
+          yield put(routerRedux.push(uri.component('user')))
         }
       } else {
         if (!uri.isPassportComponent()) {
           let from = encodeURIComponent(location.search)
-          window.location = `${location.origin}${uri.passportComponent}&from=${from}`
+          yield put(routerRedux.push(`${uri.passportComponent}&from=${from}`))
         }
       }
     },
@@ -168,7 +168,17 @@ export default {
         ...state,
         error: payload,
       }
-    }
+    },
+
+    modelLoaded(state, { payload }) {
+      return {
+        ...state,
+        models: {
+          ...state.models,
+          ...payload,
+        },
+      }
+    },
 
   },
 }

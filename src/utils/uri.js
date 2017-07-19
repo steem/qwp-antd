@@ -20,19 +20,18 @@ function param(name) {
 }
 
 function component(m) {
-  if (!m) m = param('m')
-  return config.sitePrefix + 'm=' + m
+  return config.sitePrefix + m
 }
 
-function page(p, m) {
-  let s = component(m)
-  if (!p) p = param('p')
-  if (p) s = join(s, 'p=' + p)
-  return config.sitePrefix + s
+function current() {
+  if (typeof(window) === 'undefined') return null
+  return window.location.pathname
 }
 
 function ops ({ ops, p, m, mock }) {
-  let s = component(m)
+  let s = ''
+  if (!m) m = param('m')
+  if (m) s = join(s, 'm=' + m)
   if (!p) p = param('p')
   if (p) s = join(s, 'p=' + p)
   s = join(s, 'op=' + ops)
@@ -43,8 +42,8 @@ module.exports = {
   blank: 'about:blank',
   param,
   component,
-  page,
+  current,
   ops,
   passportComponent: component('passport'),
-  isPassportComponent() { return param('m') === 'passport' },
+  isPassportComponent() { return current() === component('passport') },
 }
