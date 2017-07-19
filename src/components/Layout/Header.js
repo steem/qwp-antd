@@ -6,32 +6,48 @@ import Menus from './Menu'
 
 const SubMenu = Menu.SubMenu
 
-const Header = ({ user, logout, switchSider, siderFold, isNavbar, menuPopoverVisible, location, switchMenuPopover, navOpenKeys, changeOpenKeys, menu }) => {
+const Header = ({ user, logout, hasNavBar, hasSystemSwitcher, switchSider, siderFold, isNavbar, menuPopoverVisible, location, switchMenuPopover, navOpenKeys, changeOpenKeys, menu }) => {
   let handleClickMenu = e => e.key === 'logout' && logout()
   const menusProps = {
     menu,
     siderFold: false,
     darkTheme: false,
+    hasNavBar: true,
     isNavbar,
     handleClickNavMenu: switchMenuPopover,
     location,
     navOpenKeys,
     changeOpenKeys,
   }
-  return (
-    <div className={styles.header}>
-      {isNavbar
-        ? <Popover placement="bottomLeft" onVisibleChange={switchMenuPopover} visible={menuPopoverVisible} overlayClassName={styles.popovermenu} trigger="click" content={<Menus {...menusProps} />}>
+  let preHeader
+  if (hasNavBar) {
+    preHeader = isNavbar ? (<Popover placement="bottomLeft" onVisibleChange={switchMenuPopover} visible={menuPopoverVisible} overlayClassName={styles.popovermenu} trigger="click" content={<Menus {...menusProps} />}>
           <div className={styles.button}>
             <Icon type="bars" />
           </div>
-        </Popover>
-        : <div className={styles.button} onClick={switchSider}>
+        </Popover>) : (<div className={styles.button} onClick={switchSider}>
           <Icon type={siderFold ? 'menu-unfold' : 'menu-fold'} />
-        </div>}
+        </div>)
+  } else {
+    preHeader = ''
+  }
+  let systemSwitcher
+  if (hasSystemSwitcher) {
+    systemSwitcher = (<div className={styles.button}>
+        <Icon type="bars" />
+      </div>)
+  } else {
+    systemSwitcher = ''
+  }
+  return (
+    <div className={styles.header}>
+      <div className={styles.rightWarpper}>
+      {preHeader}
+      {systemSwitcher}
+      </div>
       <div className={styles.rightWarpper}>
         <div className={styles.button}>
-          <Icon type="mail" />
+          <Icon type="notification" />
         </div>
         <Menu mode="horizontal" onClick={handleClickMenu}>
           <SubMenu style={{
@@ -56,6 +72,7 @@ Header.propTypes = {
   switchSider: PropTypes.func,
   siderFold: PropTypes.bool,
   isNavbar: PropTypes.bool,
+  hasNavBar: PropTypes.bool,
   menuPopoverVisible: PropTypes.bool,
   location: PropTypes.object,
   switchMenuPopover: PropTypes.func,

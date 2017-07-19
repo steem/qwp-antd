@@ -1,7 +1,7 @@
 const qs = require('qs')
 const Mock = require('mockjs')
-const queryArray = require('../common')
-const { EnumRoleType, userPermission, adminUsers, NOTFOUND } = require('./data/passport')
+const { queryArray, NOTFOUND } = require('../common')
+const { EnumRoleType, userPermission, adminUsers,  } = require('./data/passport')
 
 let usersListData = Mock.mock({
   'data|80-100': [

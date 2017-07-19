@@ -17,5 +17,13 @@ const queryArray = (array, key, keyAlias = 'key') => {
   return null
 }
 
-module.exports = queryArray
+const NOTFOUND = {
+  message: 'Not Found',
+  documentation_url: 'http://localhost:8000/request',
+}
+
+module.exports = {
+  queryArray,
+  NOTFOUND,
+}
 

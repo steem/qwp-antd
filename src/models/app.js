@@ -6,6 +6,7 @@ import config from 'config'
 import { EnumRoleType } from 'enums'
 const { prefix } = config
 import uri from '../utils/uri'
+import lodash from 'lodash'
 let loadingMenuName = '■■■■■■■■■■'
 
 export default {
@@ -39,19 +40,15 @@ export default {
     siderFold: localStorage.getItem(`${prefix}siderFold`) === 'true',
     darkTheme: localStorage.getItem(`${prefix}darkTheme`) === 'true',
     isNavbar: document.body.clientWidth < 769,
+    hasNavBar: true,
+    hasSystemSwitcher: true,
     navOpenKeys: JSON.parse(localStorage.getItem(`${prefix}navOpenKeys`)) || [],
   },
   subscriptions: {
 
     setup ({ dispatch }) {
       dispatch({ type: 'init' })
-      let tid
-      window.onresize = () => {
-        clearTimeout(tid)
-        tid = setTimeout(() => {
-          dispatch({ type: 'changeNavbar' })
-        }, 300)
-      }
+      window.onresize = lodash.debounce(() => {dispatch({ type: 'changeNavbar' })}, 300)
     },
 
   },

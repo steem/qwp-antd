@@ -36,14 +36,8 @@ const adminUsers = [
   },
 ]
 
-const NOTFOUND = {
-  message: 'Not Found',
-  documentation_url: 'http://localhost:8000/request',
-}
-
 module.exports = {
   EnumRoleType,
   userPermission,
   adminUsers,
-  NOTFOUND,
 }

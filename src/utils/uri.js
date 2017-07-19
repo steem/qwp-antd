@@ -47,7 +47,11 @@ const isPassportComponent = () => { return current() === passportComponent }
 
 function defaultUri(isLogined, defaultComponent) {
   if (isLogined) {
-    if (isPassportComponent()) return component(defaultComponent)
+    if (isPassportComponent()) {
+      let from = param('from')
+      if (from) return `${location.origin}${from}`
+      return component(defaultComponent)
+    }
   } else {
     if (!isPassportComponent()) {
       let from = location.pathname != '/' || location.search.length ? encodeURI(location.pathname) + encodeURI(location.search) : false

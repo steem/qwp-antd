@@ -1,4 +1,4 @@
-const queryArray = require('../common')
+const { queryArray } = require('../common')
 const Mock = require('mockjs')
 
 let postId = 0
