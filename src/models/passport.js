@@ -1,4 +1,4 @@
-import { login } from '../services/passport'
+import { login } from '../requests/passport'
 import { routerRedux } from 'dva/router'
 
 export default {

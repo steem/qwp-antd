@@ -8,6 +8,7 @@
     border: none;
     display: inline-block;
   }
+
   box-shadow: @shadow-2;
   position: relative;
   display: flex;
@@ -21,8 +22,7 @@
     padding-right: 16px;
   }
 
-  .button {
-    width: 47px;
+  .navItem {
     height: 47px;
     line-height: 47px;
     text-align: center;
@@ -35,25 +35,18 @@
       background-color: fade(@primary-color, 15%);
     }
   }
-}
 
-.popovermenu {
-  width: 280px;
-  margin-left: 6px;
-
-  :global .ant-popover-inner-content {
-    padding: 0;
-
-    .ant-menu-inline .ant-menu-item,
-    .ant-menu-vertical .ant-menu-item {
-      border-right: 0;
-      height: 48px;
-      line-height: 48px;
-    }
-
-    .ant-menu-inline .ant-menu-item-selected,
-    .ant-menu-inline .ant-menu-selected {
-      border-right: 0;
-    }
+  .button {
+    width: 32px;
   }
+
+  .linkSpace {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .linkSpace>a {
+    color: black;
+  }
+
 }

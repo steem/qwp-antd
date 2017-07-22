@@ -1,22 +1,22 @@
-import { currentUser, logout } from '../services/passport'
-import * as acls from '../services/acls'
+import { currentUser, logout } from '../requests/passport'
+import * as acls from '../requests/acls'
 import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
 import config from 'config'
-import { EnumRoleType } from 'enums'
-const { prefix } = config
-import uri from '../utils/uri'
+import { EnumRoleType, SiderBarComponentType } from 'enums'
+import { uri, storage } from 'utils'
 import lodash from 'lodash'
 let loadingMenuName = '■■■■■■■■■■'
 
-export default {
+let app = {
   namespace: 'app',
   state: {
     user: {},
     permissions: {
       visit: [],
     },
-    menu: [
+    siderBarComponentType: SiderBarComponentType.MENU,
+    menu:[
       {
         id: 1,
         icon: 'laptop',
@@ -36,13 +36,22 @@ export default {
         router: '/user',
       }
     ],
-    menuPopoverVisible: false,
-    siderFold: localStorage.getItem(`${prefix}siderFold`) === 'true',
-    darkTheme: localStorage.getItem(`${prefix}darkTheme`) === 'true',
+    siderList:{
+      dataUrl:''
+    },
+    isLogined: false,
+    hasHeader: true,
+    hasSiderBar: true,
+    hasBread: true,
+    siderFold: storage.get('siderFold') === 'true',
+    darkTheme: storage.get('darkTheme') === 'true',
     isNavbar: document.body.clientWidth < 769,
-    hasNavBar: true,
-    hasSystemSwitcher: true,
-    navOpenKeys: JSON.parse(localStorage.getItem(`${prefix}navOpenKeys`)) || [],
+    subSystems: [],
+    error: false,
+    notifications: [],
+    defaultCompnent: false,
+    showPasswordDialog: false,
+    navOpenKeys: JSON.parse(storage.get('navOpenKeys')) || [],
   },
   subscriptions: {
 
@@ -58,9 +67,9 @@ export default {
       payload,
     }, { call, put }) {
       const { success, user } = yield call(currentUser, payload)
-      let logined = false, defaultCompnent = null
+      let isLogined = false, defaultCompnent = null
       if (success && user) {
-        logined = true
+        isLogined = true
         const userAcls = yield call(acls.query)
         const { permissions } = user
         let menu = userAcls.list
@@ -73,18 +82,29 @@ export default {
               (item.bpid ? permissions.visit.includes(item.bpid) : true)
           })
         }
+        let subSystems = []
+        if (userAcls.subSystems) subSystems = userAcls.subSystems
         yield put({
           type: 'updateState',
           payload: {
             user,
             permissions,
             menu,
+            isLogined,
+            defaultCompnent,
+            subSystems,
           },
         })
         defaultCompnent = userAcls.default
       }
-      let p = uri.defaultUri(logined, defaultCompnent)
+      let p = uri.defaultUri(isLogined, defaultCompnent)
       if (p !== false) yield put(routerRedux.push(p))
+    },
+
+    *changePassword({
+      payload,
+    }, { call, put }) {
+
     },
 
     *logout ({
@@ -117,8 +137,16 @@ export default {
       }
     },
 
+    showChangePassword(state, { payload }) {
+      return {
+        ...state,
+        showPasswordDialog: payload,
+      }
+    },
+
     switchSider (state) {
-      localStorage.setItem(`${prefix}siderFold`, !state.siderFold)
+      console.log(state.siderFold)
+      storage.set('siderFold', !state.siderFold)
       return {
         ...state,
         siderFold: !state.siderFold,
@@ -126,17 +154,10 @@ export default {
     },
 
     switchTheme (state) {
-      localStorage.setItem(`${prefix}darkTheme`, !state.darkTheme)
+      storage.set('darkTheme', !state.darkTheme)
       return {
         ...state,
         darkTheme: !state.darkTheme,
-      }
-    },
-
-    switchMenuPopver (state) {
-      return {
-        ...state,
-        menuPopoverVisible: !state.menuPopoverVisible,
       }
     },
 
@@ -173,3 +194,5 @@ export default {
 
   },
 }
+
+export default app

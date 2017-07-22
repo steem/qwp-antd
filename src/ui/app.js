@@ -3,19 +3,19 @@ import PropTypes from 'prop-types'
 import pathToRegexp from 'path-to-regexp'
 import { connect } from 'dva'
 import { Layout, Loader } from 'components'
-import { classnames, config } from 'utils'
+import ChangePasswordDialog from 'components/ChangePassword/Modal'
+import { classnames, config, uri } from 'utils'
 import { Helmet } from 'react-helmet'
 import '../themes/index.less'
 import './app.less'
 import NProgress from 'nprogress'
 import Error from './error'
-import uri from 'utils/uri'
 const { prefix } = config
 const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { error, hasNavBar, hasSystemSwitcher, user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions } = app
+  const { error, subSystems, showPasswordDialog, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -31,17 +31,19 @@ const App = ({ children, dispatch, app, loading, location }) => {
     }
   }
 
-  const headerProps = {
+  const headerProps = hasHeader ? {
+    siderBarComponentType,
     menu,
     user,
     siderFold,
+    darkTheme,
     isNavbar,
-    hasNavBar,
-    hasSystemSwitcher,
-    menuPopoverVisible,
+    hasSiderBar,
+    subSystems,
+    notifications,
     navOpenKeys,
-    switchMenuPopover () {
-      dispatch({ type: 'app/switchMenuPopver' })
+    changePassword() {
+      dispatch({ type: 'app/showChangePassword', payload: true })
     },
     logout () {
       dispatch({ type: 'app/logout' })
@@ -52,9 +54,11 @@ const App = ({ children, dispatch, app, loading, location }) => {
     changeOpenKeys (openKeys) {
       dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     },
-  }
+  } : ''
 
-  const siderProps = {
+  const siderProps = hasSiderBar ? {
+    siderBarComponentType,
+    siderList,
     menu,
     siderFold,
     darkTheme,
@@ -66,11 +70,12 @@ const App = ({ children, dispatch, app, loading, location }) => {
       localStorage.setItem(`${prefix}navOpenKeys`, JSON.stringify(openKeys))
       dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     },
-  }
+  } : ''
 
-  const breadProps = {
+  const breadProps = hasBread ? {
     menu,
-  }
+  } : ''
+
   if (!hasPermission && uri.isPassportComponent()) {
     return (<div>
       <Loader spinning={loading.effects['app/init']} />
@@ -81,6 +86,23 @@ const App = ({ children, dispatch, app, loading, location }) => {
   if (!hasPermission) errorProps = {
     error: `You don't have the permission, please contact your service administraotr`
   }
+  const passwordModalProps = {
+    visible: showPasswordDialog,
+    maskClosable: false,
+    wrapClassName: 'vertical-center-modal',
+    onOk (data) {
+      dispatch({
+        type: `app/changePassword`,
+        payload: data,
+      })
+    },
+    onCancel () {
+      dispatch({
+        type: 'app/showChangePassword',
+        payload: false,
+      })
+    },
+  }
   return (
     <div>
       <Helmet>
@@ -90,18 +112,19 @@ const App = ({ children, dispatch, app, loading, location }) => {
         {iconFontJS && <script src={iconFontJS}></script>}
         {iconFontCSS && <link rel="stylesheet" href={iconFontCSS} />}
       </Helmet>
-      <div className={classnames(styles.layout, { [styles.fold]: isNavbar ? false : siderFold }, { [styles.withnavbar]: isNavbar })}>
-        {!isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
+      <div className={classnames(styles.layout, { [styles.fold]: isNavbar ? false : siderFold }, { [styles.withnavbar]: !hasSiderBar || isNavbar })}>
+        {hasSiderBar && !isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
           <Sider {...siderProps} />
         </aside> : ''}
         <div className={styles.main}>
-          <Header {...headerProps} />
-          <Bread {...breadProps} />
+          {hasHeader ? <Header {...headerProps} /> : ''}
+          {hasBread ? <Bread {...breadProps} /> : ''}
           <div className={styles.container}>
             <div className={styles.content}>
               {hasPermission ? children : <Error {...errorProps}/>}
             </div>
           </div>
+          {showPasswordDialog && <ChangePasswordDialog {...passwordModalProps}/>}
           <Footer />
         </div>
       </div>

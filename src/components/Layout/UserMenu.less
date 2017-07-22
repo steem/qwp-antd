@@ -1,0 +1,90 @@
+@import "../../themes/vars.less";
+
+.textCenter {
+  text-align: center;
+}
+
+.userImage {
+  float: left;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  margin-right: 6px;
+  margin-top: 10px;
+}
+
+:global .user-menu-popup {
+  padding: 1px 0 0 0;
+  & .ant-popover-content {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-top-width: 0;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    box-shadow: none;
+    border-color: #eee;
+  }
+  & .ant-popover-arrow {
+    display: none
+  }
+  & .ant-popover-inner-content {
+    padding: 0;
+  }
+}
+
+.userMenu {
+  width: 280px;
+}
+
+.menuUserImageItem {
+  height: 175px;
+  padding: 10px;
+  text-align: center;
+  background-color: #3c8dbc;
+}
+
+.menuUserImage {
+  z-index: 5;
+  height: 90px;
+  width: 90px;
+  border: 3px solid;
+  border-color: transparent;
+  border-color: rgba(255,255,255,0.2);
+  vertical-align: middle;
+}
+
+.menuUserImageDesc {
+  color: #fff;
+  color: rgba(255,255,255,0.8);
+  font-size: 13px;
+  margin-top: 10px;
+
+  small {
+    font-size: 12px;
+  }
+}
+
+.menuUserOps {
+  padding: 15px;
+  height: 50px;
+  border-bottom: 1px solid #f4f4f4;
+  border-top: 1px solid #dddddd;
+  &:before {
+    content: " ";
+    display: table;
+  }
+}
+
+.menuUserPassport {
+  padding: 18px;
+  height: 60px;
+  border-bottom: 1px solid #f4f4f4;
+  &:before {
+    content: " ";
+    display: table;
+  }
+}
+
+.imgCircle {
+    border-radius: 50%;
+}

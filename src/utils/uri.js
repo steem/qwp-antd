@@ -19,12 +19,8 @@ function param(name) {
   return null
 }
 
-function component(m) {
-  if (arguments.length === 0) return config.sitePrefix
-  else if (arguments.length === 1) return config.sitePrefix + m
-  let p = []
-  for (let i = 0, cnt = arguments.length; i < cnt; ++i) p.push(arguments[i])
-  return config.sitePrefix + p.join('/')
+function component(...args) {
+  return config.sitePrefix + args.join('/')
 }
 
 function current() {
@@ -49,9 +45,9 @@ function defaultUri(isLogined, defaultComponent) {
   if (isLogined) {
     if (isPassportComponent()) {
       let from = param('from')
-      if (from) return `${location.origin}${from}`
-      return component(defaultComponent)
+      return `${location.origin}${from ? from : component(defaultComponent)}`
     }
+    return component(defaultComponent)
   } else {
     if (!isPassportComponent()) {
       let from = location.pathname != '/' || location.search.length ? encodeURI(location.pathname) + encodeURI(location.search) : false

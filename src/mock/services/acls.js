@@ -1,5 +1,17 @@
 let database = {
   default: 'user',
+  subSystems: [
+    {
+      path: '/user',
+      name: 'Users',
+      icon: 'user',
+    },
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      icon: 'laptop',
+    },
+  ],
   list: [
   {
     id: '1',

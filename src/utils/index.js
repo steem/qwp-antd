@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { color } from './theme'
 import lodash from 'lodash'
 import uri from './uri'
+import storage from './storage'
 
 // 连字符转驼峰
 String.prototype.hyphenToHump = function () {
@@ -94,4 +95,5 @@ module.exports = {
   queryArray,
   arrayToTree,
   uri,
+  storage,
 }

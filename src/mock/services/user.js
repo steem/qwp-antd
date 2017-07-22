@@ -1,7 +1,7 @@
 const qs = require('qs')
 const Mock = require('mockjs')
 const { queryArray, NOTFOUND } = require('../common')
-const { EnumRoleType, userPermission, adminUsers,  } = require('./data/passport')
+const { EnumRoleType, userPermission, adminUsers } = require('./data/passport')
 
 let usersListData = Mock.mock({
   'data|80-100': [
@@ -54,6 +54,8 @@ function currentUser(req, res) {
         user.permissions = userItem[0].permissions
         user.username = userItem[0].username
         user.id = userItem[0].id
+        user.role = userItem[0].permissions.role
+        user.createTime = (new Date()).toLocaleDateString()
       }
     }
     response.user = user

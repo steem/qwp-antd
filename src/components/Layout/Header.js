@@ -1,81 +1,112 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Menu, Icon, Popover } from 'antd'
+import { Icon, Popover, Popconfirm } from 'antd'
+import { Link } from 'dva/router'
 import styles from './Header.less'
 import Menus from './Menu'
+import UserMenu from './UserMenu'
+import Notification from './Notification'
+import SystemSwitcher from './SystemSwitcher'
+import { classnames } from 'utils'
+import { SiderBarComponentType } from 'enums'
 
-const SubMenu = Menu.SubMenu
-
-const Header = ({ user, logout, hasNavBar, hasSystemSwitcher, switchSider, siderFold, isNavbar, menuPopoverVisible, location, switchMenuPopover, navOpenKeys, changeOpenKeys, menu }) => {
-  let handleClickMenu = e => e.key === 'logout' && logout()
-  const menusProps = {
-    menu,
-    siderFold: false,
-    darkTheme: false,
-    hasNavBar: true,
-    isNavbar,
-    handleClickNavMenu: switchMenuPopover,
-    location,
-    navOpenKeys,
-    changeOpenKeys,
-  }
-  let preHeader
-  if (hasNavBar) {
-    preHeader = isNavbar ? (<Popover placement="bottomLeft" onVisibleChange={switchMenuPopover} visible={menuPopoverVisible} overlayClassName={styles.popovermenu} trigger="click" content={<Menus {...menusProps} />}>
-          <div className={styles.button}>
-            <Icon type="bars" />
-          </div>
-        </Popover>) : (<div className={styles.button} onClick={switchSider}>
-          <Icon type={siderFold ? 'menu-unfold' : 'menu-fold'} />
-        </div>)
-  } else {
-    preHeader = ''
-  }
-  let systemSwitcher
-  if (hasSystemSwitcher) {
-    systemSwitcher = (<div className={styles.button}>
-        <Icon type="bars" />
+const SideMenuSwitcher = React.createClass({
+  getInitialState() {
+    return {
+      visible: true,
+    }
+  },
+  hide() {
+    this.setState({
+      visible: false,
+    })
+  },
+  handleVisibleChange(visible) {
+    this.setState({ visible })
+  },
+  render() {
+    const {
+      darkTheme,
+      hasSiderBar,
+      isNavbar,
+      location,
+      navOpenKeys,
+      changeOpenKeys,
+      switchSider,
+      siderFold,
+    } = this.props
+    return (
+      isNavbar && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<Menus {...this.props} />}>
+        <div className={classnames(styles.button, styles.navItem)}>
+          <Icon type="bars" />
+        </div>
+      </Popover>) : (<div className={classnames(styles.button, styles.navItem)} onClick={switchSider}>
+        <Icon type={siderFold ? 'menu-unfold' : 'menu-fold'} />
       </div>)
-  } else {
-    systemSwitcher = ''
+    )
+  },
+})
+
+const Header = ({ user, logout, changePassword, hasSiderBar, notifications, subSystems, switchSider, siderFold, darkTheme, isNavbar, location, navOpenKeys, changeOpenKeys, siderBarComponentType, menu }) => {
+  
+  let sideMenuProps
+  if (hasSiderBar) {
+    sideMenuProps = {
+      siderFold,
+      darkTheme,
+      hasSiderBar,
+      isNavbar,
+      location,
+      navOpenKeys,
+      changeOpenKeys,
+      switchSider,
+    }
+    if (siderBarComponentType === SiderBarComponentType.MENU) {
+      sideMenuProps.menu = menu
+    }
+  }
+  const itemClassName = classnames(styles.button, styles.navItem)
+  const sysSwitcherProps = {
+    itemClassName,
+    subSystems,
+  }
+  const notiProps = {
+    itemClassName,
+    notifications,
+  }
+  const userMenuProps = {
+    user,
+    logout,
+    changePassword,
+    popoverClassName: classnames(styles.navItem, styles.linkSpace),
   }
   return (
-    <div className={styles.header}>
+    <div className={classnames(styles.header, "user-menu-popup")}>
       <div className={styles.rightWarpper}>
-      {preHeader}
-      {systemSwitcher}
+      {hasSiderBar && <SideMenuSwitcher {...sideMenuProps}/>}
+      {subSystems.length > 0 && <SystemSwitcher {...sysSwitcherProps}/>}
       </div>
       <div className={styles.rightWarpper}>
-        <div className={styles.button}>
-          <Icon type="notification" />
-        </div>
-        <Menu mode="horizontal" onClick={handleClickMenu}>
-          <SubMenu style={{
-            float: 'right',
-          }} title={< span > <Icon type="user" />
-            {user.username} < /span>}
-          >
-            <Menu.Item key="logout">
-              Sign out
-            </Menu.Item>
-          </SubMenu>
-        </Menu>
+        <Notification {...notiProps}/>
+        <UserMenu {...userMenuProps}/>
       </div>
     </div>
   )
 }
 
 Header.propTypes = {
-  menu: PropTypes.array,
+  menu: React.PropTypes.array,
+  subSystems: React.PropTypes.array,
+  notifications: React.PropTypes.array,
   user: PropTypes.object,
   logout: PropTypes.func,
+  changePassword: PropTypes.func,
   switchSider: PropTypes.func,
   siderFold: PropTypes.bool,
+  darkTheme: PropTypes.bool,
   isNavbar: PropTypes.bool,
-  hasNavBar: PropTypes.bool,
-  menuPopoverVisible: PropTypes.bool,
+  hasSiderBar: PropTypes.bool,
   location: PropTypes.object,
-  switchMenuPopover: PropTypes.func,
   navOpenKeys: PropTypes.array,
   changeOpenKeys: PropTypes.func,
 }

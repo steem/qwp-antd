@@ -1,6 +1,6 @@
 import modelExtend from 'dva-model-extend'
-import { create, remove, update } from '../services/user'
-import * as usersService from '../services/users'
+import { create, remove, update } from '../requests/user'
+import * as usersService from '../requests/users'
 import { pageModel } from './common'
 import { config } from 'utils'
 

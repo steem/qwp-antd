@@ -1,4 +1,4 @@
-import { myCity, queryWeather, query } from '../services/dashboard'
+import { myCity, queryWeather, query } from '../requests/dashboard'
 import { parse } from 'qs'
 
 // zuimei 摘自 http://www.zuimeitianqi.com/res/js/index.js
