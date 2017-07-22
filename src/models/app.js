@@ -1,4 +1,4 @@
-import { currentUser, logout } from '../requests/passport'
+import { currentUser, logout, changePassword } from '../requests/passport'
 import * as acls from '../requests/acls'
 import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
@@ -6,6 +6,7 @@ import config from 'config'
 import { EnumRoleType, SiderBarComponentType } from 'enums'
 import { uri, storage } from 'utils'
 import lodash from 'lodash'
+import showOpsNotification from 'utils/notification'
 let loadingMenuName = '■■■■■■■■■■'
 
 let app = {
@@ -104,17 +105,16 @@ let app = {
     *changePassword({
       payload,
     }, { call, put }) {
-
+      showOpsNotification(yield call(changePassword, payload), 'Change password', 'Password has been changed successfully')
     },
 
     *logout ({
       payload,
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
+      showOpsNotification(data, 'Logout', 'You are logout')
       if (data.success) {
         yield put({ type: 'init' })
-      } else {
-        throw (data)
       }
     },
 
@@ -138,6 +138,7 @@ let app = {
     },
 
     showChangePassword(state, { payload }) {
+      console.log(payload)
       return {
         ...state,
         showPasswordDialog: payload,

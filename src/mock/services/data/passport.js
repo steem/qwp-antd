@@ -17,7 +17,7 @@ const userPermission = {
   },
 }
 
-const adminUsers = [
+let adminUsers = [
   {
     id: 0,
     username: 'admin',

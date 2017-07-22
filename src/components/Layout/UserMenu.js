@@ -24,7 +24,7 @@ const UserMenuComponent = React.createClass({
     let handleSignout = e => this.props.logout()
     let handleChangePassword = e => {
       this.hide()
-      this.props.changePassword()
+      this.props.showChangePassword()
     }
     const { user, popoverClassName } = this.props
     const userMenu = (
@@ -80,7 +80,7 @@ const UserMenu = (props) => {
 }
 
 UserMenu.propTypes = {
-  changePassword: PropTypes.func.isRequired,
+  showChangePassword: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   popoverClassName: PropTypes.string.isRequired,

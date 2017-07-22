@@ -1,7 +1,8 @@
 const qs = require('qs')
 const Mock = require('mockjs')
 const { queryArray, NOTFOUND } = require('../common')
-const { EnumRoleType, userPermission, adminUsers } = require('./data/passport')
+const { EnumRoleType, userPermission } = require('./data/passport')
+let { adminUsers } = require('./data/passport')
 
 let usersListData = Mock.mock({
   'data|80-100': [
@@ -15,6 +16,7 @@ let usersListData = Mock.mock({
       isMale: '@boolean',
       email: '@email',
       createTime: '@datetime',
+      password: '@string(6, 10)',
       avatar () {
         return Mock.Random.image('100x100', Mock.Random.color(), '#757575', 'png', this.nickName.substr(0, 1))
       },
@@ -23,9 +25,6 @@ let usersListData = Mock.mock({
 })
 
 let database = usersListData.data
-
-
-
 let inDebug = false
 
 function currentUser(req, res) {
@@ -55,7 +54,7 @@ function currentUser(req, res) {
         user.username = userItem[0].username
         user.id = userItem[0].id
         user.role = userItem[0].permissions.role
-        user.createTime = (new Date()).toLocaleDateString()
+        user.createTime = userItem[0].createTime || (new Date()).toLocaleDateString()
       }
     }
     response.user = user
@@ -154,5 +153,23 @@ module.exports = {
         total: newData.length,
       })
     },
+
+    pwd (req, res) {
+      const editItem = req.body
+      let isExist = false
+
+      adminUsers = adminUsers.map((item) => {
+        if (item.id === editItem.id) {
+          isExist = true
+          return Object.assign({}, item, {password: editItem.pwd1})
+        }
+        return item
+      })
+      let data = {
+        success: isExist
+      }
+      if (!isExist) data.message = 'Wrong parameters' 
+      res.status(200).json(data)
+    }
   },
 }

@@ -15,7 +15,7 @@ const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { error, subSystems, showPasswordDialog, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
+  const { error, isLogined, subSystems, showPasswordDialog, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -42,7 +42,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
     subSystems,
     notifications,
     navOpenKeys,
-    changePassword() {
+    showChangePassword() {
       dispatch({ type: 'app/showChangePassword', payload: true })
     },
     logout () {
@@ -76,7 +76,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
     menu,
   } : ''
 
-  if (!hasPermission && uri.isPassportComponent()) {
+  if (!isLogined || (!hasPermission && uri.isPassportComponent())) {
     return (<div>
       <Loader spinning={loading.effects['app/init']} />
       {children}
@@ -91,9 +91,14 @@ const App = ({ children, dispatch, app, loading, location }) => {
     maskClosable: false,
     wrapClassName: 'vertical-center-modal',
     onOk (data) {
+      data.id = user.id
       dispatch({
         type: `app/changePassword`,
         payload: data,
+      })
+      dispatch({
+        type: 'app/showChangePassword',
+        payload: false,
       })
     },
     onCancel () {

@@ -30,3 +30,13 @@ export async function currentUser (params) {
     data: params,
   })
 }
+
+export async function changePassword (params) {
+  let ops = 'pwd'
+  let m = 'user'
+  return request({
+    url: uri.ops({ ops, p, m, mock }),
+    method: 'post',
+    data: params,
+  })
+}

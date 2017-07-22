@@ -47,7 +47,7 @@ const SideMenuSwitcher = React.createClass({
   },
 })
 
-const Header = ({ user, logout, changePassword, hasSiderBar, notifications, subSystems, switchSider, siderFold, darkTheme, isNavbar, location, navOpenKeys, changeOpenKeys, siderBarComponentType, menu }) => {
+const Header = ({ user, logout, showChangePassword, hasSiderBar, notifications, subSystems, switchSider, siderFold, darkTheme, isNavbar, location, navOpenKeys, changeOpenKeys, siderBarComponentType, menu }) => {
   
   let sideMenuProps
   if (hasSiderBar) {
@@ -77,7 +77,7 @@ const Header = ({ user, logout, changePassword, hasSiderBar, notifications, subS
   const userMenuProps = {
     user,
     logout,
-    changePassword,
+    showChangePassword,
     popoverClassName: classnames(styles.navItem, styles.linkSpace),
   }
   return (
@@ -100,7 +100,7 @@ Header.propTypes = {
   notifications: React.PropTypes.array,
   user: PropTypes.object,
   logout: PropTypes.func,
-  changePassword: PropTypes.func,
+  showChangePassword: PropTypes.func,
   switchSider: PropTypes.func,
   siderFold: PropTypes.bool,
   darkTheme: PropTypes.bool,

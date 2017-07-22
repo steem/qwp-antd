@@ -47,18 +47,20 @@ const modal = ({
             rules: [
               {
                 required: true,
+                message: 'New password is required',
               },
             ],
-          })(<Input />)}
+          })(<Input type="password" />)}
         </FormItem>
-        <FormItem label="Password Confirmation" hasFeedback {...formItemLayout}>
+        <FormItem label="Password confirmation" hasFeedback {...formItemLayout}>
           {getFieldDecorator('pwd2', {
             rules: [
               {
                 required: true,
+                message: 'Password confirmation is required'
               },
             ],
-          })(<Input />)}
+          })(<Input type="password" />)}
         </FormItem>
       </Form>
     </Modal>
