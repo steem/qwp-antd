@@ -106,7 +106,6 @@ let app = {
               subSystems,
             },
           })
-          console.log(location.pathname)
         }
       }
       let p = uri.defaultUri(isLogined, defaultCompnent)
@@ -149,7 +148,6 @@ let app = {
     },
 
     showChangePassword(state, { payload }) {
-      console.log(payload)
       return {
         ...state,
         showPasswordDialog: payload,
@@ -157,7 +155,6 @@ let app = {
     },
 
     switchSider (state) {
-      console.log(state.siderFold)
       storage.set('siderFold', !state.siderFold)
       return {
         ...state,
