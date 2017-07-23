@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Form, Input, Modal } from 'antd'
+import { getFormFieldRule } from 'utils/form'
+import { l } from 'utils/localization'
 const FormItem = Form.Item
 
 const formItemLayout = {
@@ -19,6 +21,7 @@ const modal = ({
     validateFields,
     getFieldsValue,
   },
+  appSettings,
   ...modalProps
 }) => {
   const handleOk = () => {
@@ -35,32 +38,32 @@ const modal = ({
 
   const modalOpts = {
     ...modalProps,
-    title: 'Change your password',
+    title: l('Change your password'),
     onOk: handleOk,
   }
-
+  let formName = 'changePassword'
   return (
     <Modal {...modalOpts}>
       <Form layout="horizontal">
-        <FormItem label="New password" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('pwd1', {
-            rules: [
-              {
-                required: true,
-                message: 'New password is required',
-              },
-            ],
-          })(<Input type="password" />)}
+        <FormItem label={l("New password")} hasFeedback {...formItemLayout}>
+          {
+            getFormFieldRule(
+              appSettings, 
+              formName, 
+              'pwd1', 
+              getFieldDecorator
+            )(<Input type="password" />)
+          }
         </FormItem>
-        <FormItem label="Password confirmation" hasFeedback {...formItemLayout}>
-          {getFieldDecorator('pwd2', {
-            rules: [
-              {
-                required: true,
-                message: 'Password confirmation is required'
-              },
-            ],
-          })(<Input type="password" />)}
+        <FormItem label={l("Password confirmation")} hasFeedback {...formItemLayout}>
+          {
+            getFormFieldRule(
+              appSettings, 
+              formName, 
+              'pwd2', 
+              getFieldDecorator
+            )(<Input type="password" />)
+          }
         </FormItem>
       </Form>
     </Modal>
@@ -70,6 +73,7 @@ const modal = ({
 modal.propTypes = {
   form: PropTypes.object.isRequired,
   onOk: PropTypes.func.isRequired,
+  appSettings: PropTypes.object.isRequired,
 }
 
 export default Form.create()(modal)

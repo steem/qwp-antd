@@ -1,9 +1,9 @@
 import React from 'react'
 import styles from './Footer.less'
-import { config } from 'utils'
+import { l } from 'utils/localization'
 
 const Footer = () => <div className={styles.footer}>
-  {config.footerText}
+  {l('footerText')}
 </div>
 
 export default Footer

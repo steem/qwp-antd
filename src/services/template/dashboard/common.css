@@ -1,0 +1,9 @@
+#toast-container {
+    top: 56px!important;
+}
+.content-wrapper {
+    margin-left: 0!important;
+}
+.content-wrapper > .content {
+    padding: 8px 20px 0 20px!important;
+}

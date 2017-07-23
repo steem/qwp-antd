@@ -1,0 +1,12 @@
+body {
+    padding: 0!important;
+}
+.content-wrapper {
+    margin-left: 0!important;
+    background-color: #fff!important;
+}
+.tbl-search-form .form-control, .tbl-search-form button {
+    height: 30px!important;
+    padding-left: 2px;
+    padding-right: 2px;
+}

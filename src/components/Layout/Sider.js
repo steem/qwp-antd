@@ -4,6 +4,7 @@ import { Icon, Switch } from 'antd'
 import styles from './Layout.less'
 import { config } from 'utils'
 import Menus from './Menu'
+import { l } from 'utils/localization'
 
 const Sider = ({ siderFold, darkTheme, location, changeTheme, navOpenKeys, changeOpenKeys, menu }) => {
   const menusProps = {
@@ -18,7 +19,7 @@ const Sider = ({ siderFold, darkTheme, location, changeTheme, navOpenKeys, chang
     <div>
       <div className={styles.logo}>
         <img alt={'logo'} src={config.logo} />
-        {siderFold ? '' : <span>{config.name}</span>}
+        {siderFold ? '' : <span>{l('productName')}</span>}
       </div>
       <Menus {...menusProps} />
       {!siderFold ? <div className={styles.switchtheme}>

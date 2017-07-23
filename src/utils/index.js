@@ -5,6 +5,7 @@ import { color } from './theme'
 import lodash from 'lodash'
 import uri from './uri'
 import storage from './storage'
+import localization from './localization'
 
 // 连字符转驼峰
 String.prototype.hyphenToHump = function () {
@@ -96,4 +97,5 @@ module.exports = {
   arrayToTree,
   uri,
   storage,
+  localization,
 }

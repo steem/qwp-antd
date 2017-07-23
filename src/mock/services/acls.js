@@ -1,5 +1,4 @@
 let database = {
-  default: 'user',
   subSystems: [
     {
       path: '/user',

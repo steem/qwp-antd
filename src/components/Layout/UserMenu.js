@@ -5,6 +5,7 @@ import { Link } from 'dva/router'
 import styles from './UserMenu.less'
 import { classnames } from 'utils'
 import userImage from '../../img/user2-160x160.jpg'
+import { l } from 'utils/localization'
 
 const UserMenuComponent = React.createClass({
   getInitialState() {
@@ -50,11 +51,11 @@ const UserMenuComponent = React.createClass({
         </div>
         <div className={styles.menuUserPassport}>
           <div className={classnames("ant-col-12", styles.textCenter)}>
-            <Button onClick={handleChangePassword}>Chang password</Button>
+            <Button onClick={handleChangePassword}>{l("Change password")}</Button>
           </div>
           <div className={classnames("ant-col-12", styles.textCenter)}>
-            <Popconfirm title={'Are you sure to sign out?'} placement="left" onConfirm={handleSignout}>
-              <Button>Sign out</Button>
+            <Popconfirm title={l('Are you sure to sign out?')} placement="left" onConfirm={handleSignout} okText={l("Yes")} cancelText={l("No")}>
+              <Button>{l('Sign out')}</Button>
             </Popconfirm>
           </div>
         </div>

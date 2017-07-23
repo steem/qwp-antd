@@ -1,0 +1,38 @@
+.main-header .navbar-nav .notifications-menu a:focus, .main-header .navbar-nav .notifications-menu a:active, .main-header .navbar-nav .notifications-menu a:hover, .main-header .navbar-nav .notifications-menu:visited, .main-header .navbar-nav .notifications-menu.open {
+    background-color: #5c941b!important;
+}
+#control-sidebar-search-tab form > .form-group {
+    margin-bottom: 6px;
+}
+.tbl-search-form input, .tbl-search-form button, .tbl-search-form select {
+    height: 30px!important;
+    padding-left: 4px!important;
+    padding-right: 4px!important;
+}
+.tbl-search-form .btn {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+}
+.modal-header {
+    border-bottom-color: #e2dada!important;
+}
+.modal-footer {
+    border-top-color: #e2dada!important;
+}
+.modal-content {
+    border: 1px solid #124bc5!important;
+    background-color: #efefef!important;
+}
+.modal-body {
+    background-color: #fff;
+}
+.content-wrapper {
+    z-index: 0!important;
+    background-color: white!important;
+}
+table[qwp=data-table] {
+    background-color: #f1f2f3!important;
+}
+.qwp-row-detail,.qwp-row-detail:hover {
+    background-color: #2ff1fb!important;
+}

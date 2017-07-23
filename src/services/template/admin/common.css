@@ -1,0 +1,29 @@
+.skin-blue .wrapper, .skin-blue .main-sidebar, .skin-blue .left-side{
+    background-color: #f5f5f5;
+}
+.skin-blue .sidebar-menu>li.header{
+    background-color: #f5f5f5;
+}
+.skin-blue .sidebar a{
+    color: #337ab7;
+}
+.skin-blue .sidebar-menu>li:hover>a{
+    background-color: #ccc;
+}
+.skin-blue .sidebar-menu>li.active>a{
+    color: #fff;
+    background-color: #428bca;
+    border-left-color: #00f;
+}
+
+.content-wrapper, .right-side{
+    background: rgb(221,224,220);
+    min-height: 1200px;
+}
+
+#toast-container {
+    top: 56px!important;
+}
+.content-wrapper > .content {
+    padding: 8px 23px 8px 23px!important;
+}

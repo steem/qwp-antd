@@ -1,10 +1,12 @@
-import { currentUser, logout, changePassword } from '../requests/passport'
+import * as passport from '../requests/passport'
 import * as acls from '../requests/acls'
 import { routerRedux } from 'dva/router'
+import { convertRules } from 'utils/form'
 import { parse } from 'qs'
 import config from 'config'
 import { EnumRoleType, SiderBarComponentType } from 'enums'
-import { uri, storage } from 'utils'
+import { uri, storage, localization } from 'utils'
+const { l } = localization
 import lodash from 'lodash'
 import showOpsNotification from 'utils/notification'
 let loadingMenuName = '■■■■■■■■■■'
@@ -50,8 +52,8 @@ let app = {
     subSystems: [],
     error: false,
     notifications: [],
-    defaultCompnent: false,
     showPasswordDialog: false,
+    appSettings: {},
     navOpenKeys: JSON.parse(storage.get('navOpenKeys')) || [],
   },
   subscriptions: {
@@ -67,36 +69,45 @@ let app = {
     *init ({
       payload,
     }, { call, put }) {
-      const { success, user } = yield call(currentUser, payload)
+      const { success, user } = yield call(passport.currentUser, payload)
       let isLogined = false, defaultCompnent = null
       if (success && user) {
-        isLogined = true
-        const userAcls = yield call(acls.query)
-        const { permissions } = user
-        let menu = userAcls.list
-        if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-          permissions.visit = userAcls.list.map(item => item.id)
-        } else {
-          menu = userAcls.list.filter(item => {
-            return permissions.visit.includes(item.id) && 
-              (item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true) &&
-              (item.bpid ? permissions.visit.includes(item.bpid) : true)
+        const globalLang = yield call(localization.load)
+        if (globalLang.success) localization.set(globalLang.data[1], globalLang.data[0])
+        const appRes = yield call(passport.$, payload)
+        if (appRes.success) {
+          isLogined = true
+          const appSettings = appRes.data
+          if (appSettings.lang) localization.set(appSettings.lang[1], appSettings.lang[0])
+          defaultCompnent = appSettings.default
+          const userAcls = yield call(acls.query)
+          const { permissions } = user
+          let menu = userAcls.list
+          if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
+            permissions.visit = userAcls.list.map(item => item.id)
+          } else {
+            menu = userAcls.list.filter(item => {
+              return permissions.visit.includes(item.id) && 
+                (item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true) &&
+                (item.bpid ? permissions.visit.includes(item.bpid) : true)
+            })
+          }
+          let subSystems = []
+          if (userAcls.subSystems) subSystems = userAcls.subSystems
+          convertRules(appSettings)
+          yield put({
+            type: 'updateState',
+            payload: {
+              user,
+              permissions,
+              menu,
+              isLogined,
+              appSettings,
+              subSystems,
+            },
           })
+          console.log(location.pathname)
         }
-        let subSystems = []
-        if (userAcls.subSystems) subSystems = userAcls.subSystems
-        yield put({
-          type: 'updateState',
-          payload: {
-            user,
-            permissions,
-            menu,
-            isLogined,
-            defaultCompnent,
-            subSystems,
-          },
-        })
-        defaultCompnent = userAcls.default
       }
       let p = uri.defaultUri(isLogined, defaultCompnent)
       if (p !== false) yield put(routerRedux.push(p))
@@ -105,13 +116,13 @@ let app = {
     *changePassword({
       payload,
     }, { call, put }) {
-      showOpsNotification(yield call(changePassword, payload), 'Change password', 'Password has been changed successfully')
+      showOpsNotification(yield call(passport.changePassword, payload), 'Change password', 'Password has been changed successfully')
     },
 
     *logout ({
       payload,
     }, { call, put }) {
-      const data = yield call(logout, parse(payload))
+      const data = yield call(passport.logout, parse(payload))
       showOpsNotification(data, 'Logout', 'You are logout')
       if (data.success) {
         yield put({ type: 'init' })

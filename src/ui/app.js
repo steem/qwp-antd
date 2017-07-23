@@ -10,12 +10,13 @@ import '../themes/index.less'
 import './app.less'
 import NProgress from 'nprogress'
 import Error from './error'
+import { l } from 'utils/localization'
 const { prefix } = config
 const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { error, isLogined, subSystems, showPasswordDialog, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
+  const { error, isLogined, appSettings, subSystems, showPasswordDialog, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -89,6 +90,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
   const passwordModalProps = {
     visible: showPasswordDialog,
     maskClosable: false,
+    appSettings,
     wrapClassName: 'vertical-center-modal',
     onOk (data) {
       data.id = user.id
@@ -111,7 +113,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
   return (
     <div>
       <Helmet>
-        <title>ANTD ADMIN</title>
+        <title>{l('productName')}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={logo} type="image/x-icon" />
         {iconFontJS && <script src={iconFontJS}></script>}

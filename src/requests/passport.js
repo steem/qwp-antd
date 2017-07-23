@@ -4,39 +4,41 @@ let p = null
 let mock = true
 
 export async function login (params) {
-  let ops = 'login'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops: 'login', p, m, mock }),
     method: 'post',
     data: params,
   })
 }
 
 export async function logout (params) {
-  let ops = 'logout'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops: 'logout', p, m, mock }),
     method: 'get',
     data: params,
   })
 }
 
 export async function currentUser (params) {
-  let ops = 'current'
-  let m = 'user'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops: 'current', p, m: 'user', mock }),
     method: 'get',
     data: params,
   })
 }
 
 export async function changePassword (params) {
-  let ops = 'pwd'
-  let m = 'user'
   return request({
-    url: uri.ops({ ops, p, m, mock }),
+    url: uri.ops({ ops: 'pwd', p, m: 'user', mock }),
     method: 'post',
+    data: params,
+  })
+}
+
+export async function $ (params) {
+  return request({
+    url: uri.ops({ ops: '$', p, m, mock }),
+    method: 'get',
     data: params,
   })
 }

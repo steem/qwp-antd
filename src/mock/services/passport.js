@@ -1,8 +1,34 @@
 const { adminUsers } = require('./data/passport')
+const { lang } = require('../common.js')
+const L = {
+  en: require('./data/lang/en/passport'),
+  zh: require('./data/lang/zh/passport'),
+}
 
 module.exports = {
   ops: {
-    login: function (req, res) {
+    '$': (req, res) => {
+      res.json({
+        success: true,
+        data: {
+          default: 'user',
+          lang: ['/', L[lang]],
+          formRules: {
+            changePassword: {
+              pwd1: {
+                required: true,
+                _msg: 'New password is required',
+              },
+              pwd2: {
+                required: true,
+                _msg: 'Password confirmation is required',
+              }
+            }
+          }
+        }
+      })
+    },
+    login (req, res) {
       const { username, password } = req.body
       const user = adminUsers.filter((item) => item.username === username)
 

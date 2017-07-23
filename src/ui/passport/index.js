@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Button, Row, Form, Input } from 'antd'
 import { config } from 'utils'
+import { l } from 'utils/localization'
 import styles from './index.less'
 
 const FormItem = Form.Item
@@ -30,7 +31,7 @@ const Passport = ({
     <div className={styles.form}>
       <div className={styles.logo}>
         <img alt={'logo'} src={config.logo} />
-        <span>{config.name}</span>
+        <span>{l('productName')}</span>
       </div>
       <form>
         <FormItem hasFeedback>
