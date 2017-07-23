@@ -749,9 +749,10 @@ function to_json($arr) {
 }
 function echo_json($arr) {
     $jsonp = P('callback');
-    if ($jsonp) echo("$jsonp(");
+    $is_jsonp = $jsonp && starts_with('jsonp_');
+    if ($is_jsonp) echo("$jsonp(");
     echo(to_json($arr));
-    if ($jsonp) echo(")");
+    if ($is_jsonp) echo(")");
 }
 function json_from_string($data, $default = null) {
     if (!$data) {
