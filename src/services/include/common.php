@@ -749,7 +749,7 @@ function to_json($arr) {
 }
 function echo_json($arr) {
     $jsonp = P('callback');
-    $is_jsonp = $jsonp && starts_with('jsonp_');
+    $is_jsonp = $jsonp && starts_with($jsonp, 'jsonp_');
     if ($is_jsonp) echo("$jsonp(");
     echo(to_json($arr));
     if ($is_jsonp) echo(")");

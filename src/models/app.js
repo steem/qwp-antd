@@ -107,6 +107,13 @@ let app = {
             },
           })
         }
+      } else {
+        yield put({
+          type: 'updateState',
+          payload: {
+            isLogined,
+          },
+        })
       }
       let p = uri.defaultUri(isLogined, defaultCompnent)
       if (p !== false) yield put(routerRedux.push(p))
