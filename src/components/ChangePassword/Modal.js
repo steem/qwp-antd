@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Form, Input, Modal } from 'antd'
-import { getFormFieldRule } from 'utils/form'
+import { fieldRuleFn } from 'utils/form'
 import { l } from 'utils/localization'
 const FormItem = Form.Item
 
@@ -41,29 +41,15 @@ const modal = ({
     title: l('Change your password'),
     onOk: handleOk,
   }
-  let formName = 'changePassword'
+  let fr = fieldRuleFn(appSettings, 'changePassword', getFieldDecorator)
   return (
     <Modal {...modalOpts}>
       <Form layout="horizontal">
         <FormItem label={l("New password")} hasFeedback {...formItemLayout}>
-          {
-            getFormFieldRule(
-              appSettings, 
-              formName, 
-              'pwd1', 
-              getFieldDecorator
-            )(<Input type="password" />)
-          }
+          {fr('pwd1')(<Input type="password" />)}
         </FormItem>
         <FormItem label={l("Password confirmation")} hasFeedback {...formItemLayout}>
-          {
-            getFormFieldRule(
-              appSettings, 
-              formName, 
-              'pwd2', 
-              getFieldDecorator
-            )(<Input type="password" />)
-          }
+          {fr('pwd2')(<Input type="password" />)}
         </FormItem>
       </Form>
     </Modal>

@@ -1,13 +1,16 @@
 import { l } from './localization'
 
 module.exports = {
-  getFormFieldRule (appSettings, formName, name, fn) {
-    let r = {}
-    if (appSettings.formRules && appSettings.formRules[formName] && appSettings.formRules[formName][name]) {
-      r = appSettings.formRules[formName][name]
+  fieldRuleFn (appSettings, formName, fn) {
+    return (name) => {
+      let r = {}
+      if (appSettings.formRules && appSettings.formRules[formName] && appSettings.formRules[formName][name]) {
+        r = appSettings.formRules[formName][name]
+      }
+      return fn(name, r)
     }
-    return fn(name, r)
   },
+
   convertRules (appSettings) {
     if (!appSettings.formRules) return
     for (let p in appSettings.formRules) {
