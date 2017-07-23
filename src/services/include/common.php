@@ -748,7 +748,10 @@ function to_json($arr) {
     return str_replace("\\/", "/", $tmp);
 }
 function echo_json($arr) {
+    $jsonp = P('callback');
+    if ($jsonp) echo("$jsonp(");
     echo(to_json($arr));
+    if ($jsonp) echo(")");
 }
 function json_from_string($data, $default = null) {
     if (!$data) {

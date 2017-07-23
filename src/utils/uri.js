@@ -35,7 +35,7 @@ function ops ({ ops, p, m, mock }) {
   if (!p) p = param('p')
   if (p) s = join(s, 'p=' + p)
   if (ops) s = join(s, 'op=' + ops)
-  return (mock === false || !config.useMockSerivce ? config.servicePrefix : config.mockServicePrefix) + s
+  return (!mock && !config.useMockSerivce ? config.servicePrefix : config.mockServicePrefix) + s
 }
 
 const passportComponent = component('passport')
