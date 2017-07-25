@@ -6,6 +6,7 @@ import styles from './UserMenu.less'
 import { classnames } from 'utils'
 import userImage from '../../img/user2-160x160.jpg'
 import { l } from 'utils/localization'
+import ChangePasswordDialog from './ChangePassword'
 
 const UserMenuComponent = React.createClass({
   getInitialState() {
@@ -23,11 +24,12 @@ const UserMenuComponent = React.createClass({
   },
   render() {
     let handleSignout = e => this.props.logout()
-    let handleChangePassword = e => {
-      this.hide()
-      this.props.showChangePassword()
+    const { user, popoverClassName, passwordModalProps } = this.props
+    const pmProps = {
+      navClassName: classnames("ant-col-12", styles.textCenter),
+      onShowDialog: () => { this.hide() },
+      ...passwordModalProps,
     }
-    const { user, popoverClassName } = this.props
     const userMenu = (
       <div className={styles.userMenu}>
         <div className={classnames(styles.menuUserImageItem, styles.textAlign)}>
@@ -50,9 +52,7 @@ const UserMenuComponent = React.createClass({
           </div>
         </div>
         <div className={styles.menuUserPassport}>
-          <div className={classnames("ant-col-12", styles.textCenter)}>
-            <Button onClick={handleChangePassword}>{l("Change password")}</Button>
-          </div>
+          <ChangePasswordDialog {...pmProps}/>
           <div className={classnames("ant-col-12", styles.textCenter)}>
             <Popconfirm title={l('Are you sure to sign out?')} placement="left" onConfirm={handleSignout} okText={l("Yes")} cancelText={l("No")}>
               <Button>{l('Sign out')}</Button>
@@ -81,7 +81,6 @@ const UserMenu = (props) => {
 }
 
 UserMenu.propTypes = {
-  showChangePassword: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   popoverClassName: PropTypes.string.isRequired,

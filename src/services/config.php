@@ -6,7 +6,7 @@ define('IN_DEBUG', true);
 define('ENABLE_LOGGER', false);
 define('IN_MOCK', false);
 // you can change the default module
-define('DEFAULT_MODULE', 'dashboard');
+define('DEFAULT_MODULE', 'user');
 define('QWP_SESSION_PREFIX', 'qwp');
 define('QWP_SESSION_TIMEOUT', true);
 define('QWP_LOG_DIR', '/tmp/qwp');
@@ -26,6 +26,9 @@ define('QWP_OPS_RET', 'success');
 define('QWP_OPS_MSG', 'message');
 define('QWP_OPS_MSG_TYPE', 'type');
 define('QWP_PRODUCT_VERSION', '2');
+define('QWP_MODULE_SEP', '/');
+define('QWP_JUST_SERVICE', true);
+define('QWP_IN_MOCK_TEST', true);
 
 define('PRODUCT_NAME_LONG', 'QWP');
 define('PRODUCT_NAME', 'QWP');

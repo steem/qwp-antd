@@ -9,6 +9,10 @@ if(!defined('QWP_ROOT')){exit('Invalid Request');}
 try {
     require_once(QWP_ROUTER_ROOT . '/required.php');
     do {
+        if (QWP_JUST_SERVICE && !P('op')) {
+            exit('Invalid Request');
+            break;
+        }
         session_start();
         qwp_initialize_language();
         if (P('op') === '_l') {

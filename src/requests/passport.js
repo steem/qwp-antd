@@ -37,7 +37,7 @@ export async function changePassword (params) {
 
 export async function $ (params) {
   return request({
-    url: uri.ops({ ops: '$', p, m, mock }),
+    url: uri.ops({ ops: '$', p, m, mock: false }),
     method: 'get',
     data: params,
   })

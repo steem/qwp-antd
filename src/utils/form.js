@@ -11,6 +11,23 @@ module.exports = {
     }
   },
 
+  createOkHander (validateFields, getFieldsValue, onOk) {
+    return () => {
+      let ret = false
+      validateFields((errors) => {
+        if (errors) {
+          return
+        }
+        ret = true
+        const data = {
+          ...getFieldsValue(),
+        }
+        onOk(data)
+      })
+      return ret
+    }
+  },
+
   convertRules (appSettings) {
     if (!appSettings.formRules) return
     for (let p in appSettings.formRules) {

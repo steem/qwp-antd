@@ -28,14 +28,23 @@ module.exports = {
     return txt
   },
 
-  set (language, appPath) {
+  set (language, appPath, update) {
+    if (appPath === '/passport') appPath = '/'
     if (!_LANG[appPath]) _LANG[appPath] = language
     else Object.assign(_LANG[appPath], language)
+    if (update) {
+      update({
+        type: 'app/updateState',
+        payload: {
+          locChangedTag: (new Date()).getTime()
+        },
+      })
+    }
   },
 
   async load () {
     return request({
-      url: uri.ops({ ops: '_l', mock }),
+      url: uri.ops({ ops: '_l', mock: false }),
       method: 'get',
     })
   }

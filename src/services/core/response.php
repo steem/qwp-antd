@@ -32,7 +32,11 @@ function qwp_echo_json_response($result, $msg = false, $msg_type = 'error', &$da
     if ($data) {
         $msg['data'] = $data;
     }
+    $jsonp = P('callback');
+    $is_jsonp = $jsonp && starts_with($jsonp, 'jsonp_');
+    if ($is_jsonp) echo("$jsonp(");
     echo_json($msg);
+    if ($is_jsonp) echo(")");
 }
 function qwp_create_and_echo_json_response($result, $msg = false, $msg_type = 'error', &$data = null, $additional_fields = null) {
     set_content_type(QWP_TP_JSON);
@@ -41,7 +45,11 @@ function qwp_create_and_echo_json_response($result, $msg = false, $msg_type = 'e
     if ($data) {
         $msg['data'] = $data;
     }
+    $jsonp = P('callback');
+    $is_jsonp = $jsonp && starts_with($jsonp, 'jsonp_');
+    if ($is_jsonp) echo("$jsonp(");
     echo_json($msg);
+    if ($is_jsonp) echo(")");
 }
 function qwp_create_text_response($text) {
     set_content_type(QWP_TP_TEXT_PLAIN);

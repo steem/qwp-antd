@@ -52,8 +52,8 @@ let app = {
     subSystems: [],
     error: false,
     notifications: [],
-    showPasswordDialog: false,
     appSettings: {},
+    locChangedTag: 0,
     navOpenKeys: JSON.parse(storage.get('navOpenKeys')) || [],
   },
   subscriptions: {
@@ -68,17 +68,19 @@ let app = {
 
     *init ({
       payload,
-    }, { call, put }) {
+    }, { call, put, select }) {
+      let locChanged = select(_ => _.locChanged)
+      const globalLang = yield call(localization.load)
+      if (globalLang.success) localization.set(globalLang.data[1], globalLang.data[0], put)
+      const appRes = yield call(passport.$, payload)
+      if (appRes.success && appRes.data && appRes.data.lang) localization.set(appRes.data.lang[1], appRes.data.lang[0], put)
+      console.log('l')
       const { success, user } = yield call(passport.currentUser, payload)
       let isLogined = false, defaultCompnent = null
       if (success && user) {
-        const globalLang = yield call(localization.load)
-        if (globalLang.success) localization.set(globalLang.data[1], globalLang.data[0])
-        const appRes = yield call(passport.$, payload)
+        isLogined = true
         if (appRes.success) {
-          isLogined = true
           const appSettings = appRes.data
-          if (appSettings.lang) localization.set(appSettings.lang[1], appSettings.lang[0])
           defaultCompnent = appSettings.default
           const userAcls = yield call(acls.query)
           const { permissions } = user
@@ -116,7 +118,13 @@ let app = {
         })
       }
       let p = uri.defaultUri(isLogined, defaultCompnent)
-      if (p !== false) yield put(routerRedux.push(p))
+      if (p !== false) {
+        if (isLogined) {
+          yield put(routerRedux.push(p))
+        } else if (!uri.isPassportComponent()) {
+          window.location = p
+        }
+      }
     },
 
     *changePassword({
@@ -129,7 +137,7 @@ let app = {
       payload,
     }, { call, put }) {
       const data = yield call(passport.logout, parse(payload))
-      showOpsNotification(data, 'Logout', 'You are logout')
+      showOpsNotification(data, l('Logout'), l('You are logout'))
       if (data.success) {
         yield put({ type: 'init' })
       }
@@ -145,19 +153,16 @@ let app = {
       }
     },
 
+    *changeHeaderNav (state, { payload }) {
+      yield put(routerRedux.push(uri.compontent(payload)))
+    },
+
   },
   reducers: {
     updateState (state, { payload }) {
       return {
         ...state,
         ...payload,
-      }
-    },
-
-    showChangePassword(state, { payload }) {
-      return {
-        ...state,
-        showPasswordDialog: payload,
       }
     },
 

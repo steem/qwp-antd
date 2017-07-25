@@ -105,7 +105,7 @@ function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $pa
         $file_path = join_paths($dir, $item);
         if (is_dir($file_path)) {
             if ($level === 0 && $item === 'passport') continue;
-            $new_parent = $parent . ($parent ? '-' : '') . $item;
+            $new_parent = $parent . ($parent ? QWP_MODULE_SEP : '') . $item;
             $modules[$new_parent] = $item;
             qwp_scan_acls_in_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent);
         } else if ($level !== 0) {
@@ -152,7 +152,7 @@ function qwp_get_all_acls(&$acls) {
 
 }
 function qwp_get_user_acls(&$acls) {
-    if (IN_DEBUG) {
+    if (QWP_IN_MOCK_TEST) {
         qwp_get_all_acls_in_directory($acls);
         return;
     }
@@ -211,13 +211,13 @@ function qwp_init_nav_modules(&$acls) {
         $arr = explode('-', $m);
         $level = count($arr);
         if ($level === 1) {
-            if (file_exists(join_paths(QWP_MODULE_ROOT, $m, 'home.php'))) {
+            if (QWP_JUST_SERVICE || file_exists(join_paths(QWP_MODULE_ROOT, $m, 'home.php'))) {
                 $modules[$m] = $desc;
             } else {
                 $left_modules[$m] = $desc;
             }
         } else if ($level === 2) {
-            if (isset($left_modules[$arr[0]]) && file_exists(join_paths(QWP_MODULE_ROOT, implode('/', $arr), 'home.php'))) {
+            if (isset($left_modules[$arr[0]]) && (QWP_JUST_SERVICE || file_exists(join_paths(QWP_MODULE_ROOT, implode('/', $arr), 'home.php')))) {
                 // select the first module
                 $modules[$m] = $left_modules[$arr[0]];
                 unset($left_modules[$arr[0]]);
@@ -225,7 +225,7 @@ function qwp_init_nav_modules(&$acls) {
             if (!isset($sub_modules[$arr[0]])) $sub_modules[$arr[0]] = array();
             $sub_modules[$arr[0]][$m] = array('desc' => $desc);
         } else if ($level === 3) {
-            if (isset($left_modules[$arr[0]]) && file_exists(join_paths(QWP_MODULE_ROOT, implode('/', $arr), 'home.php'))) {
+            if (isset($left_modules[$arr[0]]) && (QWP_JUST_SERVICE || file_exists(join_paths(QWP_MODULE_ROOT, implode('/', $arr), 'home.php')))) {
                 // select the first module
                 $modules[$m] = $left_modules[$arr[0]];
                 unset($left_modules[$arr[0]]);

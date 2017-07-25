@@ -27,3 +27,8 @@ function qwp_security_check() {
     }
     return qwp_custom_security_check();
 }
+
+function qwp_get_acls() {
+
+}
+

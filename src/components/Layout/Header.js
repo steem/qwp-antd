@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import { Icon, Popover, Popconfirm } from 'antd'
 import { Link } from 'dva/router'
 import styles from './Header.less'
-import Menus from './Menu'
+import LeftMenu from './LeftMenu'
 import UserMenu from './UserMenu'
 import Notification from './Notification'
 import SystemSwitcher from './SystemSwitcher'
 import { classnames } from 'utils'
 import { SiderBarComponentType } from 'enums'
+import HeaderNav from './HeaderNav'
 
 const SideMenuSwitcher = React.createClass({
   getInitialState() {
@@ -36,7 +37,7 @@ const SideMenuSwitcher = React.createClass({
       siderFold,
     } = this.props
     return (
-      isNavbar && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<Menus {...this.props} />}>
+      isNavbar && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<LeftMenu {...this.props} />}>
         <div className={classnames(styles.button, styles.navItem)}>
           <Icon type="bars" />
         </div>
@@ -47,7 +48,7 @@ const SideMenuSwitcher = React.createClass({
   },
 })
 
-const Header = ({ user, logout, showChangePassword, hasSiderBar, notifications, subSystems, switchSider, siderFold, darkTheme, isNavbar, location, navOpenKeys, changeOpenKeys, siderBarComponentType, menu }) => {
+const Header = ({ user, logout, hasSiderBar, subSystems, passwordModalProps, notifications, appSettings, switchSider, siderFold, darkTheme, isNavbar, location, navOpenKeys, changeOpenKeys, siderBarComponentType, menu }) => {
   
   let sideMenuProps
   if (hasSiderBar) {
@@ -77,8 +78,11 @@ const Header = ({ user, logout, showChangePassword, hasSiderBar, notifications, 
   const userMenuProps = {
     user,
     logout,
-    showChangePassword,
     popoverClassName: classnames(styles.navItem, styles.linkSpace),
+    passwordModalProps,
+  }
+  const headerNavProps = {
+    items: appSettings.headerNav,
   }
   return (
     <div className={classnames(styles.header, "user-menu-popup")}>
@@ -87,6 +91,7 @@ const Header = ({ user, logout, showChangePassword, hasSiderBar, notifications, 
       {subSystems.length > 0 && <SystemSwitcher {...sysSwitcherProps}/>}
       </div>
       <div className={styles.rightWarpper}>
+        {appSettings.headerNav.length > 0 && <HeaderNav {...headerNavProps}/> }
         <Notification {...notiProps}/>
         <UserMenu {...userMenuProps}/>
       </div>
@@ -96,11 +101,12 @@ const Header = ({ user, logout, showChangePassword, hasSiderBar, notifications, 
 
 Header.propTypes = {
   menu: React.PropTypes.array,
-  subSystems: React.PropTypes.array,
+  subSystems: React.PropTypes.array.isRequired,
+  appSettings: React.PropTypes.object.isRequired,
   notifications: React.PropTypes.array,
+  passwordModalProps: React.PropTypes.object,
   user: PropTypes.object,
   logout: PropTypes.func,
-  showChangePassword: PropTypes.func,
   switchSider: PropTypes.func,
   siderFold: PropTypes.bool,
   darkTheme: PropTypes.bool,

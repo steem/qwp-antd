@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import pathToRegexp from 'path-to-regexp'
 import { connect } from 'dva'
 import { Layout, Loader } from 'components'
-import ChangePasswordDialog from 'components/ChangePassword/Modal'
 import { classnames, config, uri } from 'utils'
 import { Helmet } from 'react-helmet'
 import '../themes/index.less'
@@ -16,7 +15,7 @@ const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { error, isLogined, appSettings, subSystems, showPasswordDialog, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
+  const { isLogined, locChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -31,6 +30,18 @@ const App = ({ children, dispatch, app, loading, location }) => {
       lastHref = href
     }
   }
+  const passwordModalProps = {
+    maskClosable: false,
+    appSettings,
+    wrapClassName: 'vertical-center-modal',
+    onOk (data) {
+      data.id = user.id
+      dispatch({
+        type: `app/changePassword`,
+        payload: data,
+      })
+    }
+  }
 
   const headerProps = hasHeader ? {
     siderBarComponentType,
@@ -40,12 +51,11 @@ const App = ({ children, dispatch, app, loading, location }) => {
     darkTheme,
     isNavbar,
     hasSiderBar,
+    appSettings,
     subSystems,
     notifications,
     navOpenKeys,
-    showChangePassword() {
-      dispatch({ type: 'app/showChangePassword', payload: true })
-    },
+    passwordModalProps,
     logout () {
       dispatch({ type: 'app/logout' })
     },
@@ -76,42 +86,19 @@ const App = ({ children, dispatch, app, loading, location }) => {
   const breadProps = hasBread ? {
     menu,
   } : ''
-
   if (!isLogined || (!hasPermission && uri.isPassportComponent())) {
-    return (<div>
+    return (<div loc={locChangedTag}>
       <Loader spinning={loading.effects['app/init']} />
       {children}
     </div>)
   }
-  let errorProps = error
+  let errorProps
+  if (app.error) errorProps = app.error
   if (!hasPermission) errorProps = {
     error: `You don't have the permission, please contact your service administraotr`
   }
-  const passwordModalProps = {
-    visible: showPasswordDialog,
-    maskClosable: false,
-    appSettings,
-    wrapClassName: 'vertical-center-modal',
-    onOk (data) {
-      data.id = user.id
-      dispatch({
-        type: `app/changePassword`,
-        payload: data,
-      })
-      dispatch({
-        type: 'app/showChangePassword',
-        payload: false,
-      })
-    },
-    onCancel () {
-      dispatch({
-        type: 'app/showChangePassword',
-        payload: false,
-      })
-    },
-  }
   return (
-    <div>
+    <div loc={locChangedTag}>
       <Helmet>
         <title>{l('productName')}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -131,7 +118,6 @@ const App = ({ children, dispatch, app, loading, location }) => {
               {hasPermission ? children : <Error {...errorProps}/>}
             </div>
           </div>
-          {showPasswordDialog && <ChangePasswordDialog {...passwordModalProps}/>}
           <Footer />
         </div>
       </div>

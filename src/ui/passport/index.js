@@ -26,7 +26,6 @@ const Passport = ({
       dispatch({ type: 'passport/login', payload: values })
     })
   }
-
   return (
     <div className={styles.form}>
       <div className={styles.logo}>

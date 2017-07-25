@@ -4,6 +4,7 @@ import dva from 'dva'
 import createLoading from 'dva-loading'
 import { browserHistory } from 'dva/router'
 import { message } from 'antd'
+import config from 'utils/config'
 
 // 1. Initialize
 const app = dva({
@@ -12,6 +13,7 @@ const app = dva({
   }),
   history: browserHistory,
   onError (error) {
+    if (config.inDebug) console.log(error)
     message.error(error.message)
   },
 })

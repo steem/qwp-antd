@@ -7,7 +7,7 @@ function qwp_tmpl_render_nav() {
     $html = '';
     foreach ($nav as $item => $desc) {
         $active = '';
-        $tmp = explode('-', $item);
+        $tmp = explode(QWP_MODULE_SEP, $item);
         if ($MODULE[0] == $tmp[0]) {
             $active = ' class="active"';
         }
