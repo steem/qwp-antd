@@ -5,7 +5,7 @@ import { connect } from 'dva'
 import { Layout, Loader } from 'components'
 import { classnames, config, uri } from 'utils'
 import { Helmet } from 'react-helmet'
-import '../themes/index.less'
+import 'themes/index.less'
 import './app.less'
 import NProgress from 'nprogress'
 import Error from './error'
@@ -15,12 +15,11 @@ const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { isLogined, locChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, navOpenKeys, siderBarComponentType, menu, siderList, permissions } = app
+  const { isLogined, locationChangedTag, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, siderBarComponentType, menu, siderList } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
-  const current = menu.filter(item => pathToRegexp(item.route || '').exec(pathname))
-  const hasPermission = current.length ? permissions.visit.includes(current[0].id) : false
+  const hasPermission = menu.filter((item) => item.path === pathname)
   const href = window.location.href
 
   if (lastHref !== href) {
@@ -54,16 +53,13 @@ const App = ({ children, dispatch, app, loading, location }) => {
     appSettings,
     subSystems,
     notifications,
-    navOpenKeys,
     passwordModalProps,
+    locationChangedTag,
     logout () {
       dispatch({ type: 'app/logout' })
     },
     switchSider () {
       dispatch({ type: 'app/switchSider' })
-    },
-    changeOpenKeys (openKeys) {
-      dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     },
   } : ''
 
@@ -71,15 +67,12 @@ const App = ({ children, dispatch, app, loading, location }) => {
     siderBarComponentType,
     siderList,
     menu,
+    locationChangedTag,
     siderFold,
     darkTheme,
-    navOpenKeys,
+    hasHeaderNav : appSettings.enableHeaderNav,
     changeTheme () {
       dispatch({ type: 'app/switchTheme' })
-    },
-    changeOpenKeys (openKeys) {
-      localStorage.setItem(`${prefix}navOpenKeys`, JSON.stringify(openKeys))
-      dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     },
   } : ''
 
@@ -87,7 +80,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
     menu,
   } : ''
   if (!isLogined || (!hasPermission && uri.isPassportComponent())) {
-    return (<div loc={locChangedTag}>
+    return (<div loc={localeChangedTag}>
       <Loader spinning={loading.effects['app/init']} />
       {children}
     </div>)
@@ -98,7 +91,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
     error: `You don't have the permission, please contact your service administraotr`
   }
   return (
-    <div loc={locChangedTag}>
+    <div loc={localeChangedTag}>
       <Helmet>
         <title>{l('productName')}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />

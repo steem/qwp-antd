@@ -52,7 +52,7 @@ function qwp_render_page() {
         if (file_exists($MODULE_FILE)) {
             $_PAGE_FILES[] = $MODULE_FILE;
         } else {
-            if ($OP === '$') {
+            if ($OP === QWP_SERVICE_INFO_OP) {
                 qwp_render_app_settings();
                 return true;
             }
@@ -70,6 +70,35 @@ function qwp_render_page() {
         }
         echo('</body></html>');
     }
+}
+function qwp_check_just_service() {
+    global $OP;
+
+    if (QWP_JUST_SERVICE && !$OP) {
+        exit('Invalid Request');
+    }
+    return false;
+}
+function qwp_render_root_app_settings() {
+    global $MODULE, $OP;
+
+    if ($MODULE || $OP !== QWP_SERVICE_INFO_OP) return false;
+
+    $app_settings = array(
+        'default' => DEFAULT_MODULE,
+        'moduleSep' => QWP_MODULE_SEP,
+        'enableHeaderNav' => QWP_ENABLE_HEADER_NAV,
+        'lang' => array(),
+    );
+    $lang = null;
+    qwp_try_load_lang_for_module('global', $lang);
+    if ($lang) {
+        $app_settings['lang'][] = array('/', $lang);
+    }
+    qwp_load_lang_for_module('passport');
+    if (isset($lang_txts) && $lang_txts) $app_settings['lang'][] = array('/', $lang_txts);
+    qwp_render_app_settings($app_settings);
+    return true;
 }
 function qwp_render_css() {
     global $CSS_FILES, $CSS_CODE_FILES, $PHP_CSS_FILES;

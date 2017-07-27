@@ -1,7 +1,8 @@
-import * as passport from '../requests/passport'
+import * as rqPassport from '../requests/passport'
 import * as acls from '../requests/acls'
+import * as rqApp from '../requests/app'
 import { routerRedux } from 'dva/router'
-import { convertRules } from 'utils/form'
+import { convertFormRules, mergeFormRules } from 'utils/form'
 import { parse } from 'qs'
 import config from 'config'
 import { EnumRoleType, SiderBarComponentType } from 'enums'
@@ -15,28 +16,25 @@ let app = {
   namespace: 'app',
   state: {
     user: {},
-    permissions: {
-      visit: [],
-    },
     siderBarComponentType: SiderBarComponentType.MENU,
     menu:[
       {
         id: 1,
         icon: 'laptop',
         name: loadingMenuName,
-        router: '/',
+        path: '/',
       },
       {
         id: 2,
         icon: 'laptop',
         name: loadingMenuName,
-        router: '/',
+        path: '/',
       },
       {
         id: 3,
         icon: 'laptop',
         name: 'user',
-        router: '/user',
+        path: '/user',
       }
     ],
     siderList:{
@@ -52,15 +50,19 @@ let app = {
     subSystems: [],
     error: false,
     notifications: [],
-    appSettings: {},
-    locChangedTag: 0,
-    navOpenKeys: JSON.parse(storage.get('navOpenKeys')) || [],
+    appSettings: {
+      headerNav: [],
+    },
+    localeChangedTag: 0,
+    locationChangedTag: 0,
+    inited: false,
   },
   subscriptions: {
 
-    setup ({ dispatch }) {
+    setup ({ dispatch, history }) {
       dispatch({ type: 'init' })
       window.onresize = lodash.debounce(() => {dispatch({ type: 'changeNavbar' })}, 300)
+      history.listen(() => { dispatch({type: 'navChanged'}) })
     },
 
   },
@@ -69,46 +71,42 @@ let app = {
     *init ({
       payload,
     }, { call, put, select }) {
-      let locChanged = select(_ => _.locChanged)
-      const globalLang = yield call(localization.load)
-      if (globalLang.success) localization.set(globalLang.data[1], globalLang.data[0], put)
-      const appRes = yield call(passport.$, payload)
-      if (appRes.success && appRes.data && appRes.data.lang) localization.set(appRes.data.lang[1], appRes.data.lang[0], put)
-      console.log('l')
-      const { success, user } = yield call(passport.currentUser, payload)
-      let isLogined = false, defaultCompnent = null
-      if (success && user) {
+      const appRes = yield call(rqApp.$)
+      let appSettings = appRes.success ? appRes.data : yield(select(_ => _.app.appSettings))
+      if (appRes.success && appSettings.lang) localization.set(appSettings.lang, put)
+      convertFormRules(appSettings)
+      const passportRes = yield call(rqPassport.$, payload)
+      let isLogined = false, defaultCompnent, menu
+      if (appSettings.default) defaultCompnent = appSettings.default
+      if (passportRes.success && passportRes.data.user) {
         isLogined = true
-        if (appRes.success) {
-          const appSettings = appRes.data
-          defaultCompnent = appSettings.default
-          const userAcls = yield call(acls.query)
-          const { permissions } = user
-          let menu = userAcls.list
-          if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-            permissions.visit = userAcls.list.map(item => item.id)
-          } else {
-            menu = userAcls.list.filter(item => {
-              return permissions.visit.includes(item.id) && 
-                (item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true) &&
-                (item.bpid ? permissions.visit.includes(item.bpid) : true)
-            })
-          }
-          let subSystems = []
-          if (userAcls.subSystems) subSystems = userAcls.subSystems
-          convertRules(appSettings)
-          yield put({
-            type: 'updateState',
-            payload: {
-              user,
-              permissions,
-              menu,
-              isLogined,
-              appSettings,
-              subSystems,
-            },
-          })
+        const passportSettings = passportRes.data
+        if (passportSettings.lang) localization.set(passportSettings.lang, put)
+        convertFormRules(passportSettings)
+        mergeFormRules(appSettings, passportSettings)
+        if (passportSettings.default) defaultCompnent = passportSettings.default
+        if (appSettings.enableHeaderNav) {
+          const { headerNav, defaultNav, newAcls } = uri.getHeaderNav(passportSettings.acls, defaultCompnent)
+          appSettings.default = defaultNav
+          appSettings.headerNav = headerNav
+          defaultCompnent = defaultNav
+          passportSettings.acls = newAcls
         }
+        const { user } = passportSettings
+        menu = passportSettings.acls
+        let subSystems = []
+        yield put({
+          type: 'updateState',
+          payload: {
+            user,
+            menu,
+            isLogined,
+            appSettings,
+            subSystems,
+            inited: true,
+            hasSiderBar: uri.hasSiderBar(menu),
+          },
+        })
       } else {
         yield put({
           type: 'updateState',
@@ -117,8 +115,9 @@ let app = {
           },
         })
       }
-      let p = uri.defaultUri(isLogined, defaultCompnent)
+      let p = uri.defaultUri(isLogined, defaultCompnent, menu)
       if (p !== false) {
+        console.log('to:' + p)
         if (isLogined) {
           yield put(routerRedux.push(p))
         } else if (!uri.isPassportComponent()) {
@@ -127,16 +126,31 @@ let app = {
       }
     },
 
+    *navChanged ({
+      payload,
+    }, { call, put, select }) {
+      const { menu, inited } = yield(select(_ => _.app))
+      if (!inited) return
+      let data = {
+        locationChangedTag: (new Date()).getTime(),
+        hasSiderBar: uri.hasSiderBar(menu),
+      }
+      yield put({
+        type: 'app/updateState',
+        payload: data,
+      })
+    },
+
     *changePassword({
       payload,
     }, { call, put }) {
-      showOpsNotification(yield call(passport.changePassword, payload), 'Change password', 'Password has been changed successfully')
+      showOpsNotification(yield call(rqPassport.changePassword, payload), 'Change password', 'Password has been changed successfully')
     },
 
     *logout ({
       payload,
     }, { call, put }) {
-      const data = yield call(passport.logout, parse(payload))
+      const data = yield call(rqPassport.logout, parse(payload))
       showOpsNotification(data, l('Logout'), l('You are logout'))
       if (data.success) {
         yield put({ type: 'init' })
@@ -186,13 +200,6 @@ let app = {
       return {
         ...state,
         isNavbar: payload,
-      }
-    },
-
-    handleNavOpenKeys (state, { payload: navOpenKeys }) {
-      return {
-        ...state,
-        ...navOpenKeys,
       }
     },
 

@@ -31,8 +31,6 @@ const SideMenuSwitcher = React.createClass({
       hasSiderBar,
       isNavbar,
       location,
-      navOpenKeys,
-      changeOpenKeys,
       switchSider,
       siderFold,
     } = this.props
@@ -48,7 +46,7 @@ const SideMenuSwitcher = React.createClass({
   },
 })
 
-const Header = ({ user, logout, hasSiderBar, subSystems, passwordModalProps, notifications, appSettings, switchSider, siderFold, darkTheme, isNavbar, location, navOpenKeys, changeOpenKeys, siderBarComponentType, menu }) => {
+const Header = ({ user, logout, hasSiderBar, locationChangedTag, subSystems, passwordModalProps, notifications, appSettings, switchSider, siderFold, darkTheme, isNavbar, location, siderBarComponentType, menu }) => {
   
   let sideMenuProps
   if (hasSiderBar) {
@@ -58,9 +56,9 @@ const Header = ({ user, logout, hasSiderBar, subSystems, passwordModalProps, not
       hasSiderBar,
       isNavbar,
       location,
-      navOpenKeys,
-      changeOpenKeys,
+      hasHeaderNav : appSettings.enableHeaderNav,
       switchSider,
+      locationChangedTag,
     }
     if (siderBarComponentType === SiderBarComponentType.MENU) {
       sideMenuProps.menu = menu
@@ -83,6 +81,7 @@ const Header = ({ user, logout, hasSiderBar, subSystems, passwordModalProps, not
   }
   const headerNavProps = {
     items: appSettings.headerNav,
+    locationChangedTag,
   }
   return (
     <div className={classnames(styles.header, "user-menu-popup")}>
@@ -113,8 +112,6 @@ Header.propTypes = {
   isNavbar: PropTypes.bool,
   hasSiderBar: PropTypes.bool,
   location: PropTypes.object,
-  navOpenKeys: PropTypes.array,
-  changeOpenKeys: PropTypes.func,
 }
 
 export default Header

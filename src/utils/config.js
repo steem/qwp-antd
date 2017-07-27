@@ -9,5 +9,5 @@ module.exports = {
   mockServicePrefix: '/mock/?',
   servicePrefix: 'http://localhost/services/?',
   useMockSerivce: false,
-  sitePrefix: '/',
+  routeUriPrefix: '/',
 }

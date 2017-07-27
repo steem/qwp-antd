@@ -133,21 +133,27 @@ function qwp_render_get_form_rules($root, $prefix, &$app_settings) {
         }
     }
 }
-function qwp_render_app_settings(&$app_settings = null)
+function qwp_render_app_settings(&$app_settings = null, $m = null)
 {
     global $MODULE_ROOT, $PAGE, $MODULE_URI, $MODULE;
-    global $lang_txts;
-    
-    qwp_load_lang_for_module($MODULE_URI);
+
     if (!$app_settings) {
         $app_settings = array(
             'formRules' => array(),
+            'lang' => array(),
         );
     }
-    if (isset($lang_txts) && $lang_txts) $app_settings['lang'] = array('/' . implode('/', $MODULE), $lang_txts);
-    $prefix = 'form_';
-    if ($PAGE) $prefix = $PAGE . '_' . $prefix;
-    qwp_render_get_form_rules($MODULE_ROOT, $prefix, $app_settings);
+    if ($MODULE) {
+        $prefix = 'form_';
+        $app_root = $MODULE_ROOT;
+        $lang = null;
+        qwp_try_load_lang_for_module($MODULE_URI, $lang);
+        if ($lang_txts) {
+            $app_settings['lang'][] = array('/' . implode('/', $MODULE), $lang);
+        }
+        if ($PAGE) $prefix = $PAGE . '_' . $prefix;
+        qwp_render_get_form_rules($app_root, $prefix, $app_settings);
+    }
     qwp_create_and_echo_json_response(true, false, 'success', $app_settings);
 }
 function qwp_initialize() {
@@ -155,12 +161,15 @@ function qwp_initialize() {
 
     initialize_logger('qwp');
     $USER = null;
-    initialize_request();
     if (!$MODULE) {
+        if (QWP_JUST_SERVICE) {
+            return false;
+        }
         $MODULE = DEFAULT_MODULE;
     }
     $MODULE_URI = $MODULE;
-    $MODULE = explode('-', $MODULE);
+    $MODULE = explode(QWP_MODULE_SEP, $MODULE);
+    if (!$MODULE[0]) array_shift($MODULE);
     if (!qwp_is_module_name_valid()) {
         return false;
     }
@@ -378,7 +387,7 @@ function qwp_uri_parent_module() {
     for ($i = 0, $cnt = count($MODULE) - 1; $i < $cnt; ++$i) {
         $tmp[] = $MODULE[$i];
     }
-    return implode('-', $tmp);
+    return implode(QWP_MODULE_SEP, $tmp);
 }
 function qwp_get_dst_url() {
     $dst_url = P("dsturl");

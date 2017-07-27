@@ -8,7 +8,7 @@ import { l } from 'utils/localization'
 const HeaderNav = React.createClass({
   getInitialState() {
     return {
-      current: uri.current().split('/')[0],
+      current: uri.current().split('/')[1],
     }
   },
   handleClick(e) {
@@ -17,9 +17,10 @@ const HeaderNav = React.createClass({
     })
   },
   render() {
+    let current = uri.current().split('/')[1]
     return (
-      <Menu onClick={this.handleClick} selectedKeys={[this.state.current]} mode="horizontal">
-        {this.props.items.map(item => (<Menu.Item key={item.name}><Link to={uri.component(item.name)}><Icon type={item.icon || 'appstore-o'} />{l(item.name)}</Link></Menu.Item>))}
+      <Menu onClick={this.handleClick} selectedKeys={[current]} mode="horizontal">
+        {this.props.items.map(item => (<Menu.Item key={item.name}><Link to={item.path}><Icon type={item.icon || 'appstore-o'} />{l(item.name)}</Link></Menu.Item>))}
       </Menu>
     )
   },

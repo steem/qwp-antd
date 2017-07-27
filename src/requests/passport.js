@@ -19,14 +19,6 @@ export async function logout (params) {
   })
 }
 
-export async function currentUser (params) {
-  return request({
-    url: uri.ops({ ops: 'current', p, m: 'user', mock }),
-    method: 'get',
-    data: params,
-  })
-}
-
 export async function changePassword (params) {
   return request({
     url: uri.ops({ ops: 'pwd', p, m: 'user', mock }),

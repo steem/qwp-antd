@@ -28,7 +28,7 @@ module.exports = {
     }
   },
 
-  convertRules (appSettings) {
+  convertFormRules (appSettings) {
     if (!appSettings.formRules) return
     for (let p in appSettings.formRules) {
       let f = appSettings.formRules[p]
@@ -58,4 +58,11 @@ module.exports = {
       }
     }
   },
+
+  mergeFormRules (appSettings, newSettings) {
+    if (!newSettings.formRules) return
+    if (!appSettings.formRules) appSettings.formRules = newSettings.formRules
+    else appSettings.formRules = {...appSettings.formRules, ...newSettings.formRules}
+  },
+  
 }

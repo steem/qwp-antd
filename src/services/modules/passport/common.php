@@ -11,7 +11,7 @@ function qwp_init_login(&$u) {
 
     $USER = $u;
     _C('u', $USER);
-    require_once(QWP_ROOT . '/security/security.php');
+    require_once(QWP_SECURITY_ROOT . '/security.php');
     qwp_init_security($acls);
 }
 function qwp_logout() {

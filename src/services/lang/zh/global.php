@@ -13,4 +13,5 @@ $lang = array(
   'sample' => '样例',
   'system' => '系统',
   'dashboard' => '仪表盘',
+  'UIElement' => '界面元素',
 );

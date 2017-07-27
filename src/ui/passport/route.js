@@ -1,4 +1,4 @@
-import registerModel from '../../utils/registerModel'
+import registerModel from 'utils/registerModel'
 
 export default {
   path: 'passport',

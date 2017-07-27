@@ -1,4 +1,3 @@
-const qs = require('qs')
 const Mock = require('mockjs')
 const { queryArray, NOTFOUND } = require('../common')
 const { EnumRoleType, userPermission } = require('./data/passport')
@@ -25,46 +24,9 @@ let usersListData = Mock.mock({
 })
 
 let database = usersListData.data
-let inDebug = false
-
-function currentUser(req, res) {
-  const cookie = req.headers.cookie || ''
-    const cookies = qs.parse(cookie.replace(/\s/g, ''), { delimiter: ';' })
-    const response = {}
-    const user = {}
-    let userId;
-    if (inDebug) {
-      response.success = true
-      userId = 0
-    } else {
-      if (!cookies.token) {
-        res.status(200).send({ message: 'Not Login' })
-        return
-      }
-      const token = JSON.parse(cookies.token)
-      if (token) {
-        response.success = token.deadline > new Date().getTime()
-        userId = token.id
-      }
-    }
-    if (response.success) {
-      const userItem = adminUsers.filter(_ => _.id === userId)
-      if (userItem.length > 0) {
-        user.permissions = userItem[0].permissions
-        user.username = userItem[0].username
-        user.id = userItem[0].id
-        user.role = userItem[0].permissions.role
-        user.createTime = userItem[0].createTime || (new Date()).toLocaleDateString()
-      }
-    }
-    response.user = user
-    res.json(response)
-}
 
 module.exports = {
-  '/': currentUser,
   ops: {
-    current: currentUser,
     get (req, res) {
       const { id } = req.params
       const data = queryArray(database, id, 'id')

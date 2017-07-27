@@ -5,10 +5,15 @@ const L = {
   zh: require('./services/data/lang/zh/global'),
 }
 
-function _l (req, res) {
+function appSettings (req, res) {
   res.json({
     success: true,
-    data: ['/', L[lang]]
+    data: {
+      default: 'user',
+      enableHeaderNav: true,
+      lang: [['/', L[lang]]],
+      headerNav: [{name: 'sample', icon: 'laptop'}, {name: 'system', icon: 'laptop'}],
+    }
   })
 }
 
@@ -27,8 +32,8 @@ function mockFns (req, res) {
     } else if (mocks[m]['/']) {
       fn = mocks[m]['/']
     }
-  } else if (!m && op === '_l') {
-    fn = _l
+  } else if (!m && op === '$') {
+    fn = appSettings
   }
   if (fn) fn(req, res)
   else res.status(400).end(JSON.stringify(mocks))

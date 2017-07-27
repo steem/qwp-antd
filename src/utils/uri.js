@@ -20,7 +20,8 @@ function param(name) {
 }
 
 function component(...args) {
-  return config.sitePrefix + args.join('/')
+  const uri = args.join('/')
+  return uri[0] === config.routeUriPrefix ? uri : config.routeUriPrefix + uri
 }
 
 function current() {
@@ -41,19 +42,91 @@ function ops ({ ops, p, m, mock }) {
 const passportComponent = component('passport')
 const isPassportComponent = () => { return current() === passportComponent }
 
-function defaultUri(isLogined, defaultComponent) {
+function defaultUri(isLogined, defaultComponent, acls) {
   if (isLogined) {
     if (isPassportComponent()) {
       let from = param('from')
       return `${location.origin}${from ? from : component(defaultComponent)}`
     }
     if (location.pathname === '/') return component(defaultComponent)
+    if (acls) {
+      for (let i in acls) {
+        let item = acls[i]
+        if (item.path.indexOf(location.pathname) === -1) continue
+        let j = parseInt(i) + 1
+        if (j < acls.length) {
+          let nextItem = acls[j]
+          if (nextItem.path.indexOf(item.path) === 0) {
+            continue
+          }
+        }
+        return item.path === location.pathname ? false : item.path
+      }
+      return component(defaultComponent)
+    }
   } else {
     if (!isPassportComponent()) {
       let from = location.pathname != '/' || location.search.length ? encodeURI(location.pathname) + encodeURI(location.search) : false
       from = from ? `?from=${from}` : ''
       return `${location.origin}${passportComponent}${from}`
     }
+  }
+  return false
+}
+
+function setDefaultComponent(acls, p, max, path) {
+  for (let i = p + 1; i < max; ++i) {
+    let item = acls[i]
+    if (item.path.indexOf(path) === -1) return
+    let j = i + 1
+    if (j < max) {
+      let nextItem = acls[j]
+      if (nextItem.path.indexOf(item.path) === -1) {
+        acls[p].path = item.path
+        break
+      }
+    } else {
+      acls[p].path = item.path
+      break
+    }
+  }
+}
+
+function getHeaderNav (acls, defaultCompnent) {
+  let headerNav = [], newAcls = []
+  if (acls) {
+    const max = acls.length
+    let needSelectDefaultComponent = true
+    if (defaultCompnent) {
+      defaultCompnent = component(defaultCompnent).split('/')
+      if (defaultCompnent.length > 2) needSelectDefaultComponent = false
+    }
+    for (let p in acls) {
+      p = parseInt(p)
+      let item = acls[p]
+      let paths = item.path.split('/')
+      if (paths.length === 2) {
+        setDefaultComponent(acls, p, max, item.path)
+        if (needSelectDefaultComponent && (!defaultCompnent || defaultCompnent[1] === paths[1])) {
+          defaultCompnent = item.path
+          needSelectDefaultComponent = false
+        }
+        headerNav.push(item)
+      } else {
+        newAcls.push(item)
+      }
+    }
+  }
+  return { headerNav, defaultNav: defaultCompnent, newAcls }
+}
+
+function hasSiderBar (acls) {
+  if (!acls || acls.length === 0 || location.pathname === passportComponent) return true
+  const path = component(location.pathname.split('/')[1])
+  for (let p in acls) {
+    let item = acls[p]
+    if (item.path === location.pathname) continue
+    if (item.path.indexOf(path) === 0) return true
   }
   return false
 }
@@ -67,4 +140,6 @@ module.exports = {
   defaultUri,
   passportComponent,
   isPassportComponent,
+  getHeaderNav,
+  hasSiderBar,
 }

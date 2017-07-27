@@ -1,4 +1,3 @@
-import request from './request'
 import uri from './uri'
 let mock = true
 let _LANG = {}
@@ -28,25 +27,21 @@ module.exports = {
     return txt
   },
 
-  set (language, appPath, update) {
-    if (appPath === '/passport') appPath = '/'
-    if (!_LANG[appPath]) _LANG[appPath] = language
-    else Object.assign(_LANG[appPath], language)
-    if (update) {
+  set (language, update) {
+    for (let i in language) {
+      let l = language[i]
+      let appPath = l[0] === '/passport' ? '/' : l[0]
+      if (!_LANG[appPath]) _LANG[appPath] = l[1]
+      else Object.assign(_LANG[appPath], l[1])
+    }
+    if (language.length > 0 && update) {
       update({
         type: 'app/updateState',
         payload: {
-          locChangedTag: (new Date()).getTime()
+          localeChangedTag: (new Date()).getTime()
         },
       })
     }
   },
-
-  async load () {
-    return request({
-      url: uri.ops({ ops: '_l', mock: false }),
-      method: 'get',
-    })
-  }
 
 }

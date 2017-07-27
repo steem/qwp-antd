@@ -26,5 +26,6 @@ module.exports = {
   queryArray,
   NOTFOUND,
   lang: 'zh',
+  inDebug: () => false,
 }
 

@@ -6,14 +6,14 @@ import { config } from 'utils'
 import LeftMenu from './LeftMenu'
 import { l } from 'utils/localization'
 
-const Sider = ({ siderFold, darkTheme, location, changeTheme, navOpenKeys, changeOpenKeys, menu }) => {
+const Sider = ({ siderFold, hasHeaderNav, locationChangedTag, darkTheme, location, changeTheme, menu }) => {
   const menusProps = {
     menu,
     siderFold,
     darkTheme,
+    hasHeaderNav,
     location,
-    navOpenKeys,
-    changeOpenKeys,
+    locationChangedTag,
   }
   return (
     <div>
@@ -36,8 +36,8 @@ Sider.propTypes = {
   darkTheme: PropTypes.bool,
   location: PropTypes.object,
   changeTheme: PropTypes.func,
-  navOpenKeys: PropTypes.array,
-  changeOpenKeys: PropTypes.func,
+  locationChangedTag: PropTypes.number,
+  hasHeaderNav: PropTypes.bool,
 }
 
 export default Sider

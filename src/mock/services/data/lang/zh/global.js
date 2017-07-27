@@ -8,4 +8,7 @@ module.exports = {
   'Sign out': '退出',
   'Yes': '确定',
   'No': '取消',
+  'sample': '样例',
+  'system': '系统',
+  'UIElement': '界面元素',
 }

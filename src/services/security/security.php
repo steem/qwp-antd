@@ -58,10 +58,10 @@ function qwp_save_acls_to_db(&$acls) {
     db_delete('sys_modules')->execute();
     db_query('ALTER TABLE sys_modules AUTO_INCREMENT=1');
     foreach ($modules as $k => &$v) {
-        $items = explode('-', $k);
+        $items = explode(QWP_MODULE_SEP, $k);
         array_pop($items);
         if (count($items) === 0) $parent = '';
-        else $parent = implode('-', $items);
+        else $parent = implode(QWP_MODULE_SEP, $items);
         $f = array(
             'name' => $v,
             'identity' => $v,
@@ -70,7 +70,7 @@ function qwp_save_acls_to_db(&$acls) {
             'seq' => '1',
         );
         $id = db_insert('sys_modules')->fields($f)->execute();
-        $identities[$k] = $f['parent'] . $id . '-';
+        $identities[$k] = $f['parent'] . $id . QWP_MODULE_SEP;
     }
     foreach ($pages as $k => &$v) {
         foreach ($v as $page => $name) {
@@ -82,7 +82,7 @@ function qwp_save_acls_to_db(&$acls) {
                 'seq' => '1',
             );
             $id = db_insert('sys_modules')->fields($f)->execute();
-            $identities[$k.'#'.$page] = $f['parent'] . $id . '-';
+            $identities[$k.'#'.$page] = $f['parent'] . $id . QWP_MODULE_SEP;
         }
     }
     foreach ($ops as $k => &$v) {
@@ -98,7 +98,7 @@ function qwp_save_acls_to_db(&$acls) {
         }
     }
 }
-function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $parent) {
+function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $parent, $add_module = true) {
     $files = scandir($dir);
     foreach ($files as $item) {
         if (is_dot_dir($item)) continue;
@@ -106,8 +106,8 @@ function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $pa
         if (is_dir($file_path)) {
             if ($level === 0 && $item === 'passport') continue;
             $new_parent = $parent . ($parent ? QWP_MODULE_SEP : '') . $item;
-            $modules[$new_parent] = $item;
-            qwp_scan_acls_in_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent);
+            if ($add_module) $modules[$new_parent] = $item;
+            qwp_scan_acls_in_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent, $add_module);
         } else if ($level !== 0) {
             if (!ends_with($item, '.php') || starts_with($item, 'home') ||
                 starts_with($item, 'form_') || starts_with($item, 'common.')) continue;
@@ -135,6 +135,23 @@ function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $pa
         }
     }
 }
+function qwp_scan_acls_in_client_directory(&$modules, &$pages, &$ops, $dir, $level, $parent, $parent_item = '') {
+    $files = scandir($dir);
+    $has_route = false;
+    foreach ($files as $item) {
+        if (is_dot_dir($item)) continue;
+        $file_path = join_paths($dir, $item);
+        if (is_dir($file_path)) {
+            if ($level === 0 && ($item === 'passport' ||  $item === 'error')) continue;
+            $new_parent = $parent . $item;
+            if (qwp_scan_acls_in_client_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent . QWP_MODULE_SEP, $item)) {
+                $modules[$new_parent] = $item;
+                $has_route = true;
+            }
+        }
+    }
+    return $has_route || file_exists(join_paths($dir, 'route.js'));
+}
 function qwp_get_all_acls_in_directory(&$acls) {
     $acls['modules'] = array();
     $acls['pages'] = array();
@@ -142,7 +159,12 @@ function qwp_get_all_acls_in_directory(&$acls) {
     $modules = &$acls['modules'];
     $pages = &$acls['pages'];
     $ops = &$acls['ops'];
-    qwp_scan_acls_in_directory($modules, $pages, $ops, QWP_MODULE_ROOT, 0, '');
+    if (QWP_JUST_SERVICE) {
+        qwp_scan_acls_in_client_directory($modules, $pages, $ops, QWP_CLIENT_UI_ROOT, 0, QWP_MODULE_SEP);
+        qwp_scan_acls_in_directory($modules, $pages, $ops, QWP_MODULE_ROOT, 0, '', false);
+    } else {
+        qwp_scan_acls_in_directory($modules, $pages, $ops, QWP_MODULE_ROOT, 0, '');
+    }
     ksort($modules, SORT_STRING);
     ksort($pages, SORT_STRING);
     ksort($ops, SORT_STRING);
@@ -182,7 +204,7 @@ function qwp_get_user_acls(&$acls) {
         $identity = &$r['identity'];
         $parent = &$r['parent'];
         $parent_path = isset($identities[$parent]) && $identities[$parent] ? $identities[$parent] . '-' : '';
-        $identity_key = $parent . $r['id'] . '-';
+        $identity_key = $parent . $r['id'] . QWP_MODULE_SEP;
         if ($r['type'] === 'm') {
             $modules[$parent_path . $identity] = $r['name'];
         } else if ($r['type'] === 'p') {
@@ -193,7 +215,7 @@ function qwp_get_user_acls(&$acls) {
         } else if ($r['type'] === 'op') {
             $path = isset($identities[$parent]) ? $identities[$parent]:'';
             if (isset($is_page[$parent])) {
-                $pos = strrpos($path, '-');
+                $pos = strrpos($path, QWP_MODULE_SEP);
                 $path[$pos] = '#';
             }
             if (!isset($ops[$path])) $ops[$path] = array();
@@ -208,7 +230,7 @@ function qwp_init_nav_modules(&$acls) {
     $all_modules = &$acls['modules'];
     $left_modules = array();
     foreach($all_modules as $m => $desc) {
-        $arr = explode('-', $m);
+        $arr = explode(QWP_MODULE_SEP, $m);
         $level = count($arr);
         if ($level === 1) {
             if (QWP_JUST_SERVICE || file_exists(join_paths(QWP_MODULE_ROOT, $m, 'home.php'))) {
@@ -230,7 +252,7 @@ function qwp_init_nav_modules(&$acls) {
                 $modules[$m] = $left_modules[$arr[0]];
                 unset($left_modules[$arr[0]]);
             }
-            $parent = $arr[0] . '-' . $arr[1];
+            $parent = $arr[0] . QWP_MODULE_SEP . $arr[1];
             if (!isset($sub_modules[$arr[0]][$parent]['sub'])) $sub_modules[$arr[0]][$parent]['sub'] = array();
             $sub_modules[$arr[0]][$parent]['sub'][] = array($m, $desc);
         }
@@ -246,11 +268,26 @@ function qwp_has_sub_modules() {
     return isset($nav[$MODULE[0]]);
 }
 // template function, you need to modify it if you want to use
+function qwp_init_client_nav(&$acls) {
+    $modules = &$acls['modules'];
+    $nav = array();
+    foreach ($modules as $path => $name) {
+        $nav[] = array(
+            'name' => $name,
+            'path' => $path,
+        );
+    }
+    _C('nav', $nav);
+}
 function qwp_init_security(&$acls) {
     $acls = array();
     qwp_get_user_acls($acls);
     _C('acls', $acls);
-    qwp_init_nav_modules($acls);
+    if (QWP_JUST_SERVICE) {
+        qwp_init_client_nav($acls);
+    } else {
+        qwp_init_nav_modules($acls);
+    }
 }
 function qwp_doing_security_check() {
     global $MODULE_URI, $PAGE, $OP;

@@ -26,6 +26,13 @@ function qwp_render_js_lang() {
 
     echo('<script>var _LANG=' . to_json($lang_txts) . ';</script>');
 }
+function qwp_try_load_lang_for_module($name, &$lang) {
+    $lang_file = QWP_LANG_ROOT . '/' . $language . '/' . $name . '.php';
+    if (!file_exists($lang_file)) {
+        return;
+    }
+    require_once($lang_file);
+}
 function qwp_load_lang_for_module($name) {
     global $lang_txts, $language, $loaded_lang;
 
@@ -38,7 +45,7 @@ function qwp_load_lang_for_module($name) {
         return;
     }
     $lang = null;
-    require_once($lang_file);
+    qwp_try_load_lang_for_module($name, $lang);
     if ($lang) {
         $lang_txts = array_merge($lang_txts, $lang);
     }

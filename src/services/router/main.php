@@ -9,17 +9,13 @@ if(!defined('QWP_ROOT')){exit('Invalid Request');}
 try {
     require_once(QWP_ROUTER_ROOT . '/required.php');
     do {
-        if (QWP_JUST_SERVICE && !P('op')) {
-            exit('Invalid Request');
+        initialize_request();
+        if (qwp_check_just_service()) {
             break;
         }
         session_start();
         qwp_initialize_language();
-        if (P('op') === '_l') {
-            global $lang_txts;
-            qwp_load_lang_for_module('global');
-            $l = array('/', $lang_txts);
-            qwp_create_and_echo_json_response(true, false, false, $l);
+        if (qwp_render_root_app_settings()) {
             break;
         }
         if (qwp_initialize() === false) {

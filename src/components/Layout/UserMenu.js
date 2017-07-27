@@ -35,8 +35,8 @@ const UserMenuComponent = React.createClass({
         <div className={classnames(styles.menuUserImageItem, styles.textAlign)}>
           <img src={userImage} className={classnames(styles.imgCircle, styles.menuUserImage)} alt="User Image" />
           <p className={styles.menuUserImageDesc} style={ {textAlign: 'left', paddingLeft: 12} }>
-            User name: {user.username} <br />
-            Role: {user.role} <br />
+            {l("User name")}: {user.username} <br />
+            {l("Role")}: {user.roleName} <br />
             <small>Create time: {user.createTime}</small>
           </p>
         </div>

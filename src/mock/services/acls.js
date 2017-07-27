@@ -1,12 +1,12 @@
 let database = {
   subSystems: [
     {
-      path: '/user',
+      path: '/system/user',
       name: 'Users',
       icon: 'user',
     },
     {
-      path: '/dashboard',
+      path: '/sample/dashboard',
       name: 'Dashboard',
       icon: 'laptop',
     },
@@ -16,35 +16,35 @@ let database = {
     id: '1',
     icon: 'laptop',
     name: 'Dashboard',
-    route: '/dashboard',
+    route: '/sample/dashboard',
   },
   {
     id: '2',
     bpid: '1',
     name: 'Users',
     icon: 'user',
-    route: '/user',
+    route: '/system/user',
   },
   {
     id: '7',
     bpid: '1',
     name: 'Posts',
     icon: 'shopping-cart',
-    route: '/post',
+    route: '/sample/post',
   },
   {
     id: '21',
     mpid: '-1',
     bpid: '2',
     name: 'User Detail',
-    route: '/user/:id',
+    route: '/system/user/:id',
   },
   {
     id: '3',
     bpid: '1',
     name: 'Request',
     icon: 'api',
-    route: '/request',
+    route: '/sample/request',
   },
   {
     id: '4',
@@ -58,7 +58,7 @@ let database = {
     mpid: '4',
     name: 'IconFont',
     icon: 'heart-o',
-    route: '/UIElement/iconfont',
+    route: '/sample/UIElement/iconfont',
   },
   {
     id: '42',
@@ -66,7 +66,7 @@ let database = {
     mpid: '4',
     name: 'DataTable',
     icon: 'database',
-    route: '/UIElement/dataTable',
+    route: '/sample/UIElement/dataTable',
   },
   {
     id: '43',
@@ -74,7 +74,7 @@ let database = {
     mpid: '4',
     name: 'DropOption',
     icon: 'bars',
-    route: '/UIElement/dropOption',
+    route: '/sample/UIElement/dropOption',
   },
   {
     id: '44',
@@ -82,7 +82,7 @@ let database = {
     mpid: '4',
     name: 'Search',
     icon: 'search',
-    route: '/UIElement/search',
+    route: '/sample/UIElement/search',
   },
   {
     id: '45',
@@ -90,7 +90,7 @@ let database = {
     mpid: '4',
     name: 'Editor',
     icon: 'edit',
-    route: '/UIElement/editor',
+    route: '/sample/UIElement/editor',
   },
   {
     id: '46',
@@ -98,7 +98,7 @@ let database = {
     mpid: '4',
     name: 'layer (Function)',
     icon: 'credit-card',
-    route: '/UIElement/layer',
+    route: '/sample/UIElement/layer',
   },
   {
     id: '5',
@@ -112,7 +112,7 @@ let database = {
     mpid: '5',
     name: 'LineChart',
     icon: 'line-chart',
-    route: '/chart/lineChart',
+    route: '/sample/chart/lineChart',
   },
   {
     id: '52',
@@ -120,7 +120,7 @@ let database = {
     mpid: '5',
     name: 'BarChart',
     icon: 'bar-chart',
-    route: '/chart/barChart',
+    route: '/sample/chart/barChart',
   },
   {
     id: '53',
@@ -128,7 +128,7 @@ let database = {
     mpid: '5',
     name: 'AreaChart',
     icon: 'area-chart',
-    route: '/chart/areaChart',
+    route: '/sample/chart/areaChart',
   },
   {
     id: '6',
@@ -141,28 +141,28 @@ let database = {
     bpid: '6',
     mpid: '6',
     name: 'Test Navigation1',
-    route: '/navigation/navigation1',
+    route: '/sample/navigation/navigation1',
   },
   {
     id: '62',
     bpid: '6',
     mpid: '6',
     name: 'Test Navigation2',
-    route: '/navigation/navigation2',
+    route: '/sample/navigation/navigation2',
   },
   {
     id: '621',
     bpid: '62',
     mpid: '62',
     name: 'Test Navigation21',
-    route: '/navigation/navigation2/navigation1',
+    route: '/sample/navigation/navigation2/navigation1',
   },
   {
     id: '622',
     bpid: '62',
     mpid: '62',
     name: 'Test Navigation22',
-    route: '/navigation/navigation2/navigation2',
+    route: '/sample/navigation/navigation2/navigation2',
   },
 ]}
 
