@@ -37,7 +37,7 @@ const getMenus = (menuTreeN, siderFoldN) => {
           key={item.path}
           title={<span>
             {item.icon && <Icon type={item.icon} />}
-            {(!siderFoldN || !menuTree.includes(item)) && l(item.name)}
+            {(!siderFoldN) && l(item.name)}
           </span>}
         >
           {getMenus(item.children, siderFoldN)}
@@ -48,7 +48,7 @@ const getMenus = (menuTreeN, siderFoldN) => {
       <Menu.Item key={item.path}>
         <Link to={item.path}>
           {item.icon && <Icon type={item.icon} />}
-          {(!siderFoldN || !menuTree.includes(item)) && l(item.name)}
+          {(!siderFoldN) && l(item.name)}
         </Link>
       </Menu.Item>
     )
@@ -74,7 +74,6 @@ class Menus extends React.Component {
     this.state = {
       openKeys: false
     }
-    this.onOpenChange = this.onOpenChange.bind(this)
   }
   onOpenChange (openKeys) {
     this.setState({
@@ -93,18 +92,19 @@ class Menus extends React.Component {
     let defaultOpenKeys = [...selectedKeys]
     defaultOpenKeys.pop()
     let menuProps = {
-      defaultOpenKeys,
       selectedKeys,
       defaultSelectedKeys: selectedKeys,
       locationChangedTag,
+    }
+    if (!siderFold) {
+      menuProps.onOpenChange = this.onOpenChange.bind(this)
+      menuProps.openKeys = this.state.openKeys || defaultOpenKeys
     }
     return (<Menu
         {...menuProps}
         mode={siderFold ? 'vertical' : 'inline'}
         theme={darkTheme ? 'dark' : 'light'}
         onClick={handleClickNavMenu}
-        onOpenChange={this.onOpenChange}
-        openKeys={this.state.openKeys || defaultOpenKeys}
       >
         {this.props.children}
       </Menu>
