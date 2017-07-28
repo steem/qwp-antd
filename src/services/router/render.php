@@ -89,6 +89,9 @@ function qwp_render_root_app_settings() {
         'moduleSep' => QWP_MODULE_SEP,
         'enableHeaderNav' => QWP_ENABLE_HEADER_NAV,
         'lang' => array(),
+        'headerNav' => qwp_get_default_header_nav(),
+        'modulesNeedNotLogin' => qwp_get_modules_need_not_login(),
+        'validators' => get_input_rules(),
     );
     $lang = null;
     qwp_try_load_lang_for_module('global', $lang);

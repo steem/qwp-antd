@@ -128,7 +128,7 @@ function qwp_render_get_form_rules($root, $prefix, &$app_settings) {
             $form_rule = null;
             require($root . '/' . $item);
             if ($form_rule && isset($form_rule['rules'])) {
-                $app_settings[$form_rule['name']] = $form_rule['rules'];
+                $app_settings['formRules'][$form_rule['name']] = $form_rule['rules'];
             }
         }
     }
@@ -143,6 +143,7 @@ function qwp_render_app_settings(&$app_settings = null, $m = null)
             'lang' => array(),
         );
     }
+    if (!isset($app_settings['formRules'])) $app_settings['formRules'] = array();
     if ($MODULE) {
         $prefix = 'form_';
         $app_root = $MODULE_ROOT;

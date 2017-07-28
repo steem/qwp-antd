@@ -18,7 +18,7 @@ const Sider = ({ siderFold, hasHeaderNav, locationChangedTag, darkTheme, locatio
   return (
     <div>
       <div className={styles.logo}>
-        <img alt={'logo'} src={config.logo} />
+        <img title={l('productNameLong')} src={config.logo} />
         {siderFold ? '' : <span>{l('productName')}</span>}
       </div>
       <LeftMenu {...menusProps} />

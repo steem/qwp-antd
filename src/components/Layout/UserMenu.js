@@ -30,7 +30,7 @@ const UserMenuComponent = React.createClass({
       onShowDialog: () => { this.hide() },
       ...passwordModalProps,
     }
-    const userMenu = (
+    let userMenu = user.isLogined ? (
       <div className={styles.userMenu}>
         <div className={classnames(styles.menuUserImageItem, styles.textAlign)}>
           <img src={userImage} className={classnames(styles.imgCircle, styles.menuUserImage)} alt="User Image" />
@@ -58,6 +58,18 @@ const UserMenuComponent = React.createClass({
               <Button>{l('Sign out')}</Button>
             </Popconfirm>
           </div>
+        </div>
+      </div>
+    ) : (
+      <div className={styles.userMenu}>
+        <div className={classnames(styles.menuUserImageItem, styles.textAlign)}>
+          <img src={userImage} className={classnames(styles.imgCircle, styles.menuUserImage)} alt="User Image" />
+          <p className={styles.menuUserImageDesc} style={ {textAlign: 'center', paddingLeft: 12} }>
+            {l("Your are not login")}
+          </p>
+        </div>
+        <div className={styles.menuUserPassport} style={ {textAlign: 'center'} }>
+          <Link to="/passport" onClick={this.hide}><Button>{l('Login')}</Button></Link>
         </div>
       </div>
     )

@@ -1,6 +1,7 @@
 <?php
 $form_rule = array(
     'cssSelector' => '#form-signin',
+    'name' => 'login',
     'rules' => array(
         'user' => array(
             'required' => true,

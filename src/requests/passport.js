@@ -5,7 +5,7 @@ let mock = true
 
 export async function login (params) {
   return request({
-    url: uri.ops({ ops: 'login', p, m, mock }),
+    url: uri.ops({ ops: 'login', p, m, mock: false }),
     method: 'post',
     data: params,
   })
@@ -13,7 +13,7 @@ export async function login (params) {
 
 export async function logout (params) {
   return request({
-    url: uri.ops({ ops: 'logout', p, m, mock }),
+    url: uri.ops({ ops: 'logout', p, m, mock: false }),
     method: 'get',
     data: params,
   })

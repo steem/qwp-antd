@@ -2,11 +2,10 @@
 if(!defined('QWP_ROOT')){exit('Invalid Request');}
 if (QWP_IN_MOCK_TEST) {
     $user = new QWPUser(0, 1, 'Mock', 'Mock', 'admin');
-    qwp_init_login($user);
+    //qwp_init_login($user);
 }
-$acls = C('nav', array());
 $app_settings = array(
-    'acls' => $acls,
+    'acls' => C('nav', array()),
     'default' => 'sample',
 );
 if (qwp_is_logined()) {

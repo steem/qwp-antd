@@ -6,7 +6,7 @@ define('IN_DEBUG', true);
 define('ENABLE_LOGGER', false);
 define('IN_MOCK', false);
 // you can change the default module
-define('DEFAULT_MODULE', 'user');
+define('DEFAULT_MODULE', 'portal');
 define('QWP_SESSION_PREFIX', 'qwp');
 define('QWP_SESSION_TIMEOUT', true);
 define('QWP_LOG_DIR', '/tmp/qwp');
@@ -38,10 +38,29 @@ define('PRODUCT_NAME', 'QWP');
 define('PRODUCT_NAME_SHORT', 'QWP');
 define('COMPANY_NAME', 'QWP, Inc.');
 
+function qwp_get_modules_need_not_login() {
+    return array('portal', 'test');
+}
+
+function qwp_get_default_header_nav() {
+    return array(
+        array(
+            'name' => 'portal',
+            'icon' => 'laptop',
+            'path' => '/portal',
+        ),
+        array(
+            'name' => 'test',
+            'icon' => 'laptop',
+            'path' => '/test',
+        ),
+    );
+}
+
 $active_db = 'default';
 // database settings
 $databases['default']['default'] = array (
-    'database' => 'qwp_center',
+    'database' => 'qwp_adminlte',
     'username' => 'root',
     'password' => '',
     'host' => 'localhost',

@@ -7,7 +7,8 @@ import LeftMenu from './LeftMenu'
 import UserMenu from './UserMenu'
 import Notification from './Notification'
 import SystemSwitcher from './SystemSwitcher'
-import { classnames } from 'utils'
+import { classnames, config } from 'utils'
+import { l } from 'utils/localization'
 import { SiderBarComponentType } from 'enums'
 import HeaderNav from './HeaderNav'
 
@@ -83,15 +84,17 @@ const Header = ({ user, logout, hasSiderBar, locationChangedTag, subSystems, pas
     items: appSettings.headerNav,
     locationChangedTag,
   }
+
   return (
     <div className={classnames(styles.header, "user-menu-popup")}>
+      {!hasSiderBar && <img className={styles.logo} title={l('productNameLong')} src={config.logo} />}
       <div className={styles.rightWarpper}>
       {hasSiderBar && <SideMenuSwitcher {...sideMenuProps}/>}
       {subSystems.length > 0 && <SystemSwitcher {...sysSwitcherProps}/>}
       </div>
       <div className={styles.rightWarpper}>
         {appSettings.headerNav.length > 0 && <HeaderNav {...headerNavProps}/> }
-        <Notification {...notiProps}/>
+        {user.isLogined && <Notification {...notiProps}/>}
         <UserMenu {...userMenuProps}/>
       </div>
     </div>

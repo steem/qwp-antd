@@ -24,16 +24,19 @@ module.exports = {
           lang: [
             ['/', L[lang]]
           ],
-          default: 'user',
+          default: 'sample',
           headerNav: [{
             name: 'sample',
-            icon: 'laptop'
+            icon: 'laptop',
+            path: '/sample',
           }, {
             name: 'system',
-            icon: 'laptop'
+            icon: 'laptop',
+            path: '/system',
           }, {
             name: 'settings',
-            icon: 'laptop'
+            icon: 'laptop',
+            path: '/settings',
           }],
           formRules: {
             changePassword: {
@@ -52,51 +55,63 @@ module.exports = {
             "path": "/sample"
           }, {
             "name": "UIElement",
+            "icon": "camera-o",
             "path": "/sample/UIElement"
           }, {
             "name": "dataTable",
+            icon: 'database',
             "path": "/sample/UIElement/dataTable"
           }, {
             "name": "dropOption",
+            icon: 'bars',
             "path": "/sample/UIElement/dropOption"
           }, {
             "name": "editor",
             "path": "/sample/UIElement/editor"
           }, {
             "name": "iconfont",
+            icon: 'heart-o',
             "path": "/sample/UIElement/iconfont"
           }, {
             "name": "layer",
             "path": "/sample/UIElement/layer"
           }, {
             "name": "search",
+            icon: 'search',
             "path": "/sample/UIElement/search"
           }, {
             "name": "chart",
+            icon: 'code-o',
             "path": "/sample/chart"
           }, {
             "name": "areaChart",
+            icon: 'area-chart',
             "path": "/sample/chart/areaChart"
           }, {
             "name": "barChart",
+            icon: 'bar-chart',
             "path": "/sample/chart/barChart"
           }, {
             "name": "lineChart",
+            icon: 'line-chart',
             "path": "/sample/chart/lineChart"
           }, {
             "name": "dashboard",
             "path": "/sample/dashboard"
           }, {
             "name": "post",
+            icon: 'shopping-cart',
             "path": "/sample/post"
           }, {
             "name": "request",
+            icon: 'api',
             "path": "/sample/request"
           }, {
             "name": "system",
             "path": "/system"
           }, {
             "name": "user",
+            icon: 'user',
             "path": "/system/user"
           }, {
             "name": "test",
@@ -125,28 +140,28 @@ module.exports = {
     },
     login(req, res) {
       const {
-        username,
-        password
+        user,
+        pwd
       } = req.body
-      const user = adminUsers.filter((item) => item.username === username)
-
-      if (user.length > 0 && user[0].password === password) {
+      const aUser = adminUsers.filter((item) => item.username === user)
+      let result = {
+        success: false,
+        message: 'Failed to login'
+      }
+      if (aUser.length > 0 && aUser[0].password === pwd) {
         const now = new Date()
         now.setDate(now.getDate() + 1)
         res.cookie('token', JSON.stringify({
-          id: user[0].id,
+          id: aUser[0].id,
           deadline: now.getTime()
         }), {
           maxAge: 900000,
           httpOnly: true,
         })
-        res.json({
-          success: true,
-          message: 'Ok'
-        })
-      } else {
-        res.status(400).end()
+        result.success = true
+        result.message = 'Login successfully'
       }
+      res.json(result)
     },
     logout: function (req, res) {
       res.clearCookie('token')

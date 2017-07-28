@@ -1,8 +1,7 @@
 import * as rqPassport from '../requests/passport'
-import * as acls from '../requests/acls'
 import * as rqApp from '../requests/app'
 import { routerRedux } from 'dva/router'
-import { convertFormRules, mergeFormRules } from 'utils/form'
+import { convertFormRules, mergeFormRules, setValidators } from 'utils/form'
 import { parse } from 'qs'
 import config from 'config'
 import { EnumRoleType, SiderBarComponentType } from 'enums'
@@ -10,39 +9,20 @@ import { uri, storage, localization } from 'utils'
 const { l } = localization
 import lodash from 'lodash'
 import showOpsNotification from 'utils/notification'
-let loadingMenuName = '■■■■■■■■■■'
 
 let app = {
   namespace: 'app',
   state: {
-    user: {},
+    user: {
+      isLogined: false
+    },
     siderBarComponentType: SiderBarComponentType.MENU,
-    menu:[
-      {
-        id: 1,
-        icon: 'laptop',
-        name: loadingMenuName,
-        path: '/',
-      },
-      {
-        id: 2,
-        icon: 'laptop',
-        name: loadingMenuName,
-        path: '/',
-      },
-      {
-        id: 3,
-        icon: 'laptop',
-        name: 'user',
-        path: '/user',
-      }
-    ],
+    menu:[],
     siderList:{
       dataUrl:''
     },
-    isLogined: false,
     hasHeader: true,
-    hasSiderBar: true,
+    hasSiderBar: false,
     hasBread: true,
     siderFold: storage.get('siderFold') === 'true',
     darkTheme: storage.get('darkTheme') === 'true',
@@ -52,6 +32,7 @@ let app = {
     notifications: [],
     appSettings: {
       headerNav: [],
+      modulesNeedNotLogin: [],
     },
     localeChangedTag: 0,
     locationChangedTag: 0,
@@ -71,16 +52,19 @@ let app = {
     *init ({
       payload,
     }, { call, put, select }) {
+      const oldSettings = yield(select(_ => _.app.appSettings))
       const appRes = yield call(rqApp.$)
-      let appSettings = appRes.success ? appRes.data : yield(select(_ => _.app.appSettings))
+      let appSettings = appRes.success ? appRes.data : oldSettings
+      if (!appSettings.headerNav) appSettings.headerNav = []
       if (appRes.success && appSettings.lang) localization.set(appSettings.lang, put)
+      if (appSettings.validators) setValidators(appSettings.validators)
       convertFormRules(appSettings)
       const passportRes = yield call(rqPassport.$, payload)
       let isLogined = false, defaultCompnent, menu
       if (appSettings.default) defaultCompnent = appSettings.default
       if (passportRes.success && passportRes.data.user) {
         isLogined = true
-        const passportSettings = passportRes.data
+        let passportSettings = passportRes.data
         if (passportSettings.lang) localization.set(passportSettings.lang, put)
         convertFormRules(passportSettings)
         mergeFormRules(appSettings, passportSettings)
@@ -88,19 +72,20 @@ let app = {
         if (appSettings.enableHeaderNav) {
           const { headerNav, defaultNav, newAcls } = uri.getHeaderNav(passportSettings.acls, defaultCompnent)
           appSettings.default = defaultNav
-          appSettings.headerNav = headerNav
+          if (passportSettings.headerNav) appSettings.headerNav = passportSettings.headerNav
+          else appSettings.headerNav = headerNav
           defaultCompnent = defaultNav
           passportSettings.acls = newAcls
         }
-        const { user } = passportSettings
+        let { user } = passportSettings
+        user.isLogined = isLogined
         menu = passportSettings.acls
-        let subSystems = []
+        let subSystems = passportSettings.subSystems || []
         yield put({
           type: 'updateState',
           payload: {
             user,
             menu,
-            isLogined,
             appSettings,
             subSystems,
             inited: true,
@@ -108,16 +93,23 @@ let app = {
           },
         })
       } else {
+        if (passportRes.data) {
+          convertFormRules(passportRes.data)
+          mergeFormRules(appSettings, passportRes.data)
+        }
         yield put({
           type: 'updateState',
           payload: {
-            isLogined,
+            appSettings,
+            user: {
+              isLogined
+            },
           },
         })
       }
-      let p = uri.defaultUri(isLogined, defaultCompnent, menu)
+      let p = uri.defaultUri(isLogined, defaultCompnent, menu, appSettings.modulesNeedNotLogin)
+      console.log('to:' + p + '. is login: ' + isLogined)
       if (p !== false) {
-        console.log('to:' + p)
         if (isLogined) {
           yield put(routerRedux.push(p))
         } else if (!uri.isPassportComponent()) {

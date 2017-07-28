@@ -21,7 +21,7 @@ let adminUsers = [
   {
     id: 0,
     username: 'admin',
-    password: 'admin',
+    password: '1234567',
     permissions: userPermission.ADMIN,
   }, {
     id: 1,

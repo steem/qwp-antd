@@ -9,10 +9,8 @@ require_once(QWP_ROOT . '/security/security.php');
 function qwp_custom_need_login() {
     global $MODULE_URI, $MODULE, $PAGE, $OP;
 
-    if (qwp_is_passport_module() || qwp_is_portal_module()) {
-        return false;
-    }
-    return true;
+    if (qwp_is_passport_module()) return false;
+    return !in_array($MODULE[0], qwp_get_modules_need_not_login());
 }
 // return false to indicate failed to check security
 // you need to modify it

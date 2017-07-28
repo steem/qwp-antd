@@ -15,7 +15,7 @@ const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { isLogined, locationChangedTag, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, siderBarComponentType, menu, siderList } = app
+  const { locationChangedTag, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, siderBarComponentType, menu, siderList } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -79,12 +79,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
   const breadProps = hasBread ? {
     menu,
   } : ''
-  if (!isLogined || (!hasPermission && uri.isPassportComponent())) {
-    return (<div loc={localeChangedTag}>
-      <Loader spinning={loading.effects['app/init']} />
-      {children}
-    </div>)
-  }
+  const showLoadingSpinning = !user.isLogined || (!hasPermission && uri.isPassportComponent())
   let errorProps
   if (app.error) errorProps = app.error
   if (!hasPermission) errorProps = {
@@ -108,6 +103,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
           {hasBread ? <Bread {...breadProps} /> : ''}
           <div className={styles.container}>
             <div className={styles.content}>
+              { showLoadingSpinning && <Loader spinning={loading.effects['app/init']} /> }
               {hasPermission ? children : <Error {...errorProps}/>}
             </div>
           </div>

@@ -68,7 +68,7 @@ const modal = ({
   onOk,
   form: {
     getFieldDecorator,
-    validateFields,
+    validateFieldsAndScroll,
     getFieldsValue,
   },
   appSettings,
@@ -77,11 +77,11 @@ const modal = ({
   const modalOpts = {
     ...modalProps,
     ...dialogBtns(),
-    okHandler: createOkHander(validateFields, getFieldsValue, onOk),
+    okHandler: createOkHander(validateFieldsAndScroll, getFieldsValue, onOk),
   }
   const formProps = {
     getFieldDecorator,
-    validateFields,
+    validateFieldsAndScroll,
     getFieldsValue,
     appSettings,
   }

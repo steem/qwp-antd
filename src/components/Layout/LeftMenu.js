@@ -2,8 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Menu, Icon } from 'antd'
 import { Link } from 'dva/router'
-import { queryArray } from 'utils'
-import pathToRegexp from 'path-to-regexp'
 import { l } from 'utils/localization'
 
 let levelMap = {}
@@ -26,7 +24,8 @@ const arrayToTree = (array, children = 'children') => {
   return result
 }
 
-const getMenus = (menuTreeN, siderFoldN) => {
+const getMenus = (menuTreeN, siderFoldN, menuTree) => {
+  if (!menuTree) menuTree = []
   return menuTreeN.map(item => {
     if (item.children) {
       if (item.mpid) {
@@ -37,7 +36,7 @@ const getMenus = (menuTreeN, siderFoldN) => {
           key={item.path}
           title={<span>
             {item.icon && <Icon type={item.icon} />}
-            {(!siderFoldN) && l(item.name)}
+            {(!siderFoldN || !menuTree.includes(item)) && l(item.name)}
           </span>}
         >
           {getMenus(item.children, siderFoldN)}
@@ -48,7 +47,7 @@ const getMenus = (menuTreeN, siderFoldN) => {
       <Menu.Item key={item.path}>
         <Link to={item.path}>
           {item.icon && <Icon type={item.icon} />}
-          {(!siderFoldN) && l(item.name)}
+          {(!siderFoldN || !menuTree.includes(item)) && l(item.name)}
         </Link>
       </Menu.Item>
     )
@@ -123,7 +122,8 @@ const LeftMenu = ({ siderFold, hasHeaderNav, locationChangedTag, darkTheme, hand
   }
   levelMap = {}
   const menuTree = arrayToTree(navMenus)
-  const menuItems = getMenus(menuTree, siderFold)
+  const menuTreeBackup = [...menuTree]
+  const menuItems = getMenus(menuTree, siderFold, menuTreeBackup)
   let selectedKeys = getPathArray(location.pathname, hasHeaderNav)
   const menuProps = {
     siderFold,

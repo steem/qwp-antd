@@ -28,13 +28,16 @@ class HorizontalFormGenerator extends React.Component{
       fields,
       formName,
     } = this.props
-    const formItemLayout = this.props.formItemLayout || defaultFormItemLayout
+    const formItemLayout = this.props.noFormItemLayout ? {} : this.props.formItemLayout || defaultFormItemLayout
     let fr = fieldRuleFn(appSettings, formName, getFieldDecorator)
     const items = fields.map(f => {
+      let itemProps = {}, inputProps = f.inputProps ? {...f.inputProps} : {}
+      if (f.label) itemProps.label = l(f.label)
+      if (f.placeholder) inputProps.placeholder = l(f.placeholder)
       if (f.input) {
         return (
-          <FormItem label={l(f.label)} hasFeedback {...formItemLayout}>
-            {fr(f.id)(<Input type={f.input} />)}
+          <FormItem {...itemProps} hasFeedback {...formItemLayout}>
+            {fr(f.id)(<Input type={f.input} {...inputProps}/>)}
           </FormItem>
         )
       }

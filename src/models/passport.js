@@ -1,5 +1,6 @@
 import { login } from '../requests/passport'
 import { routerRedux } from 'dva/router'
+import showOpsNotification from 'utils/notification'
 
 export default {
   namespace: 'passport',
@@ -14,10 +15,9 @@ export default {
       yield put({ type: 'showLoginLoading' })
       const data = yield call(login, payload)
       yield put({ type: 'hideLoginLoading' })
+      showOpsNotification(data, 'Login')
       if (data.success) {
         yield put({ type: 'app/init' })
-      } else {
-        throw data
       }
     },
   },

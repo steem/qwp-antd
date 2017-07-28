@@ -14,4 +14,5 @@ $lang = array(
   'system' => '系统',
   'dashboard' => '仪表盘',
   'UIElement' => '界面元素',
+  'portal' => '首页',
 );

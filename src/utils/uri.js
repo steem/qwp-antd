@@ -42,13 +42,16 @@ function ops ({ ops, p, m, mock }) {
 const passportComponent = component('passport')
 const isPassportComponent = () => { return current() === passportComponent }
 
-function defaultUri(isLogined, defaultComponent, acls) {
+function defaultUri(isLogined, defaultComponent, acls, modulesNeedNotLogin) {
   if (isLogined) {
     if (isPassportComponent()) {
       let from = param('from')
       return `${location.origin}${from ? from : component(defaultComponent)}`
     }
     if (location.pathname === '/') return component(defaultComponent)
+    if (modulesNeedNotLogin.includes(location.pathname.split('/')[1])) {
+      return false
+    }
     if (acls) {
       for (let i in acls) {
         let item = acls[i]
@@ -65,11 +68,15 @@ function defaultUri(isLogined, defaultComponent, acls) {
       return component(defaultComponent)
     }
   } else {
-    if (!isPassportComponent()) {
-      let from = location.pathname != '/' || location.search.length ? encodeURI(location.pathname) + encodeURI(location.search) : false
-      from = from ? `?from=${from}` : ''
-      return `${location.origin}${passportComponent}${from}`
+    if (isPassportComponent()) return false
+    let isRoot = location.pathname === '/'
+    let path = isRoot ? component(defaultComponent) : location.pathname
+    if (modulesNeedNotLogin.includes(path.split('/')[1])) {
+      return isRoot ? path : false
     }
+    let from = encodeURI(path) + encodeURI(location.search)
+    from = `?from=${from}`
+    return `${location.origin}${passportComponent}${from}`
   }
   return false
 }
@@ -105,6 +112,7 @@ function getHeaderNav (acls, defaultCompnent) {
       p = parseInt(p)
       let item = acls[p]
       let paths = item.path.split('/')
+      if (!item.icon && !item.image) item.icon = 'laptop'
       if (paths.length === 2) {
         setDefaultComponent(acls, p, max, item.path)
         if (needSelectDefaultComponent && (!defaultCompnent || defaultCompnent[1] === paths[1])) {

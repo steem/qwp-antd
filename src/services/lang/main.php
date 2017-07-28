@@ -27,6 +27,8 @@ function qwp_render_js_lang() {
     echo('<script>var _LANG=' . to_json($lang_txts) . ';</script>');
 }
 function qwp_try_load_lang_for_module($name, &$lang) {
+    global $language;
+
     $lang_file = QWP_LANG_ROOT . '/' . $language . '/' . $name . '.php';
     if (!file_exists($lang_file)) {
         return;

@@ -9,7 +9,7 @@ if(!defined('QWP_ROOT')){exit('Invalid Request');}
 function qwp_is_logined() {
     global $USER;
 
-    return $USER->role !== QWP_ROLE_VISITOR;
+    return $USER && $USER->role !== QWP_ROLE_VISITOR;
 }
 function qwp_initialize_login() {
     global $USER;
