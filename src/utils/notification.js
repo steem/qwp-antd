@@ -1,4 +1,5 @@
 import { notification } from 'antd'
+import { message } from 'antd'
 import { l } from 'utils/localization'
 
 export default (data, title, sucMessage, failedMessage) => {
@@ -11,8 +12,12 @@ export default (data, title, sucMessage, failedMessage) => {
     message = failedMessage ? failedMessage : (data && data.message ? data.message : l('Operation is failed. The error is known'))
   }
   if (!title) title = l('Operation notification')
-  notification[type]({
-    message: title,
-    description: message,
-  })
+  if (data.notice) {
+    message[type](message)
+  } else {
+    notification[type]({
+      message: title,
+      description: message,
+    })
+  }
 }

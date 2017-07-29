@@ -39,6 +39,22 @@ module.exports = {
             path: '/settings',
           }],
           formRules: {
+            "login": {
+              "user": {
+                "required": true,
+                "alphanumeric": true,
+                "rangelength": [3, 32]
+              },
+              "pwd": {
+                "required": true,
+                "rangelength": [6, 32],
+                "password": true
+              },
+              "option1": {
+                "required": true,
+                "rangelength": [2, 3],
+              }
+            },
             changePassword: {
               pwd1: {
                 required: true,

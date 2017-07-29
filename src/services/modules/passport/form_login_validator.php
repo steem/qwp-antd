@@ -13,6 +13,10 @@ $form_rule = array(
             'rangelength' => array(6, 32),
             'password' => true,
         ),
+        "option1" => array(
+            "required" => true,
+            "rangelength" => array(2, 3),
+        ),
     ),
     'actionMessage' => L('Login is in processing, please wait...'),
     'invalidHandler'  => 'loginInvalidHandler',

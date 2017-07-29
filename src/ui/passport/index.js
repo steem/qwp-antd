@@ -34,6 +34,57 @@ class LoginForm extends React.Component {
             size: 'large',
             onPressEnter: this.props.handleOk
           },
+        },{
+          id: "role",
+          select: [{
+            name: l("User"),
+            value: "user"
+          },{
+            name: l("Administrator"),
+            value: 'admin'
+          }],
+          defaultValue: 'user',
+          placeholder: l("Please select role"),
+          inputProps: {
+            multiple: true,
+            size: 'large',
+            onPressEnter: this.props.handleOk
+          },
+        },{
+          inputGroup: [{
+            id: "option1",
+            input: "text",
+            placeholder: l("Opt1"),
+            inputProps: {
+              onPressEnter: this.props.handleOk
+            },
+          },{
+            id: "option2",
+            input: "text",
+            placeholder: l("Opt2"),
+            inputProps: {
+              onPressEnter: this.props.handleOk
+            },
+          },{
+            id: "option3",
+            input: "text",
+            placeholder: l("Opt3"),
+            inputProps: {
+              onPressEnter: this.props.handleOk
+            },
+          },{
+            id: "option4",
+            input: "text",
+            placeholder: l("Opt4"),
+            inputProps: {
+              onPressEnter: this.props.handleOk
+            },
+          }],
+          span: 6,
+          itemProps: {
+            labelCol: { span: 6 },
+            wrapperCol: { span: 24 },
+          }
         }
       ],
       ...this.props,
@@ -78,10 +129,6 @@ const Passport = ({
         <Button type="primary" size="large" onClick={handleOk} loading={loginLoading}>
           {l('Sign in')}
         </Button>
-        <p>
-          <span>Username：guest</span>
-          <span>Password：guest</span>
-        </p>
       </Row>
     </div>
   )

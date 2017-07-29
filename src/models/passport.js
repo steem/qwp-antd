@@ -15,6 +15,7 @@ export default {
       yield put({ type: 'showLoginLoading' })
       const data = yield call(login, payload)
       yield put({ type: 'hideLoginLoading' })
+      data.notice = true
       showOpsNotification(data, 'Login')
       if (data.success) {
         yield put({ type: 'app/init' })
