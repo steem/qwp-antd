@@ -10,6 +10,11 @@ const { l } = localization
 import lodash from 'lodash'
 import showOpsNotification from 'utils/notification'
 
+function footerVisibility() {
+  let arr = location.pathname.split('/')
+  return arr.length === 1 || arr[1] === 'portal'
+}
+
 let app = {
   namespace: 'app',
   state: {
@@ -37,12 +42,13 @@ let app = {
     localeChangedTag: 0,
     locationChangedTag: 0,
     inited: false,
+    showFooter: false,
   },
   subscriptions: {
 
     setup ({ dispatch, history }) {
       dispatch({ type: 'init' })
-      window.onresize = lodash.debounce(() => {dispatch({ type: 'changeNavbar' })}, 300)
+      window.onresize = lodash.debounce(() => {dispatch({ type: 'sizeChanged' })}, 300)
       history.listen(() => { dispatch({type: 'navChanged'}) })
     },
 
@@ -90,6 +96,7 @@ let app = {
             subSystems,
             inited: true,
             hasSiderBar: uri.hasSiderBar(menu),
+            showFooter: footerVisibility(),
           },
         })
       } else {
@@ -104,6 +111,7 @@ let app = {
             user: {
               isLogined
             },
+            showFooter: footerVisibility(),
           },
         })
       }
@@ -126,6 +134,7 @@ let app = {
       let data = {
         locationChangedTag: (new Date()).getTime(),
         hasSiderBar: uri.hasSiderBar(menu),
+        showFooter: footerVisibility(),
       }
       yield put({
         type: 'app/updateState',
@@ -149,7 +158,7 @@ let app = {
       }
     },
 
-    *changeNavbar ({
+    *sizeChanged ({
       payload,
     }, { put, select }) {
       const { app } = yield(select(_ => _))

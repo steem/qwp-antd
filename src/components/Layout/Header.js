@@ -36,7 +36,7 @@ const SideMenuSwitcher = React.createClass({
       siderFold,
     } = this.props
     return (
-      isNavbar && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<LeftMenu {...this.props} />}>
+      isNavbar && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<LeftMenu {...this.props} popMenu="1" />}>
         <div className={classnames(styles.button, styles.navItem)}>
           <Icon type="bars" />
         </div>

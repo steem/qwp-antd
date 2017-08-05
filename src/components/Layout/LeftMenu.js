@@ -1,8 +1,12 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { Menu, Icon } from 'antd'
 import { Link } from 'dva/router'
 import { l } from 'utils/localization'
+import _ from 'lodash'
+import layout from 'utils/layout'
+import styles from './Layout.less'
 
 let levelMap = {}
 
@@ -78,6 +82,21 @@ class Menus extends React.Component {
     this.setState({
       openKeys,
     })
+    setTimeout(this.onSizeChanged.bind(this), 300)
+  }
+  componentDidMount () {
+    if (this.props.popMenu) return
+    this.onSizeChanged()
+    layout.$(window).on('resize', _.debounce(this.onSizeChanged.bind(this), 200))
+  }
+  componentWillUnmount () {
+
+  }
+  onSizeChanged () {
+    let node = ReactDOM.findDOMNode(this.refs.leftMenu)
+    if (!node) return
+    let h = layout.calcFullFillHeight(node, 48)
+    layout.addSimscroll(node, h, {'suppressScrollX': true})
   }
   render () {
     const {
@@ -99,14 +118,17 @@ class Menus extends React.Component {
       menuProps.onOpenChange = this.onOpenChange.bind(this)
       menuProps.openKeys = this.state.openKeys || defaultOpenKeys
     }
-    return (<Menu
-        {...menuProps}
-        mode={siderFold ? 'vertical' : 'inline'}
-        theme={darkTheme ? 'dark' : 'light'}
-        onClick={handleClickNavMenu}
-      >
-        {this.props.children}
-      </Menu>
+    return (
+      <div ref="leftMenu" className="qwp-left-menu">
+        <Menu
+          {...menuProps}
+          mode={siderFold ? 'vertical' : 'inline'}
+          theme={darkTheme ? 'dark' : 'light'}
+          onClick={handleClickNavMenu}
+        >
+          {this.props.children}
+        </Menu>
+      </div>
     )
   }
 }

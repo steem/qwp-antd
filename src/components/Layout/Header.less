@@ -20,6 +20,16 @@
   .rightWarpper {
     display: flex;
     padding-right: 16px;
+
+    @media (max-width: 767px) {
+      :global .ant-menu-root {
+        .ant-menu-item {
+          span {
+            display: none!important;
+          }
+        }
+      }
+    }
   }
 
   .navItem {

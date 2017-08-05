@@ -25,7 +25,7 @@ function _qwp_process_ops(&$msg, &$data, &$msg_type, &$ret) {
         if ($e->errorInfo[1] == 1062) {
             if (!$msg) $msg = L("Duplicated record when doing ops, please check the parameters!");
         } else {
-            $msg = L("Failed to execute query: ") . (IN_DEBUG ? $e->query_string : $e->getMessage());
+            $msg = L("Failed to execute query: ") . (IN_DEBUG && $e->query_string ? $e->query_string : $e->getMessage());
         }
     } catch (Exception $e) {
         $msg = L("Exception happens: ") . $e->getMessage();

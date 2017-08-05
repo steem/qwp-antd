@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Button, Row, Form, Input } from 'antd'
+import { Button, Row, Form, Icon } from 'antd'
 import { config } from 'utils'
 import { createOkHander } from 'utils/form'
 import { l } from 'utils/localization'
@@ -26,6 +26,18 @@ class LoginForm extends React.Component {
             size: 'large',
             onPressEnter: this.props.handleOk
           },
+          addonBefore:{
+            id: "area",
+            select: [{
+              name: l("Beijing"),
+              value: "bj"
+            },{
+              name: l("Shenzhen"),
+              value: 'sz'
+            }],
+            defaultValue: 'bj',
+            placeholder: l("Please select area")
+          }
         },{
           id: "pwd",
           input: "password",
@@ -33,6 +45,15 @@ class LoginForm extends React.Component {
           inputProps: {
             size: 'large',
             onPressEnter: this.props.handleOk
+          },
+        },{
+          id: "chk",
+          checkboxGroup: true,
+          placeholder: l("Password"),
+          inputProps: {
+            options: ['Apple', 'Pear', 'Orange'],
+            value: ['Apple', 'Pear', 'Orange'],
+            defaultValue: ['Apple', 'Orange'],
           },
         },{
           id: "role",
@@ -85,8 +106,7 @@ class LoginForm extends React.Component {
             labelCol: { span: 6 },
             wrapperCol: { span: 24 },
           }
-        }
-      ],
+        }],
       ...this.props,
     }
     return (
@@ -119,6 +139,7 @@ const Passport = ({
   return (
     <div loc={app.localeChangedTag} className={styles.form}>
       <div className={styles.loginTitle}>
+        <img alt={'logo'} src={config.logo} />
         <span>{l('productName')}</span>
       </div>
       <p style={ {paddingBottom: 8, textAlign: 'left'} }>

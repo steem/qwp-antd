@@ -128,6 +128,12 @@ function qwp_render_get_form_rules($root, $prefix, &$app_settings) {
             $form_rule = null;
             require($root . '/' . $item);
             if ($form_rule && isset($form_rule['rules'])) {
+                if (isset($form_rule['files'])) {
+                    foreach ($form_rule['files'] as $field_name => &$rule_value) {
+                        if (!isset($form_rule['rules'][$field_name])) $form_rule['rules'][$field_name] = array();
+                        $form_rule['rules'][$field_name]['file'] = $rule_value;
+                    }
+                }
                 $app_settings['formRules'][$form_rule['name']] = $form_rule['rules'];
             }
         }

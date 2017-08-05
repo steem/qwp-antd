@@ -3,22 +3,22 @@ import lodash from 'lodash'
 
 let validators = {}
 const validatorDesc = {
-  digits: "Must be digits",
-  letters : "Must be letters",
-  alphanumeric : "Must be letters",
-  alphanumeric_ex : "Must be letters",
-  url : "Must be valid url",
-  password : "Password is too simple",
-  email : "Must be valid email",
-  number : "Must be valid number",
-  ipv4 : "Must be valid ipv4 address",
-  ipv6 : "Must be valid ipv6 address",
-  datehour : "Must be date with hour, eg: 1998-01-01 19:01",
-  datetime : "Must be date with hour and minutes, eg: 1998-01-01 19:01:01",
-  date : "Must be date, eg: 1998-01-01",
-  joined_digits : "Must be digits joined by comma, eg: 1,2,3",
-  base64 : "Must be valid base64 encoded value",
-  hex : "Must be hex string",
+  digits: 'Must be digits',
+  letters: 'Must be letters',
+  alphanumeric: 'Must be letters',
+  alphanumeric_ex: 'Must be letters',
+  url: 'Must be valid url',
+  password: 'Password is too simple',
+  email: 'Must be valid email',
+  number: 'Must be valid number',
+  ipv4: 'Must be valid ipv4 address',
+  ipv6: 'Must be valid ipv6 address',
+  datehour: 'Must be date with hour, eg: 1998-01-01 19:01',
+  datetime: 'Must be date with hour and minutes, eg: 1998-01-01 19:01:01',
+  date: 'Must be date, eg: 1998-01-01',
+  joined_digits: 'Must be digits joined by comma, eg: 1,2,3',
+  base64: 'Must be valid base64 encoded value',
+  hex: 'Must be hex string',
 }
 
 function createMultiRegExValidatorFn() {
@@ -34,6 +34,42 @@ function createMultiRegExValidatorFn() {
       }
     }
     callback()
+  }
+}
+
+function createCompareValidator () {
+  return (rule, value, callback) => {
+    let rs = rule.rs
+    let invalid = false
+    value = parseInt(value)
+    if (rs[0] === 'min') {
+      invalid = rs[1] > value
+    } else if (rs[0] === 'max') {
+      invalid = rs[1] < value
+    } else if (rs[0] === '[]') {
+      invalid = value < rs[1][0] || value > rs[1][1]
+    } else if (rs[0] === '[)') {
+      invalid = value < rs[1][0] || value >= rs[1][1]
+    } else if (rs[0] === '(]') {
+      invalid = value <= rs[1][0] || value > rs[1][1]
+    } else if (rs[0] === '()') {
+      invalid = value <= rs[1][0] || value >= rs[1][1]
+    }
+    if (invalid) callback(new Error(l('The field is invalid!')))
+    else callback()
+  }
+}
+
+function createFileValidator () {
+  return (rule, value, callback) => {
+    value = value.toLowerCase()
+    for (let ext in rule.rs) {
+      if (lodash.endsWith(value, `.${ext}`)) {
+        callback()
+        return
+      }
+    }
+    callback(new Error(l('The field is invalid!')))
   }
 }
 
@@ -64,7 +100,7 @@ module.exports = {
         const data = {
           ...getFieldsValue(),
         }
-        onOk({f:data})
+        onOk({ f: data })
       })
       return ret
     }
@@ -76,15 +112,26 @@ module.exports = {
       let f = settings.formRules[p]
       for (let rs in f) {
         let fr = f[rs]
-        let nr = {rules: []}, msg = false
+        let nr = { rules: [] }
+        let msg = false
         for (let item in fr) {
           let ov = fr[item]
           let r = {}
-          if (item === '_msg') {
+          if (item === 'file') {
+            r.validator = createFileValidator()
+            r.rs = ov[0].split(',')
+          } else if (item === '_msg') {
             msg = ov
           } else if (item === 'rangelength' || item === '[]') {
             r.min = ov[0]
             r.max = ov[1]
+          } else if (item === 'minlength') {
+            r.min = ov
+          } else if (item === 'maxlength') {
+            r.max = ov
+          } else if (item === 'min' || item === 'max' || item === 'range' || item === '[)' || item === '(]' || item === '()') {
+            r.validator = createCompareValidator()
+            r.rs = [item, ov]
           } else if (validators[item]) {
             if (lodash.isArray(validators[item])) {
               r.validator = createMultiRegExValidatorFn()
@@ -100,7 +147,7 @@ module.exports = {
         }
         if (nr.rules.length > 0) {
           if (msg) {
-            nr.rules.map(_ => {
+            nr.rules.map((_) => {
               if (!_.message) _.message = l(msg)
               return _
             })
@@ -116,7 +163,7 @@ module.exports = {
   mergeFormRules (appSettings, newSettings) {
     if (!newSettings.formRules) return
     if (!appSettings.formRules) appSettings.formRules = newSettings.formRules
-    else appSettings.formRules = {...appSettings.formRules, ...newSettings.formRules}
+    else appSettings.formRules = { ...appSettings.formRules, ...newSettings.formRules }
   },
-  
+
 }

@@ -1,4 +1,5 @@
 @import "./vars.less";
+@import "./perfect-scrollbar.min.less";
 
 body {
   height: 100%;
@@ -11,8 +12,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 :global {
@@ -23,7 +24,10 @@ body {
     -webkit-transform:rotate(270deg);
     -o-transform:rotate(270deg);
   }
-  
+
+  .ant-table-selection-column {
+    padding: 10px 8px!important;
+  }
   .ant-breadcrumb {
     & > span {
       &:last-child {

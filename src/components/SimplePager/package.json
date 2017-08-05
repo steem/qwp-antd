@@ -1,0 +1,6 @@
+{
+  "name": "SimplePager",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Pager.js"
+}

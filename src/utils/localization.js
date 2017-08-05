@@ -1,9 +1,16 @@
+import lodash from 'lodash'
 import uri from './uri'
 let mock = true
 let _LANG = {}
 
 function _l (txt, ...args) {
   if (!args || args.length === 0) {
+    return txt
+  }
+  if (args.length > 0 && lodash.isPlainObject(args[0])) {
+    for (var p in args[0]) {
+      txt = txt.replace(new RegExp(`\\{${p}\\}`, "g"), args[0][p])
+    }
     return txt
   }
   for (let i = 0, cnt = args.length; i < cnt; ++i) {
@@ -20,11 +27,11 @@ module.exports = {
       if (!path) path = '/'
       if (_LANG[path]) {
         let l = _LANG[path]
-        if (l[txt]) return _l(l[txt], args)
+        if (l[txt]) return _l(l[txt], ...args)
       }
       appPath.pop()
     }
-    return txt
+    return _l(txt, ...args)
   },
 
   set (language, update) {

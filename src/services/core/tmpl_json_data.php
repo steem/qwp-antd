@@ -26,7 +26,7 @@ do {
             $msg = L("No data processor!");
         }
     } catch (PDOException $e) {
-        $msg = L("Failed to execute query: ") . (IN_DEBUG ? $e->query_string : $e->getMessage());
+        $msg = L("Failed to execute query: ") . (IN_DEBUG && $e->query_string ? $e->query_string : $e->getMessage());
     } catch (Exception $e) {
         $msg = L("Exception happens: ") . $e->getMessage();
     }

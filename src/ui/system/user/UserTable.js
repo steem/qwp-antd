@@ -1,15 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Modal } from 'antd'
-import styles from './List.less'
+import { Modal } from 'antd'
+import styles from './UserTable.less'
 import classnames from 'classnames'
-import AnimTableBody from '../../../components/DataTable/AnimTableBody'
+import DateTable from 'components/DataTable'
 import { DropOption } from 'components'
 import { Link } from 'dva/router'
+import uri from 'utils/uri'
 
 const confirm = Modal.confirm
 
-const List = ({ onDeleteItem, onEditItem, isMotion, location, ...tableProps }) => {
+const UserTable = ({ onDeleteItem, onEditItem, isMotion, location, keyId, ...tableProps }) => {
   const handleMenuClick = (record, e) => {
     if (e.key === '1') {
       onEditItem(record)
@@ -25,7 +26,7 @@ const List = ({ onDeleteItem, onEditItem, isMotion, location, ...tableProps }) =
 
   const columns = [
     {
-      title: 'Avatar',
+      title: '',
       dataIndex: 'avatar',
       key: 'avatar',
       width: 64,
@@ -35,40 +36,56 @@ const List = ({ onDeleteItem, onEditItem, isMotion, location, ...tableProps }) =
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 10,
+      dynamicWidth: true,
       render: (text, record) => <Link to={`user/${record.id}`}>{text}</Link>,
     }, {
       title: 'NickName',
       dataIndex: 'nickName',
+      width: 10,
+      dynamicWidth: true,
       key: 'nickName',
     }, {
       title: 'Age',
       dataIndex: 'age',
+      width: 10,
+      dynamicWidth: true,
       key: 'age',
     }, {
       title: 'Gender',
       dataIndex: 'isMale',
       key: 'isMale',
+      width: 10,
+      dynamicWidth: true,
       render: (text) => <span>{text
             ? 'Male'
             : 'Female'}</span>,
     }, {
       title: 'Phone',
       dataIndex: 'phone',
+      width: 20,
+      dynamicWidth: true,
       key: 'phone',
     }, {
       title: 'Email',
       dataIndex: 'email',
+      width: 20,
+      dynamicWidth: true,
       key: 'email',
     }, {
       title: 'Address',
       dataIndex: 'address',
+      width: 20,
+      dynamicWidth: true,
       key: 'address',
     }, {
       title: 'CreateTime',
       dataIndex: 'createTime',
+      width: 30,
+      dynamicWidth: true,
       key: 'createTime',
     }, {
-      title: 'Operation',
+      title: '',
       key: 'operation',
       width: 100,
       render: (text, record) => {
@@ -82,29 +99,26 @@ const List = ({ onDeleteItem, onEditItem, isMotion, location, ...tableProps }) =
     current: tableProps.pagination.current,
   }
 
-  const getBodyWrapper = body => { return isMotion ? <AnimTableBody {...getBodyWrapperProps} body={body} /> : body }
+  tableProps.fetch = {
+    url: uri.ops({m: 'user', ops: 'list', mock: true}),
+  }
+
+  tableProps.columns = columns
 
   return (
-    <div>
-      <Table
-        {...tableProps}
-        className={classnames({ [styles.table]: true, [styles.motion]: isMotion })}
-        bordered
-        scroll={{ x: 1250 }}
-        columns={columns}
-        simple
-        rowKey={record => record.id}
-        getBodyWrapper={getBodyWrapper}
-      />
-    </div>
+    <DateTable
+      {...tableProps}
+      className={styles.table}
+      rowKey={record => keyId ? record[keyId] : record.id}
+    />
   )
 }
 
-List.propTypes = {
+UserTable.propTypes = {
   onDeleteItem: PropTypes.func,
   onEditItem: PropTypes.func,
   isMotion: PropTypes.bool,
   location: PropTypes.object,
 }
 
-export default List
+export default UserTable

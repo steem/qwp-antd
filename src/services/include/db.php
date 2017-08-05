@@ -426,7 +426,8 @@ function qwp_db_set_pager(&$query, $total) {
     if (!$page || $page < 0) {
         $page = 1;
     }
-    $page_size = P('psize', 30);
+    $page_size = P('psize');
+    if (!$page_size) $page_size = P('pageSize', 30);
     if (!$page_size || $page_size < 0) {
         $page_size = 30;
     }
@@ -438,8 +439,10 @@ function qwp_db_set_pager(&$query, $total) {
 }
 function qwp_db_init_order_by(&$options) {
     $sort_field = P("sortf");
+    if (!$sort_field) $sort_field = P('sortField');
     if ($sort_field) {
         $sort = P("sort");
+        if (!$sort) $sort = P('sortOrder');
         $sort = array(
             array($sort_field, $sort)
         );

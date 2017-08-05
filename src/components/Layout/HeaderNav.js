@@ -20,7 +20,7 @@ const HeaderNav = React.createClass({
     let current = uri.current().split('/')[1]
     return (
       <Menu onClick={this.handleClick} selectedKeys={[current]} mode="horizontal">
-        {this.props.items.map(item => (<Menu.Item key={item.name}><Link to={item.path}><Icon type={item.icon || 'appstore-o'} />{l(item.name)}</Link></Menu.Item>))}
+        {this.props.items.map(item => (<Menu.Item key={item.name}><Link to={item.path}><Icon type={item.icon || 'appstore-o'} /><span>{l(item.name)}</span></Link></Menu.Item>))}
       </Menu>
     )
   },

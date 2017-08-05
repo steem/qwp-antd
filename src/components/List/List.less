@@ -1,0 +1,52 @@
+:global {
+  .qwp-list {
+    border: 1px solid #d9d9d9;
+
+    .ant-table-selection-column, .ant-table-row-expand-icon-cell {
+      min-width: 16px!important;
+      width: 16px!important;
+    }
+
+    .qwp-list-cell {
+      text-align: left!important;
+      cursor: pointer;
+    }
+
+    .qwp-list-pager {
+      text-align: center;
+      position: absolute;
+      top: 8px;
+      display: none;
+      right: -4px;
+      width: 16px;
+      margin: 0;
+      background: #f7f7f7
+    }
+
+
+    &:hover {
+      .qwp-list-pager {
+        display: block;
+      }
+    }
+
+    .ant-table-body {
+      overflow-y: hidden!important;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+      }
+
+      &:hover {
+                
+        &::-webkit-scrollbar-thumb {
+          background-color: rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+}
+
+.selectedCell {
+    background: #ecf6fd
+}

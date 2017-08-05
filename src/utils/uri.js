@@ -46,6 +46,7 @@ function defaultUri(isLogined, defaultComponent, acls, modulesNeedNotLogin) {
   if (isLogined) {
     if (isPassportComponent()) {
       let from = param('from')
+      if (from === '/') from = 0
       return `${location.origin}${from ? from : component(defaultComponent)}`
     }
     if (location.pathname === '/') return component(defaultComponent)

@@ -24,8 +24,8 @@ function qwp_validate_get_error($msg, $val) {
     if (QWP_SHOW_INVALID_FORM_VALUE) return $msg . '. ' . L('Current value is: ') . '<pre>'  . $val . '</pre>';
     return $msg;
 }
-function qwp_validate_files(&$form_rule) {
-    if (!isset($form_rule['files'])) {
+function qwp_validate_files(&$form_rule, &$rules) {
+    if (!isset($form_rule['files']) && !isset($form_rule['has_file'])) {
         return true;
     }
     global $_FILES, $F;
@@ -41,7 +41,16 @@ function qwp_validate_files(&$form_rule) {
         @unlink($files['tmp_name']);
         return true;
     }
-    $files_rule = &$form_rule['files'];
+    if (isset($form_rule['files'])) $files_rule = &$form_rule['files'];
+    else $files_rule = array();
+    foreach ($rules as $field_name => &$rule) {
+        foreach ($rule as $key => &$item) {
+            if ($key === 'file') {
+                $files_rule[$field_name] = $item;
+                break;
+            }
+        }
+    }
     foreach ($files['name'] as $file_field => $file_names) {
         $file_rule = &$files_rule[$file_field];
         if (is_string($file_names)) {
@@ -151,7 +160,7 @@ function qwp_validate_data(&$f, &$rules, &$filters = null, $just_unset_when_fail
                 if ($key == '_avoidSqlInj') $f[$field_name] = mysql_real_escape_string($field_value);
                 continue;
             }
-            if ($key == 'required' || $key == 'optional') continue;
+            if ($key == 'required' || $key == 'optional' || $key === 'file') continue;
             if ($key == 'date') {
                 if (!date_to_int($field_value)) {
                     if ($just_unset_when_failed) {
@@ -325,12 +334,12 @@ function qwp_validate_form() {
     if (!$form_rule) {
         return true;
     }
-    $tmp = qwp_validate_files($form_rule);
+    if (isset($form_rule['rules'])) $rules = &$form_rule['rules'];
+    else $rules = &$form_rule;
+    $tmp = qwp_validate_files($form_rule, $rules);
     if ($tmp !== true) {
         return $tmp === false ? L('Invalid form data') : $tmp;
     }
-    if (isset($form_rule['rules'])) $rules = &$form_rule['rules'];
-    else $rule = &$form_rule;
     if (isset($form_rule['filters'])) $filters = &$form_rule['filters'];
     else $filters = null;
     global $F;

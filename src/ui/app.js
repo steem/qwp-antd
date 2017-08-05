@@ -15,7 +15,7 @@ const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { locationChangedTag, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, siderBarComponentType, menu, siderList } = app
+  const { locationChangedTag, showFooter, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, siderBarComponentType, menu, siderList } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -85,6 +85,8 @@ const App = ({ children, dispatch, app, loading, location }) => {
   if (!hasPermission) errorProps = {
     error: `You don't have the permission, please contact your service administraotr`
   }
+  let layoutClassName = classnames(styles.layout, { [styles.noFooter]: !showFooter }, { [styles.fold]: isNavbar ? false : siderFold }, { [styles.withnavbar]: !hasSiderBar || isNavbar })
+
   return (
     <div loc={localeChangedTag}>
       <Helmet>
@@ -94,7 +96,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
         {iconFontJS && <script src={iconFontJS}></script>}
         {iconFontCSS && <link rel="stylesheet" href={iconFontCSS} />}
       </Helmet>
-      <div className={classnames(styles.layout, { [styles.fold]: isNavbar ? false : siderFold }, { [styles.withnavbar]: !hasSiderBar || isNavbar })}>
+      <div className={layoutClassName}>
         {hasSiderBar && !isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
           <Sider {...siderProps} />
         </aside> : ''}
@@ -103,11 +105,11 @@ const App = ({ children, dispatch, app, loading, location }) => {
           {hasBread ? <Bread {...breadProps} /> : ''}
           <div className={styles.container}>
             <div className={styles.content}>
-              { showLoadingSpinning && <Loader spinning={loading.effects['app/init']} /> }
+              {showLoadingSpinning && <Loader spinning={loading.effects['app/init']} />}
               {hasPermission ? children : <Error {...errorProps}/>}
             </div>
           </div>
-          <Footer />
+          {showFooter && <Footer />}
         </div>
       </div>
     </div>

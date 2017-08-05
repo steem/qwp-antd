@@ -1,5 +1,16 @@
 @import "../../themes/vars.less";
 
+:global {
+  .qwp-left-menu {
+    position: relative;
+
+    .ps__scrollbar-y-rail {
+      left: 0!important;
+      z-index: 10; 
+    }
+  }
+}
+
 .layout {
   position: relative;
   height: 100vh;
@@ -17,14 +28,18 @@
       .logo {
         img {
           width: 28px;
-          margin: 6px 7px;
         }
       }
 
       :global {
+        .qwp-left-menu {
+          .ps__scrollbar-y-rail {
+            display: none!important;
+          }
+        }
+        
         .ant-menu-root {
           width: 100%;
-          overflow: visible;
 
           & > .ant-menu-item {
             padding: 0;
@@ -60,13 +75,24 @@
     }
   }
 
+  &.noFooter {
+    .main {
+      :global {
+        .content-inner {
+          min-height: e("calc(100vh - 136px)");
+        }
+      }
+      .content {
+        min-height: e("calc(100vh - 136px)");
+      }
+    }
+  }
+
   .sider {
     width: 224px;
     background: #3e3e3e;
     position: absolute;
     overflow: visible;
-    padding-bottom: 24px;
-    height: 100vh;
     transition: @transition-ease-out;
     box-shadow: @shadow-1;
     color: #999;
@@ -82,21 +108,21 @@
 
     .logo {
       text-align: center;
-      height: 40px;
-      line-height: 40px;
+      height: 96px;
+      line-height: 96px;
       cursor: pointer;
-      margin: 28px 0;
+      margin: 0;
       transition: @transition-ease-out;
-      overflow: hidden;
 
       img {
         width: 40px;
         margin-right: 8px;
+        vertical-align: middle;
         transition: @transition-ease-out;
       }
 
       span {
-        vertical-align: text-bottom;
+        vertical-align: middle;
         font-size: 16px;
         text-transform: uppercase;
         display: inline-block;
@@ -109,8 +135,6 @@
 
     .switchtheme {
       width: 100%;
-      position: absolute;
-      bottom: 0;
       height: 48px;
       background-color: @dark-half;
       display: flex;
@@ -118,7 +142,6 @@
       align-items: center;
       padding: 0 16px 0 24px;
       overflow: hidden;
-      z-index: 1000;
 
       span {
         white-space: nowrap;
@@ -141,8 +164,6 @@
       }
 
       .ant-menu-root {
-        height: ~"calc(100vh - 144px)";
-        overflow-x: hidden;
         border-right: none;
 
         &::-webkit-scrollbar-thumb {
@@ -176,7 +197,6 @@
 
         .ant-menu-item,
         .ant-menu-submenu-title {
-          overflow: hidden;
           white-space: normal;
         }
       }
@@ -268,6 +288,20 @@
 }
 @media (max-width: 767px) {
   .layout {
+
+    &.noFooter {
+      .main {
+        :global {
+          .content-inner {
+            min-height: e("calc(100vh - 112px)");
+          }
+        }
+        .content {
+          min-height: e("calc(100vh - 112px)");
+        }
+      }
+    }
+
     .main {
       .container {
         margin: 12px;
