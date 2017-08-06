@@ -98,6 +98,7 @@ class DataTable extends React.Component {
     if (nextProps) {
       if (nextProps.fetch) props.fetch = nextProps.fetch
       if (nextProps.fetchData) fetchData = {...fetchData, ...nextProps.fetchData}
+      props.pagination.current = 1
     }
     if (sorter) {
       if (sorter.field) fetchData.sortField = sorter.field
