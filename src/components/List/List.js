@@ -53,15 +53,22 @@ class List extends React.Component {
   }
 
   onSizeChanged () {
-    if (this.props.autoSize === false) return
     let node = ReactDOM.findDOMNode(this.refs.QwpList)
     if (!node) return
-    node = node.querySelector('.ant-table-body')
-    let h = layout.calcFullFillHeight(node)
-    layout.addSimscroll(node, h)
-    this.setState({
-      scroll: {y: h}
-    })
+    let h
+    if (this.props.autoSize !== false) {
+      node = node.querySelector('.ant-table-body')
+      h = layout.calcFullFillHeight(node)
+    } else if (this.props.height) {
+      node = node.querySelector('.ant-table-body')
+      h = this.props.height
+    }
+    if (h) {
+      layout.addSimscroll(node, h)
+      this.setState({
+        scroll: {y: h}
+      })
+    }
   }
 
   createNewState (pagination, filters, sorter, nextProps) {

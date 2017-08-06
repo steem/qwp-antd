@@ -82,6 +82,10 @@ class DataTable extends React.Component {
       if (!empty) h = layout.calcFullFillHeight(node, dataTable.querySelector('.ant-table-pagination'))
       layout.addSimscroll(node, h)
       state.scroll = {y: h}
+    } else if (this.props.height) {
+      let node = dataTable.querySelector('.ant-table-body')
+      layout.addSimscroll(node, this.props.height)
+      state.scroll = {y: this.props.height}
     }
     this.setState(state)
   }
