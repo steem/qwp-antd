@@ -431,6 +431,7 @@ function qwp_db_set_pager(&$query, $total) {
     if (!$page_size || $page_size < 0) {
         $page_size = 30;
     }
+    if ($page_size > 200) $page_size = 200;
     $total_page = ceil($total / $page_size);
     if ($page > $total_page && P('cpage', true)) $page = $total_page;
     $page_start = ($page - 1) * $page_size;

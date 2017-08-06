@@ -1,17 +1,5 @@
 const Mock = require('mockjs')
-const { queryArray, NOTFOUND } = require('../common')
-
-let orgListData = Mock.mock({
-  'data|80-100': [
-    {
-      id: '@id',
-      name: '@name',
-      createTime: '@datetime',
-    },
-  ],
-})
-
-let database = orgListData.data
+let { queryArray, NOTFOUND, orgData } = require('../common')
 
 module.exports = {
   ops: {
@@ -19,14 +7,14 @@ module.exports = {
       const newData = req.body
       newData.createTime = Mock.mock('@now')
       newData.id = Mock.mock('@id')
-      database.unshift(newData)
+      orgData.unshift(newData)
       res.status(200).end()
     },
     del (req, res) {
       const { id } = req.params
-      const data = queryArray(database, id, 'id')
+      const data = queryArray(orgData, id, 'id')
       if (data) {
-        database = database.filter((item) => item.id !== id)
+        orgData = orgData.filter((item) => item.id !== id)
         res.status(204).end()
       } else {
         res.status(404).json(NOTFOUND)
@@ -34,7 +22,7 @@ module.exports = {
     },
     dels (req, res) {
       const { ids } = req.body
-      database = database.filter((item) => !ids.some(_ => _ === item.id))
+      orgData = orgData.filter((item) => !ids.some(_ => _ === item.id))
       res.status(204).end()
     },
     edit (req, res) {
@@ -42,7 +30,7 @@ module.exports = {
       const editItem = req.body
       let isExist = false
 
-      database = database.map((item) => {
+      orgData = orgData.map((item) => {
         if (item.id === id) {
           isExist = true
           return Object.assign({}, item, editItem)
@@ -62,7 +50,7 @@ module.exports = {
       pageSize = pageSize || 10
       page = page || 1
 
-      let newData = database
+      let newData = orgData
       for (let key in other) {
         if ({}.hasOwnProperty.call(other, key)) {
           newData = newData.filter((item) => {

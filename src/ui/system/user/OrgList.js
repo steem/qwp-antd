@@ -6,14 +6,13 @@ import classnames from 'classnames'
 import List from 'components/List'
 import uri from 'utils/uri'
 
-const OrgList = ({ onDeleteItem, onEditItem, isMotion, location, ...listProps }) => {
+const OrgList = ({ onDeleteItem, onEditItem, isMotion, onRowClick, location, ...listProps }) => {
   let props = {
     showCheckbox: true,
-    fetch: {
-      url: uri.ops({m: 'org', ops: 'list', mock: true}),
-    },
+    fetch: uri.ops({m: 'org', ops: 'list', mock: true}),
     dataIndex: 'name',
     ...listProps,
+    onRowClick: onRowClick,
   }
   return (
     <List {...props}/>

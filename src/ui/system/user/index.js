@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { routerRedux } from 'dva/router'
 import { connect } from 'dva'
 import { Row, Col, Button, Popconfirm } from 'antd'
+import uri from 'utils/uri'
 import OrgList from './OrgList'
 import UserTable from './UserTable'
 import Filter from './Filter'
@@ -10,23 +11,26 @@ import Modal from './Modal'
 import styles from './index.less'
 
 const User = ({ location, dispatch, user, loading, app }) => {
-  const { list, pagination, currentItem, modalVisible, modalType, isMotion, selectedRowKeys } = user
-  const { sizeChanged } = app
-  const { pageSize } = pagination
+  const { list, currentItem, modalVisible, modalType, isMotion, selectedRowKeys } = user
 
   let orgListProps = {
     location,
-    loading: loading.effects['user/query'],
-    pagination,
+    clickedKeyId: uri.param('org', -1),
+    onRowClick: (record, idx, org) => {
+      dispatch(routerRedux.push({
+        pathname: location.pathname,
+        query: {
+          org,
+        },
+      }))}
   }
   let userTableProps = {
     location,
-    loading: loading.effects['user/query'],
-    pagination,
+    fetchData: {org: uri.param('org')}
   }
   return (
     <div className="content-inner">
-      <Row gutter={24}>
+      <Row gutter={24} className={styles.colPadding}>
         <Col span={4}><OrgList {...orgListProps}/></Col>
         <Col span={20}><UserTable {...userTableProps} /></Col>
       </Row>

@@ -82,7 +82,6 @@ class Menus extends React.Component {
     this.setState({
       openKeys,
     })
-    setTimeout(this.onSizeChanged.bind(this), 300)
   }
   componentDidMount () {
     if (this.props.popMenu) return

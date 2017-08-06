@@ -6,24 +6,23 @@ import { request } from 'utils'
 import layout from 'utils/layout'
 import lodash from 'lodash'
 import styles from './DataTable.less'
+import { isPaginationEqual } from 'utils'
 
 class DataTable extends React.Component {
   constructor (props) {
     super(props)
-    const { dataSource, pagination = {
+    const { dataSource } = props
+    this.state = {
+      loading: false,
+      dataSource,
+      fetchData: props.fetchData || {},
+      pagination: props.pagination || {
         showSizeChanger: true,
         showQuickJumper: true,
         showTotal: total => `共 ${total} 条`,
         current: 1,
-        defaultPageSize: props.defaultPageSize ? props.defaultPageSize : 30,
+        pageSize: 30,
       },
-    } = props
-    this.state = {
-      loading: false,
-      dataSource,
-      isReady: props.isReady !== false,
-      fetchData: {},
-      pagination,
       scroll: undefined,
     }
   }
@@ -51,80 +50,111 @@ class DataTable extends React.Component {
   }
 
   componentDidMount () {
-    if (!this.state.isReady) return
-    if (this.props.fetch) {
-      this.fetch()
-    }
-    this.onSizeChanged()
-    layout.$(window).on('resize', lodash.debounce(this.onSizeChanged.bind(this), 200))
+    this.handleTableChange()
+    if (this.props.autoSize !== false) this.timerCheckWindow = setInterval(this.checkWindowResize.bind(this), 500)
   }
 
   componentWillUnmount () {
+    if (this.timerCheckWindow) {
+      clearInterval(this.timerCheckWindow)
+      this.timerCheckWindow = null
+    }
+  }
 
+  checkWindowResize () {
+    let node = ReactDOM.findDOMNode(this.refs.dataTable)
+    if (!node) return
+    this.resizeState = layout.getResizeState(node, this.resizeState)
+    if (this.resizeState.needResize) this.onSizeChanged()
   }
 
   onSizeChanged () {
-    if (this.props.autoSize === false) return
     let dataTable = ReactDOM.findDOMNode(this.refs.dataTable)
     if (!dataTable) return
-    let node = dataTable.querySelector('.ant-table-body')
-    let h = layout.calcFullFillHeight(node, dataTable.querySelector('.ant-table-pagination'))
-    layout.addSimscroll(node, h)
-    this.setState({
+    let state = {
       columns: this.calcColumnsWidth(),
-      scroll: {y: h}
-    })
+    }
+    if (this.props.autoSize !== false) {  
+      let node = dataTable.querySelector('.ant-table-body')
+      let empty = dataTable.querySelector('.ant-table-placeholder')
+      if (empty) empty = layout.$(empty).is(':visible')
+      let h = 8
+      if (!empty) h = layout.calcFullFillHeight(node, dataTable.querySelector('.ant-table-pagination'))
+      layout.addSimscroll(node, h)
+      state.scroll = {y: h}
+    }
+    this.setState(state)
+  }
+
+  createNewState (pagination, filters, sorter, nextProps) {
+    let props = {pagination: {...this.state.pagination}}
+    if (pagination) {
+      props.pagination.current = pagination.current
+      if (pagination.pageSize) props.pagination.pageSize = pagination.pageSize
+    } else if (nextProps && nextProps.pagination) {
+      props.pagination = nextProps.pagination
+    }
+    let fetchData = filters ? {...this.state.fetchData, ...filters} : {...this.state.fetchData}
+    if (nextProps) {
+      if (nextProps.fetch) props.fetch = nextProps.fetch
+      if (nextProps.fetchData) fetchData = {...fetchData, ...nextProps.fetchData}
+    }
+    if (sorter) {
+      if (sorter.field) fetchData.sortField = sorter.field
+      if (sorter.order) fetchData.sortOrder = sorter.order
+    }
+    fetchData.pageSize = props.pagination.pageSize
+    fetchData.page = props.pagination.current
+    props.fetchData = fetchData
+    return props
   }
 
   componentWillReceiveProps (nextProps) {
-    const staticNextProps = lodash.cloneDeep(nextProps)
-    delete staticNextProps.columns
-    const { columns, ...otherProps } = this.props
-
-    if (!lodash.isEqual(staticNextProps, otherProps)) {
+    if (!nextProps.fetch || lodash.isFunction(nextProps.fetch)) {
       this.props = nextProps
-      this.fetch()
+      return
+    }
+    let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) || 
+                       (nextProps.fetch && !lodash.isEqual(nextProps.fetch, this.props.fetch)) ||
+                       (nextProps.fetchData && !lodash.isMatch(this.props.fetchData, nextProps.fetchData))
+    if (needLoadData) {
+      this.props = nextProps
+      this.setState(this.createNewState(false, false, false, nextProps), this.fetch)
     }
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    const pager = this.state.pagination
-    pager.current = pagination.current
+    this.setState(this.createNewState(pagination, filters, sorter), this.fetch)
+  }
+
+  onUpdateData = (result) => {
+    let { pagination } = this.state
+    if (result.data && lodash.isNumber(result.data.total)) result = result.data
+    pagination.total = result.total || 0
+    pagination.totalPage = Math.ceil(result.total / pagination.pageSize)
+    if (pagination.totalPage === NaN) pagination.totalPage = 1
     this.setState({
-      pagination: pager,
-      fetchData: {
-        pageSize: pagination.pageSize,
-        page: pagination.current,
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters,
-      },
-    }, () => {
-      this.fetch()
-    })
+      loading: false,
+      dataSource: this.props.dataKey ? result[this.props.dataKey] : result.data,
+      pagination,
+    }, this.onSizeChanged)
   }
 
   fetch = () => {
-    const { fetch: { url, data, dataKey } } = this.props
+    if (!this.props.fetch) return
     const { fetchData } = this.state
+    if (lodash.isFunction(this.props.fetch)) {
+      this.setState({ loading: true })
+      this.props.fetch({...fetchData}, this.onUpdateData.bind(this))
+      return
+    }
     this.setState({ loading: true })
     this.promise = request({
-      url,
+      url: this.props.fetch,
       data: {
-        ...data,
         ...fetchData,
       },
-    }).then((result) => {
-      const { pagination } = this.state
-      if (result.data && lodash.isNumber(result.data.total)) result = result.data
-      pagination.total = result.total || 0
-      this.setState({
-        loading: false,
-        dataSource: dataKey ? result[dataKey] : result.data,
-        pagination,
-      })
-      setTimeout(this.onSizeChanged.bind(this), 100)
-    })
+    }).then(this.onUpdateData.bind(this))
   }
 
   render () {
@@ -139,7 +169,7 @@ class DataTable extends React.Component {
           bordered
           size="middle"
           loading={loading}
-          onChange={this.handleTableChange}
+          onChange={this.handleTableChange.bind(this)}
           pagination={pagination}
           dataSource={dataSource}
           scroll={this.state.scroll}

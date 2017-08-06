@@ -31,7 +31,7 @@ module.exports = {
       else h -= getFullHeight(nodeBelow)
     }
     h -= node.offset().top
-    while (node && node.get(0) !== document) {
+    while (node && node.length > 0 && node.get(0) !== document) {
       h -= cssValueToInt(node, 'padding-bottom')
       h -= cssValueToInt(node, 'margin-bottom')
       h -= cssValueToInt(node, 'border-bottom-width')
@@ -39,5 +39,27 @@ module.exports = {
     }
     return h
   },
+
+  getResizeState (node, oldState) {
+    node = $(node)
+    let needResize = false
+    if (!oldState) oldState = {}
+    if (oldState.top !== node.offset().top) {
+      oldState.top = node.offset().top
+      needResize = true
+    }
+    let win = $(window)
+    if (win.height() !== oldState.winHeight) {
+      oldState.winHeight = win.height()
+      needResize = true
+    }
+    if (win.width() !== oldState.winWidth) {
+      oldState.winWidth = win.width()
+      needResize = true
+    }
+    oldState.needResize = needResize
+    return oldState
+  },
+
   $,
 }

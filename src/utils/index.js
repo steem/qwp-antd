@@ -60,6 +60,12 @@ const queryArray = (array, key, keyAlias = 'key') => {
   return null
 }
 
+const isPaginationEqual = (p1, p2) => {
+  if (!p1 && !p2) return true
+  if (p1 && p2) return p1.current === p2.current && p1.pageSize === p2.pageSize
+  return false
+}
+
 module.exports = {
   config,
   request,
@@ -69,4 +75,5 @@ module.exports = {
   uri,
   storage,
   localization,
+  isPaginationEqual,
 }

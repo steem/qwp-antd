@@ -94,15 +94,7 @@ const UserTable = ({ onDeleteItem, onEditItem, isMotion, location, keyId, ...tab
     },
   ]
 
-  const getBodyWrapperProps = {
-    page: location.query.page,
-    current: tableProps.pagination.current,
-  }
-
-  tableProps.fetch = {
-    url: uri.ops({m: 'user', ops: 'list', mock: true}),
-  }
-
+  tableProps.fetch = uri.ops({m: 'user', ops: 'list', mock: true})
   tableProps.columns = columns
 
   return (

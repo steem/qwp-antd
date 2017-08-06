@@ -1,13 +1,13 @@
 import modelExtend from 'dva-model-extend'
 import { create, remove, update } from '../requests/user'
 import * as usersService from '../requests/users'
-import { pageModel } from './common'
+import { model } from './common'
 import { config } from 'utils'
 
 const { query } = usersService
 const { prefix } = config
 
-export default modelExtend(pageModel, {
+export default modelExtend(model, {
   namespace: 'user',
 
   state: {
@@ -15,18 +15,13 @@ export default modelExtend(pageModel, {
     modalVisible: false,
     modalType: 'create',
     selectedRowKeys: [],
-    isMotion: localStorage.getItem(`${prefix}userIsMotion`) === 'true',
   },
 
   subscriptions: {
     setup ({ dispatch, history }) {
-      history.listen(location => {
-        if (location.pathname === '/user') {
-          dispatch({
-            type: 'init',
-            payload: location.query,
-          })
-        }
+      dispatch({
+        type: 'init',
+        payload: location.query,
       })
     },
   },
@@ -34,20 +29,7 @@ export default modelExtend(pageModel, {
   effects: {
 
     *init ({ payload = {} }, { call, put }) {
-      const data = yield call(query, payload)
-      if (data) {
-        yield put({
-          type: 'querySuccess',
-          payload: {
-            list: data.data,
-            pagination: {
-              current: Number(payload.page) || 1,
-              pageSize: Number(payload.pageSize) || 10,
-              total: data.total,
-            },
-          },
-        })
-      }
+
     },
 
     *'delete' ({ payload }, { call, put, select }) {
@@ -103,11 +85,6 @@ export default modelExtend(pageModel, {
 
     hideModal (state) {
       return { ...state, modalVisible: false }
-    },
-
-    switchIsMotion (state) {
-      localStorage.setItem(`${prefix}userIsMotion`, !state.isMotion)
-      return { ...state, isMotion: !state.isMotion }
     },
 
   },

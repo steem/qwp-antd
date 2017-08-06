@@ -1,5 +1,37 @@
 .hand {
+  text-align: left;
+  padding: 4px 2px 2px 4px;
+  &.expand {
+    .pageSetting {
+      display: block!important;
+    }
+
+    .switchPage {
+      display: none;
+    }
+  }
   a {
     cursor: pointer;
+    color: black;
+  }
+  .pageSetting {
+    display: none;
+    margin-bottom: 2px;
+
+    input {
+      display: inline-block!important;
+      margin: 0;
+      padding: 2px 2px 2px 2px;
+      width: 45px;
+      height: 22px;
+      margin-bottom: 4px;
+    }
+    :global {
+      .ant-input-number {
+        display: inline-block!important;
+        width: 45px;
+        margin-bottom: 2px;
+      }
+    }
   }
 }

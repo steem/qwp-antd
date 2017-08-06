@@ -1,7 +1,9 @@
+import modelExtend from 'dva-model-extend'
 import * as rqPassport from '../requests/passport'
 import * as rqApp from '../requests/app'
 import { routerRedux } from 'dva/router'
 import { convertFormRules, mergeFormRules, setValidators } from 'utils/form'
+import { model } from './common'
 import { parse } from 'qs'
 import config from 'config'
 import { EnumRoleType, SiderBarComponentType } from 'enums'
@@ -15,7 +17,7 @@ function footerVisibility() {
   return arr.length === 1 || arr[1] === 'portal'
 }
 
-let app = {
+let app = modelExtend(model, {
   namespace: 'app',
   state: {
     user: {
@@ -174,13 +176,6 @@ let app = {
 
   },
   reducers: {
-    updateState (state, { payload }) {
-      return {
-        ...state,
-        ...payload,
-      }
-    },
-
     switchSider (state) {
       storage.set('siderFold', !state.siderFold)
       return {
@@ -222,6 +217,6 @@ let app = {
     },
 
   },
-}
+})
 
 export default app

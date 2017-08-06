@@ -7,25 +7,25 @@ import SimplePager from 'components/SimplePager'
 import { classnames, request } from 'utils'
 import styles from './List.less'
 import layout from 'utils/layout'
+import { isPaginationEqual } from 'utils'
 
 const fnListName = name => 'QwpList_' + name
 
 class List extends React.Component {
   constructor (props) {
     super(props)
-    const { dataSource, pagination = {
-        showQuickJumper: true,
-        showTotal: total => `共 ${total} 条`,
-        current: 1,
-        defaultPageSize: props.defaultPageSize ? props.defaultPageSize : 30,
-      },
-    } = props
+    const { dataSource, pagination } = props
     this.state = {
       loading: false,
       dataSource,
       fetchData: {},
-      pagination,
-      clickedIndex: -1,
+      pagination: pagination || {
+        current: 1,
+        pageSize: props.pageSize || 30,
+        total: 0,
+        totalPage: 0,
+      },
+      clickedKeyId: lodash.isInteger(props.clickedKeyId) ? lodash.isInteger(props.clickedKeyId) : -1,
       scroll: undefined,
       pager: {
         top: 8
@@ -34,15 +34,22 @@ class List extends React.Component {
   }
 
   componentDidMount () {
-    if (this.props.fetch) {
-      this.fetch()
-    }
-    this.onSizeChanged()
-    layout.$(window).on('resize', lodash.debounce(this.onSizeChanged.bind(this), 200))
+    this.handleTableChange()
+    if (this.props.autoSize !== false) this.timerCheckWindow = setInterval(this.checkWindowResize.bind(this), 500)
   }
 
   componentWillUnmount () {
+    if (this.timerCheckWindow) {
+      clearInterval(this.timerCheckWindow)
+      this.timerCheckWindow = null
+    }
+  }
 
+  checkWindowResize () {
+    let node = ReactDOM.findDOMNode(this.refs.QwpList)
+    if (!node) return
+    this.resizeState = layout.getResizeState(node, this.resizeState)
+    if (this.resizeState.needResize) this.onSizeChanged()
   }
 
   onSizeChanged () {
@@ -57,37 +64,63 @@ class List extends React.Component {
     })
   }
 
-  componentWillReceiveProps (nextProps) {
-    const staticNextProps = lodash.cloneDeep(nextProps)
-    delete staticNextProps.columns
-    const { columns, ...otherProps } = this.props
+  createNewState (pagination, filters, sorter, nextProps) {
+    let props = {pagination: {...this.state.pagination}}
+    if (pagination) {
+      props.pagination.current = pagination.current
+      if (pagination.pageSize) props.pagination.pageSize = pagination.pageSize
+    } else if (nextProps && nextProps.pagination) {
+      props.pagination = nextProps.pagination
+    }
+    let fetchData = filters ? {...this.state.fetchData, ...filters} : {...this.state.fetchData}
+    if (nextProps) {
+      if (nextProps.fetch) props.fetch = nextProps.fetch
+      if (nextProps.fetchData) fetchData = {...fetchData, ...nextProps.fetchData}
+    }
+    if (sorter) {
+      if (sorter.field) fetchData.sortField = sorter.field
+      if (sorter.order) fetchData.sortOrder = sorter.order
+    }
+    fetchData.pageSize = props.pagination.pageSize
+    fetchData.page = props.pagination.current
+    props.fetchData = fetchData
+    return props
+  }
 
-    if (!lodash.isEqual(staticNextProps, otherProps)) {
+  componentWillReceiveProps (nextProps) {
+    if (!nextProps.fetch || lodash.isFunction(nextProps.fetch)) {
       this.props = nextProps
-      this.fetch()
+      return
+    }
+    let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) || 
+                       (nextProps.fetch && !lodash.isEqual(nextProps.fetch, this.props.fetch)) ||
+                       (nextProps.fetchData && !lodash.this.props.fetchData(this.props.fetchData, nextProps.fetchData))
+    if (needLoadData) {
+      this.props = nextProps
+      this.setState(this.createNewState(false, false, false, nextProps), this.fetch)
     }
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    const pager = this.state.pagination
-    pager.current = pagination.current
-    this.setState({
-      pagination: pager,
-      fetchData: {
-        pageSize: pagination.pageSize,
-        page: pagination.current,
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters,
-      }
-    }, () => {
-      this.fetch()
-    })
+    this.setState(this.createNewState(pagination, filters, sorter), this.fetch)
+  }
+
+  switchPage = (current, pageSize) => {
+    if (!current) {
+      this.handleTableChange({...this.state.pagination})
+    } else {
+      this.handleTableChange({current, pageSize})
+    }
+  }
+
+  getRecordKey = (record) => {
+    return this.props.keyId ? record[this.props.keyId] : record.id
   }
 
   handleRowClick = (record, index, event) => {
-    if (this.props.onRowClick) this.props.onRowClick(record, index)
-    if (index != this.state.clickedIndex) this.setState({clickedIndex: index})
+    let newClicked = this.getRecordKey(record)
+    if (this.props.onRowClick) this.props.onRowClick(record, index, newClicked)
+    if (newClicked != this.state.clickedKeyId) this.setState({clickedKeyId: newClicked})
   }
 
   handleRowDoubleClick = (record, index, event) => {
@@ -95,23 +128,23 @@ class List extends React.Component {
   }
 
   getRowClassName = (record, index) => {
-    return index === this.state.clickedIndex ? styles.selectedCell : ''
+    return this.getRecordKey(record) === this.state.clickedKeyId ? styles.selectedCell : ''
   }
 
   onMouseMove = (event) => {
     if (!this.state.pager) return
     let node = layout.$(event.target).closest('.ant-table-row')
     if (node.length === 0) return
-    let top = node.offset().top - layout.$(ReactDOM.findDOMNode(this.refs.QwpList)).offset().top
+    let list = layout.$(ReactDOM.findDOMNode(this.refs.QwpList))
+    let top = node.offset().top - list.offset().top
     let pagerNode = layout.$(ReactDOM.findDOMNode(this.refs.QwpListPager))
-    let delta = top + pagerNode.height() - layout.$(window).height()
+    let delta = top + pagerNode.height() - list.height()
     if (delta > 0) {
       top -= delta
       if (top < 0) top = 0
     }
     if (top === this.state.pager.top) return
     let pager = {
-      ...this.state.pager,
       top,
     }
     this.setState({
@@ -119,28 +152,34 @@ class List extends React.Component {
     })
   }
 
+  onUpdateData (result) {
+    let { pagination } = this.state
+    if (result.data && lodash.isNumber(result.data.total)) result = result.data
+    pagination.total = result.total || 0
+    pagination.totalPage = Math.ceil(result.total / pagination.pageSize)
+    if (pagination.totalPage === NaN) pagination.totalPage = 1
+    this.setState({
+      loading: false,
+      dataSource: this.props.dataKey ? result[this.props.dataKey] : result.data,
+      pagination,
+    }, this.onSizeChanged)
+  }
+
   fetch = () => {
-    if (!this.props.fetch || !this.props.fetch.url) return
-    const { fetch: { url, data, dataKey } } = this.props
+    if (!this.props.fetch) return
     const { fetchData } = this.state
+    if (lodash.isFunction(this.props.fetch)) {
+      this.setState({ loading: true })
+      this.props.fetch({...fetchData}, this.onUpdateData.bind(this))
+      return
+    }
     this.setState({ loading: true })
     this.promise = request({
-      url,
+      url: this.props.fetch,
       data: {
-        ...data,
         ...fetchData,
       },
-    }).then((result) => {
-      const { pagination } = this.state
-      if (result.data && lodash.isNumber(result.data.total)) result = result.data
-      pagination.total = result.total || 0
-      this.setState({
-        loading: false,
-        dataSource: dataKey ? result[dataKey] : result.data,
-        pagination,
-      })
-      setTimeout(this.onSizeChanged.bind(this), 100)
-    })
+    }).then(this.onUpdateData.bind(this))
   }
 
   render () {
@@ -151,7 +190,6 @@ class List extends React.Component {
       render,
       onRowClick,
       onRowDoubleClick,
-      defaultPageSize,
       autoSize,
       name,
       noPagination,
@@ -176,7 +214,10 @@ class List extends React.Component {
     tableProps.pagination = false
     let pagerProps = {}
     if (this.state.pager) {
-      pagerProps = {...pagination}
+      pagerProps = {
+        ...pagination,
+        onSwitchPage: this.switchPage,
+      }
     }
     return (<div ref="QwpList" className="qwp-list" onMouseMove={this.onMouseMove}>
       {this.state.pager && <div ref="QwpListPager" className="qwp-list-pager" style={{ top: this.state.pager.top || 8 }}><SimplePager {...pagerProps}/></div>}
@@ -184,7 +225,6 @@ class List extends React.Component {
         className={className}
         size="middle"
         loading={loading}
-        onChange={this.handleTableChange}
         {...tableProps}
         dataSource={this.state.dataSource}
         scroll={this.state.scroll}
