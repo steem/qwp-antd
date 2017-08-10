@@ -7,10 +7,34 @@ import DateTable from 'components/DataTable'
 import { DropOption } from 'components'
 import { Link } from 'dva/router'
 import uri from 'utils/uri'
+import layout from 'utils/layout'
 
 const confirm = Modal.confirm
 
-const UserTable = ({ onDeleteItem, onEditItem, isMotion, location, keyId, ...tableProps }) => {
+const colOptions = {
+  render: {
+    avatar (text, record) {
+      return (<img alt={'avatar'} width={24} src={text} />)
+    },
+    name (text, record) {
+      return (<Link to={`user/${record.id}`}>{text}</Link>)
+    },
+    isMale (text, record) {
+      return (<span>{text
+              ? 'Male'
+              : 'Female'}</span>)
+    },
+    operation (text, record) {
+      return (<DropOption onMenuClick={e => handleMenuClick(record, e)} 
+        menuOptions={[{ key: '1', name: 'Update' }, { key: '2', name: 'Delete' }]} />)
+    },
+  },
+  className: {
+    avatar: styles.avatar
+  },
+}
+
+const UserTable = ({ onDeleteItem, onEditItem, isMotion, location, keyId, tables, ...tableProps }) => {
   const handleMenuClick = (record, e) => {
     if (e.key === '1') {
       onEditItem(record)
@@ -23,79 +47,8 @@ const UserTable = ({ onDeleteItem, onEditItem, isMotion, location, keyId, ...tab
       })
     }
   }
-
-  const columns = [
-    {
-      title: '',
-      dataIndex: 'avatar',
-      key: 'avatar',
-      width: 64,
-      className: styles.avatar,
-      render: (text) => <img alt={'avatar'} width={24} src={text} />,
-    }, {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: 10,
-      dynamicWidth: true,
-      render: (text, record) => <Link to={`user/${record.id}`}>{text}</Link>,
-    }, {
-      title: 'NickName',
-      dataIndex: 'nickName',
-      width: 10,
-      dynamicWidth: true,
-      key: 'nickName',
-    }, {
-      title: 'Age',
-      dataIndex: 'age',
-      width: 10,
-      dynamicWidth: true,
-      key: 'age',
-    }, {
-      title: 'Gender',
-      dataIndex: 'isMale',
-      key: 'isMale',
-      width: 10,
-      dynamicWidth: true,
-      render: (text) => <span>{text
-            ? 'Male'
-            : 'Female'}</span>,
-    }, {
-      title: 'Phone',
-      dataIndex: 'phone',
-      width: 20,
-      dynamicWidth: true,
-      key: 'phone',
-    }, {
-      title: 'Email',
-      dataIndex: 'email',
-      width: 20,
-      dynamicWidth: true,
-      key: 'email',
-    }, {
-      title: 'Address',
-      dataIndex: 'address',
-      width: 20,
-      dynamicWidth: true,
-      key: 'address',
-    }, {
-      title: 'CreateTime',
-      dataIndex: 'createTime',
-      width: 30,
-      dynamicWidth: true,
-      key: 'createTime',
-    }, {
-      title: '',
-      key: 'operation',
-      width: 100,
-      render: (text, record) => {
-        return <DropOption onMenuClick={e => handleMenuClick(record, e)} menuOptions={[{ key: '1', name: 'Update' }, { key: '2', name: 'Delete' }]} />
-      },
-    },
-  ]
-
   tableProps.fetch = uri.ops({m: 'user', ops: 'list', mock: true})
-  tableProps.columns = columns
+  tableProps.columns = layout.getTableColumn(tables, colOptions)
 
   return (
     <DateTable

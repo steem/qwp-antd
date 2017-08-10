@@ -29,7 +29,7 @@ define('QWP_PRODUCT_VERSION', '2');
 define('QWP_MODULE_SEP', '/');
 define('QWP_JUST_SERVICE', true);
 define('QWP_IN_MOCK_TEST', true);
-define('QWP_SERVICE_INFO_OP', '$');
+define('QWP_APP_SETTINGS_OP', '$');
 define('QWP_ENABLE_HEADER_NAV', true);
 
 define('QWP_CLIENT_UI_ROOT', QWP_ROOT . '/../ui');
@@ -39,7 +39,7 @@ define('PRODUCT_NAME_SHORT', 'QWP');
 define('COMPANY_NAME', 'QWP, Inc.');
 
 function qwp_get_modules_need_not_login() {
-    return array('portal', 'test');
+    return array('portal');
 }
 
 function qwp_get_default_header_nav() {
@@ -48,11 +48,6 @@ function qwp_get_default_header_nav() {
             'name' => 'portal',
             'icon' => 'laptop',
             'path' => '/portal',
-        ),
-        array(
-            'name' => 'test',
-            'icon' => 'laptop',
-            'path' => '/test',
         ),
     );
 }

@@ -14,7 +14,7 @@ import showOpsNotification from 'utils/notification'
 
 function footerVisibility() {
   let arr = location.pathname.split('/')
-  return arr.length === 1 || arr[1] === 'portal'
+  return arr.length === 1 || arr[1] === 'portal' || arr[1] === 'dashboard'
 }
 
 let app = modelExtend(model, {
@@ -106,15 +106,18 @@ let app = modelExtend(model, {
           convertFormRules(passportRes.data)
           mergeFormRules(appSettings, passportRes.data)
         }
+        let state = {
+          appSettings,
+          user: {
+            isLogined
+          },
+          error: !(appRes.success && passportRes.success),
+          showFooter: footerVisibility(),
+        }
+        if (state.error) state.hasHeader = false
         yield put({
           type: 'updateState',
-          payload: {
-            appSettings,
-            user: {
-              isLogined
-            },
-            showFooter: footerVisibility(),
-          },
+          payload: state,
         })
       }
       let p = uri.defaultUri(isLogined, defaultCompnent, menu, appSettings.modulesNeedNotLogin)

@@ -52,7 +52,7 @@ function qwp_render_page() {
         if (file_exists($MODULE_FILE)) {
             $_PAGE_FILES[] = $MODULE_FILE;
         } else {
-            if ($OP === QWP_SERVICE_INFO_OP) {
+            if ($OP === QWP_APP_SETTINGS_OP) {
                 qwp_render_app_settings();
                 return true;
             }
@@ -82,7 +82,7 @@ function qwp_check_just_service() {
 function qwp_render_root_app_settings() {
     global $MODULE, $OP;
 
-    if ($MODULE || $OP !== QWP_SERVICE_INFO_OP) return false;
+    if ($MODULE || $OP !== QWP_APP_SETTINGS_OP) return false;
 
     $app_settings = array(
         'default' => DEFAULT_MODULE,

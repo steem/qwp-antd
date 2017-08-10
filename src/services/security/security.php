@@ -105,7 +105,7 @@ function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $pa
         $file_path = join_paths($dir, $item);
         if (is_dir($file_path)) {
             if ($level === 0 && $item === 'passport') continue;
-            $new_parent = $parent . ($parent ? QWP_MODULE_SEP : '') . $item;
+            $new_parent = $parent . ($parent && $parent != QWP_MODULE_SEP ? QWP_MODULE_SEP : '') . $item;
             if ($add_module) $modules[$new_parent] = $item;
             qwp_scan_acls_in_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent, $add_module);
         } else if ($level !== 0) {
@@ -135,7 +135,7 @@ function qwp_scan_acls_in_directory(&$modules, &$pages, &$ops, $dir, $level, $pa
         }
     }
 }
-function qwp_scan_acls_in_client_directory(&$modules, &$pages, &$ops, $dir, $level, $parent, $parent_item = '') {
+function qwp_scan_acls_in_client_directory(&$modules, &$pages, &$ops, $dir, $level, $parent) {
     $files = scandir($dir);
     $has_route = false;
     foreach ($files as $item) {
@@ -144,7 +144,7 @@ function qwp_scan_acls_in_client_directory(&$modules, &$pages, &$ops, $dir, $lev
         if (is_dir($file_path)) {
             if ($level === 0 && ($item === 'passport' ||  $item === 'error')) continue;
             $new_parent = $parent . $item;
-            if (qwp_scan_acls_in_client_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent . QWP_MODULE_SEP, $item)) {
+            if (qwp_scan_acls_in_client_directory($modules, $pages, $ops, $file_path, $level + 1, $new_parent . QWP_MODULE_SEP)) {
                 $modules[$new_parent] = $item;
                 $has_route = true;
             }
@@ -161,7 +161,7 @@ function qwp_get_all_acls_in_directory(&$acls) {
     $ops = &$acls['ops'];
     if (QWP_JUST_SERVICE) {
         qwp_scan_acls_in_client_directory($modules, $pages, $ops, QWP_CLIENT_UI_ROOT, 0, QWP_MODULE_SEP);
-        qwp_scan_acls_in_directory($modules, $pages, $ops, QWP_MODULE_ROOT, 0, '', false);
+        qwp_scan_acls_in_directory($modules, $pages, $ops, QWP_MODULE_ROOT, 0, QWP_MODULE_SEP, false);
     } else {
         qwp_scan_acls_in_directory($modules, $pages, $ops, QWP_MODULE_ROOT, 0, '');
     }
@@ -307,7 +307,7 @@ function qwp_doing_security_check() {
         if ($PAGE) {
             $path .= '#' . $PAGE;
         }
-        return isset($acls['ops'][$path]) && isset($acls['ops'][$path][$OP]);
+        return isset($acls['ops'][$path]) && ($OP === QWP_APP_SETTINGS_OP || isset($acls['ops'][$path][$OP]));
     }
     if ($PAGE) {
         return isset($acls['pages'][$MODULE_URI]) && isset($acls['pages'][$MODULE_URI][$PAGE]);

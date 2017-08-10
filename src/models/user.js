@@ -1,10 +1,12 @@
 import modelExtend from 'dva-model-extend'
-import { create, remove, update } from '../requests/user'
+import * as userService from '../requests/user'
 import * as usersService from '../requests/users'
 import { model } from './common'
 import { config } from 'utils'
+import showOpsNotification from 'utils/notification'
+import { localization } from 'utils'
+import _ from 'lodash'
 
-const { query } = usersService
 const { prefix } = config
 
 export default modelExtend(model, {
@@ -15,6 +17,9 @@ export default modelExtend(model, {
     modalVisible: false,
     modalType: 'create',
     selectedRowKeys: [],
+    moduleSettings: {
+      tables: {},
+    },
   },
 
   subscriptions: {
@@ -29,11 +34,23 @@ export default modelExtend(model, {
   effects: {
 
     *init ({ payload = {} }, { call, put }) {
-
+      const appRes = yield call(userService.$)
+      if (appRes.success && appRes.data) {
+        const { lang, ...moduleSettings } = appRes.data
+        if (lang) localization.set(lang, put)
+        yield put({
+          type: 'updateState',
+          payload: {
+            moduleSettings,
+          },
+        })
+      } else {
+        showOpsNotification(appRes)
+      }
     },
 
     *'delete' ({ payload }, { call, put, select }) {
-      const data = yield call(remove, { id: payload })
+      const data = yield call(userService.remove, { id: payload })
       const { selectedRowKeys } = yield select(_ => _.user)
       if (data.success) {
         yield put({ type: 'updateState', payload: { selectedRowKeys: selectedRowKeys.filter(_ => _ !== payload) } })
@@ -54,7 +71,7 @@ export default modelExtend(model, {
     },
 
     *create ({ payload }, { call, put }) {
-      const data = yield call(create, payload)
+      const data = yield call(userService.create, payload)
       if (data.success) {
         yield put({ type: 'hideModal' })
         yield put({ type: 'query' })
@@ -66,7 +83,7 @@ export default modelExtend(model, {
     *update ({ payload }, { select, call, put }) {
       const id = yield select(({ user }) => user.currentItem.id)
       const newUser = { ...payload, id }
-      const data = yield call(update, newUser)
+      const data = yield call(userService.update, newUser)
       if (data.success) {
         yield put({ type: 'hideModal' })
         yield put({ type: 'query' })

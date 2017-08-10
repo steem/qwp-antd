@@ -1,8 +1,18 @@
 import { request, uri } from 'utils'
+
 let baseUri = {
-  m: 'user',
+  m: uri.component('system', 'user'),
   p: null,
   mock: true
+}
+
+export async function $ (params) {
+  let ops = '$'
+  return request({
+    url: uri.ops({ ops, ...baseUri, mock: false }),
+    method: 'post',
+    data: params,
+  })
 }
 
 export async function query (params) {

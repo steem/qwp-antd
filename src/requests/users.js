@@ -1,6 +1,6 @@
 import { request, uri } from 'utils'
 let baseUri = {
-  m: 'user',
+  m: uri.component('system', 'user'),
   p: null,
   mock: true
 }

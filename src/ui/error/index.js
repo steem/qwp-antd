@@ -3,29 +3,39 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Icon } from 'antd'
 import styles from './index.less'
+import { l } from 'utils/localization'
 
-const Error = ({ error, icon, link, linkDesc }) => {
-  let errIcon = icon ? icon : 'frown-o'
-  let desc = error ? error : '404 Not Found'
-  let solution = link ? `<a href="${link}">${linkDesc}</a>` : ''
-  
-  return (
-    <div className="content-inner">
-      <div className={styles.error}>
+class Error extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    const {
+      error,
+      icon,
+      link,
+      linkDesc,
+      children,
+    } = this.props
+
+    let items
+    if (!children) {
+      let errIcon = icon ? icon : 'frown-o'
+      let desc = error === true ? l('Failed to load site resources') : (error ? error : l('404 Not Found'))
+      let solution = link ? (<a href="${link}">${linkDesc}</a>) : (<a href="javascript:window.location.reload()">{l('Refresh')}</a>)
+      $items = (<div className={styles.error}>
         <Icon type={errIcon} />
         <h1>{desc}</h1>
         {solution}
-      </div>
-  </div>
-  )
+      </div>)
+    }
+    return (
+      <div className="content-inner">
+        {children || items}
+    </div>
+    )
+  }
 }
 
-Error.propTypes = {
-  error: PropTypes.string,
-  icon: PropTypes.string,
-  link: PropTypes.string,
-  linkDesc: PropTypes.string,
-}
-
-export default connect(({ error, icon, link, linkDesc }) => ({ error, icon, link }))(Error)
-
+export default Error

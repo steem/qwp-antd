@@ -21,10 +21,6 @@ function appSettings(req, res) {
         name: 'portal',
         icon: 'laptop',
         path: '/portal',
-      }, {
-        name: 'test',
-        icon: 'laptop',
-        path: '/test',
       }],
     }
   })

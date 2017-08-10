@@ -137,20 +137,22 @@ const Passport = ({
   }
 
   return (
-    <div loc={app.localeChangedTag} className={styles.form}>
-      <div className={styles.loginTitle}>
-        <img alt={'logo'} src={config.logo} />
-        <span>{l('productName')}</span>
+    <div>
+      <div loc={app.localeChangedTag} className={styles.form}>
+        <div className={styles.loginTitle}>
+          <img alt={'logo'} src={config.logo} />
+          <span>{l('productName')}</span>
+        </div>
+        <p style={ {paddingBottom: 8, textAlign: 'left'} }>
+          <span>{l('Please login')}:</span>
+        </p>
+        <LoginForm {...formProps}/>
+        <Row>
+          <Button type="primary" size="large" onClick={handleOk} loading={loginLoading}>
+            {l('Sign in')}
+          </Button>
+        </Row>
       </div>
-      <p style={ {paddingBottom: 8, textAlign: 'left'} }>
-        <span>{l('Please login')}:</span>
-      </p>
-      <LoginForm {...formProps}/>
-      <Row>
-        <Button type="primary" size="large" onClick={handleOk} loading={loginLoading}>
-          {l('Sign in')}
-        </Button>
-      </Row>
     </div>
   )
 }

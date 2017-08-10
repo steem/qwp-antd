@@ -84,10 +84,9 @@ const Header = ({ user, logout, hasSiderBar, locationChangedTag, subSystems, pas
     items: appSettings.headerNav,
     locationChangedTag,
   }
-
   return (
     <div className={classnames(styles.header, "user-menu-popup")}>
-      {!hasSiderBar && <img className={styles.logo} title={l('productNameLong')} src={config.logo} />}
+      {!hasSiderBar && <div className={styles.logo}><img title={l('productNameLong')} src={config.logo} /><span>{l('productName')}</span></div>}
       <div className={styles.rightWarpper}>
       {hasSiderBar && <SideMenuSwitcher {...sideMenuProps}/>}
       {subSystems.length > 0 && <SystemSwitcher {...sysSwitcherProps}/>}

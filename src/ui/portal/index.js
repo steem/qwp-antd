@@ -8,7 +8,7 @@ class PortalPage extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className={styles.imageContainer}>
         <div className="image1 image-wrapper" style={{transform: "matrix(1, 0, 0, 1, 0, 0)", opacity: 1}} ></div>
         <div className="text-wrapper">
           <h2 style={{opacity: 1, visibility: 'visible', transform: "translateX(0)"}}><span>Best Practice</span></h2>

@@ -1,3 +1,4 @@
+import { l } from 'utils/localization'
 import $ from 'jquery'
 import ps from 'perfect-scrollbar/jquery'
 import _ from 'lodash'
@@ -25,13 +26,20 @@ module.exports = {
 
   calcFullFillHeight (node, nodeBelow) {
     node = $(node)
-    let h = $(window).height()
+    let container = $('#container')
+    let isWindowContainer = false
+    if (container.length === 0 || container.get(0) === node.get(0)) {
+      container = $(window)
+      isWindowContainer = true
+    }
+    let h = container.height()
     if (nodeBelow) {
       if (_.isInteger(nodeBelow)) h -= nodeBelow
       else h -= getFullHeight(nodeBelow)
     }
-    h -= node.offset().top
-    while (node && node.length > 0 && node.get(0) !== document) {
+    let domContainer = isWindowContainer ? $(document).get(0) : container.get(0)
+    h -= node.offset().top - (isWindowContainer ? 0 : container.offset().top)
+    while (node && node.length > 0 && node.get(0) !== domContainer) {
       h -= cssValueToInt(node, 'padding-bottom')
       h -= cssValueToInt(node, 'margin-bottom')
       h -= cssValueToInt(node, 'border-bottom-width')
@@ -48,17 +56,48 @@ module.exports = {
       oldState.top = node.offset().top
       needResize = true
     }
-    let win = $(window)
-    if (win.height() !== oldState.winHeight) {
-      oldState.winHeight = win.height()
+    let container = $('#container')
+    if (container.length === 0 || container.get(0) === node.get(0)) container = $(window)
+    if (container.height() !== oldState.winHeight) {
+      oldState.winHeight = container.height()
       needResize = true
     }
-    if (win.width() !== oldState.winWidth) {
-      oldState.winWidth = win.width()
+    if (container.width() !== oldState.winWidth) {
+      oldState.winWidth = container.width()
       needResize = true
     }
     oldState.needResize = needResize
     return oldState
+  },
+
+  getTableColumn (table, colOptions) {
+    if (!table || !table.names || table.names.length === 0) return false
+    let cols = []
+    // [dataIndex, title, width, sort, render, className]
+    for (let item of table.names) {
+      let col = {
+        title: item[1] ? l(item[1]) : '',
+        width: item[2],
+      }
+      if (item[0]) {
+        col.key = item[0]
+        col.dataIndex = item[0]
+      }
+      if (item[3]) {
+        if (colOptions && colOptions.sorter && colOptions.sorter[item[0]]) col.sorter = colOptions.sorter[item[0]]
+        else col.sorter = true
+      }
+      if (colOptions) {
+        if (item.length >= 5) {
+          col.render = colOptions.render[item[4] === true ? item[0] : item[4]]
+        }
+        if (item.length >= 6) {
+          col.className = colOptions.className[item[5] === true ? item[0] : item[5]]
+        }
+      }
+      cols.push(col)
+    }
+    return cols
   },
 
   $,

@@ -12,4 +12,5 @@ module.exports = {
   'system': '系统',
   'UIElement': '界面元素',
   'portal': '首页',
+  Refresh: '刷新',
 }

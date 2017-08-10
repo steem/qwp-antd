@@ -15,4 +15,5 @@ $lang = array(
   'dashboard' => '仪表盘',
   'UIElement' => '界面元素',
   'portal' => '首页',
+  'Refresh' => '刷新',
 );

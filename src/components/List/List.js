@@ -25,7 +25,7 @@ class List extends React.Component {
         total: 0,
         totalPage: 0,
       },
-      clickedKeyId: lodash.isInteger(props.clickedKeyId) ? lodash.isInteger(props.clickedKeyId) : -1,
+      clickedKeyId: props.clickedKeyId || null,
       scroll: undefined,
       pager: {
         top: 8
@@ -190,9 +190,16 @@ class List extends React.Component {
     }).then(this.onUpdateData.bind(this))
   }
 
+  onFilter = () => {
+
+  }
+
+  onChange = (selectedRowKeys, selectedRows) => {
+
+  }
+
   render () {
     let { fetch, 
-      showCheckbox, 
       header,
       dataIndex,
       render,
@@ -200,21 +207,32 @@ class List extends React.Component {
       onRowDoubleClick,
       autoSize,
       name,
+      filter,
       noPagination,
       className,
+      selectionType,
       ...tableProps,
     } = this.props
     const { loading, pagination } = this.state
 
-    tableProps.rowSelection = showCheckbox ? {} : undefined
+    if (selectionType) {
+      tableProps.rowSelection = {type: selectionType}
+    }    
     let col = {
       title: this.props.header || '',
+    }
+    if (filter) {
+      const { filters, filterMultiple, filterDropdown } = filter
+      col.filters = filters
+      if (filterDropdown) col.filterDropdown = filterDropdown
+      if (filterMultiple) col.filterMultiple = filterMultiple
+      col.onFilter = this.onFilter
     }
     if (dataIndex) col.dataIndex = dataIndex
     if (render) col.render = render
     col.className = 'qwp-list-cell'
     tableProps.columns = [col]
-    tableProps.showHeader = header || showCheckbox ? true : false
+    tableProps.showHeader = header || selectionType === 'checkbox' || filter ? true : false
     tableProps.bordered = false
     tableProps.onRowClick = this.handleRowClick
     tableProps.onRowDoubleClick = this.handleRowDoubleClick
@@ -234,6 +252,7 @@ class List extends React.Component {
         size="middle"
         loading={loading}
         {...tableProps}
+        onChange={this.onChange}
         dataSource={this.state.dataSource}
         scroll={this.state.scroll}
       />

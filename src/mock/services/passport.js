@@ -67,6 +67,9 @@ module.exports = {
             }
           },
           acls: [{
+            "name": "dashboard",
+            "path": "/dashboard"
+          }, {
             "name": "sample",
             "path": "/sample"
           }, {
@@ -112,9 +115,6 @@ module.exports = {
             icon: 'line-chart',
             "path": "/sample/chart/lineChart"
           }, {
-            "name": "dashboard",
-            "path": "/sample/dashboard"
-          }, {
             "name": "post",
             icon: 'shopping-cart',
             "path": "/sample/post"
@@ -129,9 +129,6 @@ module.exports = {
             "name": "user",
             icon: 'user',
             "path": "/system/user"
-          }, {
-            "name": "test",
-            "path": "/test"
           }]
         }
       }

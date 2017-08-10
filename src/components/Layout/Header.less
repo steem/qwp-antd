@@ -62,8 +62,19 @@
 }
 
 .logo {
-  width: 28px;
-  height: 28px;
-  margin: 6px 7px;
+
+  img {
+    width: 28px;
+    height: 28px;
+    margin: 6px 7px;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 767px) {
+    span {
+      display: none;
+    }
+  }
+
 }
 

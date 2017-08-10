@@ -34,18 +34,21 @@ class DataTable extends React.Component {
     if (!node) return cols
     let total = 0
     let width = layout.$(node).width()
+    let tw = 0
 
     for (let item of this.props.columns) {
-      if (item.dynamicWidth) total += parseInt(item.width)
+      if (lodash.isString(item.width)) total += parseInt(item.width)
+      else width -= item.width
     }
     for (let item of this.props.columns) {
       let copy = {...item}
-      if (item.dynamicWidth) {
+      if (lodash.isString(item.width)) {
         copy.width = parseInt(width * parseInt(item.width) / total)
-        delete copy.dynamicWidth
       }
+      tw += copy.width
       cols.push(copy)
     }
+    cols[cols.length - 1].width += width - tw
     return cols
   }
 
@@ -68,12 +71,10 @@ class DataTable extends React.Component {
     if (this.resizeState.needResize) this.onSizeChanged()
   }
 
-  onSizeChanged () {
+  setScrollBarSize () {
     let dataTable = ReactDOM.findDOMNode(this.refs.dataTable)
     if (!dataTable) return
-    let state = {
-      columns: this.calcColumnsWidth(),
-    }
+    let state = {}
     if (this.props.autoSize !== false) {  
       let node = dataTable.querySelector('.ant-table-body')
       let empty = dataTable.querySelector('.ant-table-placeholder')
@@ -87,7 +88,15 @@ class DataTable extends React.Component {
       layout.addSimscroll(node, this.props.height)
       state.scroll = {y: this.props.height}
     }
-    this.setState(state)
+    if (state.scroll) this.setState(state)
+  }
+
+  onSizeChanged () {
+    let dataTable = ReactDOM.findDOMNode(this.refs.dataTable)
+    if (!dataTable) return
+    this.setState({
+      columns: this.calcColumnsWidth(),
+    }, this.setScrollBarSize)
   }
 
   createNewState (pagination, filters, sorter, nextProps) {

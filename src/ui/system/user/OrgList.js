@@ -8,7 +8,7 @@ import uri from 'utils/uri'
 
 const OrgList = ({ onDeleteItem, onEditItem, isMotion, onRowClick, location, ...listProps }) => {
   let props = {
-    showCheckbox: true,
+    selectionType: 'checkbox',
     fetch: uri.ops({m: 'org', ops: 'list', mock: true}),
     dataIndex: 'name',
     ...listProps,
