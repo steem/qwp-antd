@@ -35,7 +35,7 @@ class List extends React.Component {
 
   componentDidMount () {
     this.handleTableChange()
-    if (this.props.autoSize !== false) this.timerCheckWindow = setInterval(this.checkWindowResize.bind(this), 500)
+    if (this.props.autoHeight !== false) this.timerCheckWindow = setInterval(this.checkWindowResize.bind(this), 500)
   }
 
   componentWillUnmount () {
@@ -56,7 +56,7 @@ class List extends React.Component {
     let node = ReactDOM.findDOMNode(this.refs.QwpList)
     if (!node) return
     let h
-    if (this.props.autoSize !== false) {
+    if (this.props.autoHeight !== false) {
       node = node.querySelector('.ant-table-body')
       h = layout.calcFullFillHeight(node)
     } else if (this.props.height) {
@@ -163,6 +163,7 @@ class List extends React.Component {
   onUpdateData (result) {
     let { pagination } = this.state
     if (result.data && lodash.isNumber(result.data.total)) result = result.data
+    else if (this.props.dataConvertor) result = this.props.dataConvertor(result)
     pagination.total = result.total || 0
     pagination.totalPage = Math.ceil(result.total / pagination.pageSize)
     if (pagination.totalPage === NaN) pagination.totalPage = 1
@@ -205,7 +206,7 @@ class List extends React.Component {
       render,
       onRowClick,
       onRowDoubleClick,
-      autoSize,
+      autoHeight,
       name,
       filter,
       noPagination,

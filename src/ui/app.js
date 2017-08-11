@@ -35,8 +35,33 @@ class AppContainer extends React.Component {
     let node = ReactDOM.findDOMNode(this.refs.container)
     if (!node) return
     this.resizeState = layout.getResizeState(node, this.resizeState)
-    if (!this.resizeState.needResize) return
-    layout.addSimscroll(node, layout.calcFullFillHeight(node), {'suppressScrollX': true})
+    let h = layout.calcFullFillHeight(node)
+    let footer = layout.$('#footer')
+    let content = ReactDOM.findDOMNode(this.refs.content)
+    let contentInner = ReactDOM.findDOMNode(this.refs.contentInner)
+    let footerHeight = footer.length > 0 ? layout.$(footer).height() : 0
+    let contentScrollHeight = layout.scrollHeight(contentInner)
+    let contentHeight = layout.$(contentInner).height()
+    if (this.resizeState.needResize || this.contentHeight !== contentHeight || this.contentScrollHeight !== contentScrollHeight) {
+      this.contentScrollHeight = contentScrollHeight
+      this.contentHeight = contentHeight
+      contentInner = layout.$('.content-inner')
+      if (this.contentScrollHeight + footerHeight < h) {
+        let newHeight = h - footerHeight - layout.getHeightWithoutContent(content) - layout.getHeightWithoutContent(node)
+        layout.$(content).height(newHeight)
+        if (contentInner.length > 0) {
+          contentInner.height(newHeight - layout.getHeightWithoutContent(contentInner))
+        }
+      } else {
+        layout.$(content).height('auto')
+        if (contentInner.length > 0) {
+          contentInner.height('auto')
+        }
+      }
+    }
+    if (!this.resizeState.needResize && !this.needUpdateScroll) return
+    this.needUpdateScroll = false
+    layout.addSimscroll(node, h, {'suppressScrollX': true})
   }
 
   render () {
@@ -55,6 +80,7 @@ class AppContainer extends React.Component {
     const href = window.location.href
 
     if (this.lastHref !== href) {
+      this.needUpdateScroll = true
       NProgress.start()
       if (!loading.global) {
         NProgress.done()
@@ -111,7 +137,6 @@ class AppContainer extends React.Component {
     const breadProps = hasBread ? {
       menu,
     } : ''
-    const showLoadingSpinning = !user.isLogined || (!hasPermission && uri.isPassportComponent())
     let errorProps
     if (app.error) errorProps = { error: app.error }
     if (!hasPermission) errorProps = {
@@ -128,22 +153,24 @@ class AppContainer extends React.Component {
         {iconFontJS && <script src={iconFontJS}></script>}
         {iconFontCSS && <link rel="stylesheet" href={iconFontCSS} />}
       </Helmet>
-      <div className={layoutClassName}>
-        {hasSiderBar && !isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
-          <Sider {...siderProps} />
-        </aside> : ''}
-        <div className={styles.main}>
-          {hasHeader ? <Header {...headerProps} /> : ''}
-          {hasBread ? <Bread {...breadProps} /> : ''}
-          <div className={styles.container} ref="container" id="container">
-            <div className={styles.content}>
-              {showLoadingSpinning && <Loader spinning={loading.effects['app/init']} />}
-              {errorProps ? <Error {...errorProps} /> : children}
-              {showFooter && <Footer ref="footer" />}
+      {loading.effects['app/init'] ? <Loader spinning={loading.effects['app/init']} /> : <div className={layoutClassName}>
+          {hasSiderBar && !isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
+            <Sider {...siderProps} />
+          </aside> : ''}
+          <div className={styles.main}>
+            {hasHeader ? <Header {...headerProps} /> : ''}
+            {hasBread ? <Bread {...breadProps} /> : ''}
+            <div className={styles.container} ref="container" id="container">
+              <div className={styles.content} ref="content">
+                <div ref="contentInner">
+                {errorProps ? <Error {...errorProps} /> : children}
+                </div>
+              </div>
+              {showFooter && <Footer />}
             </div>
           </div>
         </div>
-      </div>
+      }
     </div>
     )
   }

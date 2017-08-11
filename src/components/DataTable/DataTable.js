@@ -54,7 +54,7 @@ class DataTable extends React.Component {
 
   componentDidMount () {
     this.handleTableChange()
-    if (this.props.autoSize !== false) this.timerCheckWindow = setInterval(this.checkWindowResize.bind(this), 500)
+    if (this.props.autoHeight !== false) this.timerCheckWindow = setInterval(this.checkWindowResize.bind(this), 500)
   }
 
   componentWillUnmount () {
@@ -75,7 +75,7 @@ class DataTable extends React.Component {
     let dataTable = ReactDOM.findDOMNode(this.refs.dataTable)
     if (!dataTable) return
     let state = {}
-    if (this.props.autoSize !== false) {  
+    if (this.props.autoHeight !== false) {  
       let node = dataTable.querySelector('.ant-table-body')
       let empty = dataTable.querySelector('.ant-table-placeholder')
       if (empty) empty = layout.$(empty).is(':visible')
@@ -144,6 +144,7 @@ class DataTable extends React.Component {
   onUpdateData = (result) => {
     let { pagination } = this.state
     if (result.data && lodash.isNumber(result.data.total)) result = result.data
+    else if (this.props.dataConvertor) result = this.props.dataConvertor(result)
     pagination.total = result.total || 0
     pagination.totalPage = Math.ceil(result.total / pagination.pageSize)
     if (pagination.totalPage === NaN) pagination.totalPage = 1

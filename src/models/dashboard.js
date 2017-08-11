@@ -1,5 +1,6 @@
 import { myCity, queryWeather, query } from '../requests/dashboard'
 import { parse } from 'qs'
+import showOpsNotification from 'utils/notification'
 
 // zuimei 摘自 http://www.zuimeitianqi.com/res/js/index.js
 let zuimei = {
@@ -206,11 +207,15 @@ export default {
     }, { call, put }) {
       const myCityResult = yield call(myCity, { flg: 0 })
       const result = yield call(queryWeather, { cityCode: myCityResult.selectCityCode })
-      const weather = zuimei.parseActualData(result.data.actual)
-      weather.city = myCityResult.selectCityName
-      yield put({ type: 'queryWeatherSuccess', payload: {
-        weather,
-      } })
+      if (result.data) {
+        const weather = zuimei.parseActualData(result.data.actual)
+        weather.city = myCityResult.selectCityName
+        yield put({ type: 'queryWeatherSuccess', payload: {
+          weather,
+        } })
+      } else {
+        showOpsNotification({success: false, notice: true}, false, false, 'Failed to get weather data')
+      }
     },
   },
   reducers: {

@@ -23,48 +23,46 @@ class DataTablePage extends React.Component {
       dataSource: [{ key: '1', name: 'John Brown', age: 24, address: 'New York' }, { key: '2', name: 'Jim Green', age: 23, address: 'London' }],
       columns: [{ title: 'name', dataIndex: 'name' }, { title: 'Age', dataIndex: 'age' }, { title: 'Address', dataIndex: 'address' }],
       pagination: false,
+      autoHeight: false,
     }
 
     const fetchDataTableProps = {
-      fetch: {
-        url: 'https://randomuser.me/api',
-        data: {
-          results: 10,
-          testPrams: 'test',
-        },
-        dataKey: 'results',
+      fetch: 'https://randomuser.me/api',
+      fetchData: {
+        results: 10,
+        testPrams: 'test',
       },
+      dataKey: 'results',
       columns: [
         { title: 'Name', dataIndex: 'name', render: (text) => `${text.first} ${text.last}` },
         { title: 'Phone', dataIndex: 'phone' },
         { title: 'Gender', dataIndex: 'gender' },
       ],
       rowKey: 'registered',
+      autoHeight: false,
     }
 
     const caseChangeDataTableProps = {
-      fetch: {
-        url: 'https://randomuser.me/api',
-        data: {
-          results: 10,
-          testPrams: 'test',
-          ...filterCase,
-        },
-        dataKey: 'results',
+      fetch: 'https://randomuser.me/api',
+      fetchData: {
+        testPrams: 'test',
+        ...filterCase,
       },
+      dataKey: 'results',
       columns: [
         { title: 'Name', dataIndex: 'name', render: (text) => `${text.first} ${text.last}` },
         { title: 'Phone', dataIndex: 'phone' },
         { title: 'Gender', dataIndex: 'gender' },
       ],
       rowKey: 'registered',
+      autoHeight: false,
     }
 
     return (<div className="content-inner">
       <Row gutter={32}>
         <Col lg={12} md={24}>
           <Card title="默认">
-            <DataTable pagination={false} />
+            <DataTable pagination={false} { ...{autoHeight: false} } />
           </Card>
         </Col>
         <Col lg={12} md={24}>

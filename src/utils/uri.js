@@ -121,6 +121,13 @@ function getHeaderNav (acls, defaultCompnent) {
           needSelectDefaultComponent = false
         }
         headerNav.push(item)
+        let j = p + 1
+        if (j < max) {
+          let nextItem = acls[j]
+          if (nextItem.path.indexOf(item.path) === -1 && item.path.indexOf(nextItem.path) === -1) {
+            newAcls.push(item)
+          }
+        }
       } else {
         newAcls.push(item)
       }
@@ -140,6 +147,11 @@ function hasSiderBar (acls) {
   return false
 }
 
+function getCurrentAcls(acls) {
+  let root = location.pathname.split('/').slice(0, 2).join('/')
+  return acls.filter(_ => _.path.indexOf(root) === 0)
+}
+
 module.exports = {
   blank: 'about:blank',
   param,
@@ -151,4 +163,5 @@ module.exports = {
   isPassportComponent,
   getHeaderNav,
   hasSiderBar,
+  getCurrentAcls,
 }

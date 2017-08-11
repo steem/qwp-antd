@@ -14,7 +14,7 @@ import showOpsNotification from 'utils/notification'
 
 function footerVisibility() {
   let arr = location.pathname.split('/')
-  return arr.length === 1 || arr[1] === 'portal' || arr[1] === 'dashboard'
+  return arr.length === 1 || arr[1] === 'passport' || arr[1] === 'portal' || arr[1] === 'dashboard'
 }
 
 let app = modelExtend(model, {
@@ -30,7 +30,7 @@ let app = modelExtend(model, {
     },
     hasHeader: true,
     hasSiderBar: false,
-    hasBread: true,
+    hasBread: false,
     siderFold: storage.get('siderFold') === 'true',
     darkTheme: storage.get('darkTheme') === 'true',
     isNavbar: document.body.clientWidth < 769,
@@ -98,6 +98,7 @@ let app = modelExtend(model, {
             subSystems,
             inited: true,
             hasSiderBar: uri.hasSiderBar(menu),
+            hasBread: uri.getCurrentAcls(menu).length >= 2,
             showFooter: footerVisibility(),
           },
         })
@@ -111,6 +112,7 @@ let app = modelExtend(model, {
           user: {
             isLogined
           },
+          hasBread: false,
           error: !(appRes.success && passportRes.success),
           showFooter: footerVisibility(),
         }
@@ -138,6 +140,7 @@ let app = modelExtend(model, {
       if (!inited) return
       let data = {
         locationChangedTag: (new Date()).getTime(),
+        hasBread: uri.getCurrentAcls(menu).length >= 2,
         hasSiderBar: uri.hasSiderBar(menu),
         showFooter: footerVisibility(),
       }

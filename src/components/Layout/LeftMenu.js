@@ -6,6 +6,7 @@ import { Link } from 'dva/router'
 import { l } from 'utils/localization'
 import _ from 'lodash'
 import layout from 'utils/layout'
+import uri from 'utils/uri'
 import styles from './Layout.less'
 
 let levelMap = {}
@@ -94,7 +95,7 @@ class Menus extends React.Component {
   onSizeChanged () {
     let node = ReactDOM.findDOMNode(this.refs.leftMenu)
     if (!node) return
-    let h = layout.calcFullFillHeight(node, 48)
+    let h = layout.calcFullFillHeight(node, 48, true)
     layout.addSimscroll(node, h, {'suppressScrollX': true})
   }
   render () {
@@ -136,8 +137,7 @@ const LeftMenu = ({ siderFold, hasHeaderNav, locationChangedTag, darkTheme, hand
 
   let navMenus
   if (hasHeaderNav) {
-    let root = location.pathname.split('/').slice(0, 2).join('/')
-    navMenus = menu.filter(_ => _.path.indexOf(root) === 0)
+    navMenus = uri.getCurrentAcls(menu)
   } else {
     navMenus = menu
   }

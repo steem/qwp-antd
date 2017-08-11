@@ -33,7 +33,7 @@ class Error extends React.Component {
     return (
       <div className="content-inner">
         {children || items}
-    </div>
+      </div>
     )
   }
 }

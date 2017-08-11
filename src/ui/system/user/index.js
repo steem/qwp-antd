@@ -36,7 +36,7 @@ const User = ({ location, dispatch, user, loading, app }) => {
       <Row gutter={24} className={styles.colPadding}>
         <Col span={4}><OrgList {...orgListProps}/></Col>
         <Col span={20}>
-          {moduleSettings.tables.userList ? <UserTable {...userTableProps} /> : <Loader spinning="1" />}
+          {moduleSettings.tables.userList ? <UserTable {...userTableProps} /> : <Loader spinning={loading.effects['user/init']} />}
         </Col>
       </Row>
     </div>

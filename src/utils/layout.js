@@ -13,22 +13,54 @@ function getFullHeight (n) {
   return n.height() + cssValueToInt(n, 'padding-top') + cssValueToInt(n, 'padding-bottom') + cssValueToInt(n, 'margin-top') + cssValueToInt(n, 'margin-bottom') + cssValueToInt(n, 'border-top-width') + cssValueToInt(n, 'border-bottom-width')
 }
 
+function getHeightWithoutContent (n) {
+  n = $(n)
+  return cssValueToInt(n, 'padding-top') + cssValueToInt(n, 'padding-bottom') + cssValueToInt(n, 'margin-top') + cssValueToInt(n, 'margin-bottom') + cssValueToInt(n, 'border-top-width') + cssValueToInt(n, 'border-bottom-width')
+}
+
+function getMarginHeight (n) {
+  n = $(n)
+  return cssValueToInt(n, 'margin-top') + cssValueToInt(n, 'margin-bottom') + cssValueToInt(n, 'border-top-width') + cssValueToInt(n, 'border-bottom-width')
+}
+
+function scrollHeight (n) {
+  n = $(n)
+  return n.length > 0 ? n.get(0).scrollHeight : 0
+}
+
 module.exports = {
   addSimscroll (node, h, opt) {
     node = $(node)
     h = h + 'px'
     node.css({'max-height': h, height: h})
-    if (!node.attr('psInited')) node.perfectScrollbar(opt ? opt : {})
+    if (!node.data('psInited')) {
+      node.perfectScrollbar(opt ? opt : {})
+      node.data('psInited', 1)
+    }
     node.perfectScrollbar('update')
+  },
+
+  destrySimscroll (node) {
+    $(node).perfectScrollbar('destroy').data('psInited', null)
+  },
+
+  updateSimscroll (node) {
+    $(node).perfectScrollbar('update')
   },
 
   getFullHeight,
 
-  calcFullFillHeight (node, nodeBelow) {
+  getHeightWithoutContent,
+
+  getMarginHeight,
+
+  scrollHeight,
+
+  calcFullFillHeight (node, nodeBelow, ignoreContainer) {
     node = $(node)
     let container = $('#container')
     let isWindowContainer = false
-    if (container.length === 0 || container.get(0) === node.get(0)) {
+    if (ignoreContainer || container.length === 0 || container.get(0) === node.get(0)) {
       container = $(window)
       isWindowContainer = true
     }
@@ -39,7 +71,8 @@ module.exports = {
     }
     let domContainer = isWindowContainer ? $(document).get(0) : container.get(0)
     h -= node.offset().top - (isWindowContainer ? 0 : container.offset().top)
-    while (node && node.length > 0 && node.get(0) !== domContainer) {
+    node = node.parent()
+    while (node.length > 0 && node.get(0) !== domContainer) {
       h -= cssValueToInt(node, 'padding-bottom')
       h -= cssValueToInt(node, 'margin-bottom')
       h -= cssValueToInt(node, 'border-bottom-width')
