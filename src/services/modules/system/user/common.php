@@ -5,7 +5,7 @@ function get_user_data_modal(&$modal) {
     $modal = array(
         array(
             'table' => 'u',
-            array('avatar', '', 64, false, true, true),
+            array('avatar', '', 40, false, true, true),
             array('name', 'Name', '10', true, true),
             array('nickName', 'NickName', '10', true),
             array('age', 'Age', '10', true),

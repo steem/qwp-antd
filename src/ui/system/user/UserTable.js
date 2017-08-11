@@ -6,6 +6,7 @@ import classnames from 'classnames'
 import DateTable from 'components/DataTable'
 import { DropOption } from 'components'
 import { Link } from 'dva/router'
+import RandomAvatar from 'components/Helper/RandomAvatar'
 import uri from 'utils/uri'
 import layout from 'utils/layout'
 
@@ -14,7 +15,7 @@ const confirm = Modal.confirm
 const colOptions = {
   render: {
     avatar (text, record) {
-      return (<img alt={'avatar'} width={24} src={text} />)
+      return (<RandomAvatar text={record.nickName.substr(0, 1)}/>)
     },
     name (text, record) {
       return (<Link to={`user/${record.id}`}>{text}</Link>)

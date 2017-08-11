@@ -173,9 +173,6 @@ let usersListData = Mock.mock({
     email: '@email',
     createTime: '@datetime',
     password: '@string(6, 10)',
-    avatar() {
-      return Mock.Random.image('100x100', Mock.Random.color(), '#757575', 'png', this.nickName.substr(0, 1))
-    },
     org() {
       return orgData[Mock.Random.integer(0, orgData.length - 1)].id
     },

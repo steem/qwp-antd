@@ -29,7 +29,7 @@ module.exports = {
           tables: {
             "userList": {
               "names": [
-                ["avatar", "", 64, true, false, true],
+                ["avatar", "", 40, true, false, true],
                 ["name", "Name", "10", true],
                 ["nickName", "NickName.", "10", true],
                 ["age", "Age", "10", true],
