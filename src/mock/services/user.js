@@ -29,16 +29,16 @@ module.exports = {
           tables: {
             "userList": {
               "names": [
-                ["avatar", "", 40, true, false, true],
-                ["name", "Name", "10", true],
-                ["nickName", "NickName.", "10", true],
+                ["", "", 40, false, "avatar", true],
+                ["name", "Name", "10", true, true],
+                ["nickName", "NickName", "10", true],
                 ["age", "Age", "10", true],
-                ["isMale", "$genderConvertor", "10", true],
+                ["isMale", "", "10", true, true],
                 ["phone", "Phone", "20", true],
                 ["email", "Email", "20", true],
                 ["address", "Address", "30", true],
                 ["createTime", "CreateTime", "20"],
-                ["", "$operationConvertor", "20"]
+                ["", "", "20", false, "operation"]
               ]
             }
           },
@@ -141,9 +141,9 @@ module.exports = {
             return true
           })
         }
-        if (newData.length > 0 && query.sortField && typeof(newData[0][query.sortField]) !== 'undefined') {
+        if (newData.length > 0 && query.sortField && typeof (newData[0][query.sortField]) !== 'undefined') {
           let desc = query.sortOrder === 'desc'
-          newData.sort(function(a, b){
+          newData.sort(function (a, b) {
             if (desc) return a[query.sortField] - b[query.sortField]
             return b[query.sortField] - a[query.sortField]
           })

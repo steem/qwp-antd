@@ -45,13 +45,13 @@ let app = modelExtend(model, {
     locationChangedTag: 0,
     inited: false,
     showFooter: false,
+    hasSimscroll: false,
   },
   subscriptions: {
 
     setup ({ dispatch, history }) {
       dispatch({ type: 'init' })
       window.onresize = lodash.debounce(() => {dispatch({ type: 'sizeChanged' })}, 300)
-      history.listen(() => { dispatch({type: 'navChanged'}) })
     },
 
   },
@@ -98,7 +98,7 @@ let app = modelExtend(model, {
             subSystems,
             inited: true,
             hasSiderBar: uri.hasSiderBar(menu),
-            hasBread: uri.getCurrentAcls(menu).length >= 2,
+            hasBread: uri.getAclsByPath(menu).length >= 2,
             showFooter: footerVisibility(),
           },
         })
@@ -140,13 +140,16 @@ let app = modelExtend(model, {
       if (!inited) return
       let data = {
         locationChangedTag: (new Date()).getTime(),
-        hasBread: uri.getCurrentAcls(menu).length >= 2,
+        hasBread: uri.getAclsByPath(menu).length >= 2,
         hasSiderBar: uri.hasSiderBar(menu),
         showFooter: footerVisibility(),
       }
       yield put({
         type: 'app/updateState',
-        payload: data,
+        payload: {
+          ...data,
+          ...payload,
+        }
       })
     },
 
@@ -219,6 +222,13 @@ let app = modelExtend(model, {
           ...state.models,
           ...payload,
         },
+      }
+    },
+
+    hideSimscroll(state, { payload }) {
+      return {
+        ...state,
+        hasSimscroll: false,
       }
     },
 

@@ -29,6 +29,12 @@ function scrollHeight (n) {
 }
 
 module.exports = {
+  setHeight  (node, h) {
+    node = $(node)
+    h = h + 'px'
+    node.css({'max-height': h, height: h})
+  },
+
   addSimscroll (node, h, opt) {
     node = $(node)
     h = h + 'px'
@@ -70,7 +76,13 @@ module.exports = {
       else h -= getFullHeight(nodeBelow)
     }
     let domContainer = isWindowContainer ? $(document).get(0) : container.get(0)
-    h -= node.offset().top - (isWindowContainer ? 0 : container.offset().top)
+    if (node.offset().top < 0) {
+      let inner = $('.content-inner')
+      if (inner.length > 0) h -= inner.offset().top - node.offset().top
+      h -= (isWindowContainer ? 0 : container.offset().top)
+    } else {
+      h -= node.offset().top - (isWindowContainer ? 0 : container.offset().top)
+    }
     node = node.parent()
     while (node.length > 0 && node.get(0) !== domContainer) {
       h -= cssValueToInt(node, 'padding-bottom')

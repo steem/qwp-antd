@@ -147,11 +147,6 @@ function hasSiderBar (acls) {
   return false
 }
 
-function getCurrentAcls(acls) {
-  let root = location.pathname.split('/').slice(0, 2).join('/')
-  return acls.filter(_ => _.path.indexOf(root) === 0)
-}
-
 module.exports = {
   blank: 'about:blank',
   param,
@@ -163,5 +158,8 @@ module.exports = {
   isPassportComponent,
   getHeaderNav,
   hasSiderBar,
-  getCurrentAcls,
+  getAclsByPath (acls, pathname) {
+    if (!pathname) pathname = location.pathname.split('/').slice(0, 2).join('/')
+    return acls.filter(_ => _.path.indexOf(pathname) === 0)
+  },
 }

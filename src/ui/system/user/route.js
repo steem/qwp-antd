@@ -1,5 +1,7 @@
 import registerModel from 'utils/registerModel'
 
+let namespace = 'user'
+
 export default {
   path: 'system/user',
   getComponent (nextState, cb) {
@@ -9,4 +11,6 @@ export default {
       cb(null, require('./'))
     }, 'user')
   },
+  hasSimscroll: false,
+  namespace,
 }

@@ -49,6 +49,10 @@ export default modelExtend(model, {
       }
     },
 
+    *onEnter ({ payload = {} }, { call, put }) {
+
+    },
+
     *'delete' ({ payload }, { call, put, select }) {
       const data = yield call(userService.remove, { id: payload })
       const { selectedRowKeys } = yield select(_ => _.user)

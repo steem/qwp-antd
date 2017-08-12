@@ -13,9 +13,20 @@ class Avatar extends React.Component {
     let br1 = parseInt(c1 * 2 / 3)
     let br2 = parseInt(c2 * 2 / 3)
     let br3 = parseInt(c3 * 2 / 3)
+    let square = this.props.square || 24
+    let props = {
+      width: square,
+      height: square,
+      backgroundColor: `rgb(${b1},${b2},${b3})`,
+      color: `rgb(${c1},${c2},${c3})`,
+      border: `1px solid rgb(${br1},${br2},${br3})`,
+    }
+    let textProps = {
+      fontSize: this.props.fontSize || '12px',
+    }
     return (
-      <div className={styles.avatar} style={{ backgroundColor: `rgb(${b1},${b2},${b3})`, color: `rgb(${c1},${c2},${c3})`, border: `1px solid rgb(${br1},${br2},${br3})` }}>
-        {this.props.text}
+      <div className={styles.avatar} style={{ ...props }}>
+        <span style={{ ...textProps }} >{this.props.text.toUpperCase()}</span>
       </div>
     )
   }

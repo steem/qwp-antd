@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Table, Tag } from 'antd'
 import styles from './comments.less'
 import { color } from 'utils'
+import RandomAvatar from 'components/Helper/RandomAvatar'
 
 const status = {
   1: {
@@ -26,7 +27,7 @@ function Comments ({ data }) {
       dataIndex: 'avatar',
       width: 48,
       className: styles.avatarcolumn,
-      render: text => <span style={{ backgroundImage: `url(${text})` }} className={styles.avatar} />,
+      render: (text, it) => <RandomAvatar text={it.name.substr(0, 1)} fontSize="28px" square="48" />,
     }, {
       title: 'content',
       dataIndex: 'content',

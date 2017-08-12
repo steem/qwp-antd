@@ -37,31 +37,50 @@ class AppContainer extends React.Component {
     this.resizeState = layout.getResizeState(node, this.resizeState)
     let h = layout.calcFullFillHeight(node)
     let footer = layout.$('#footer')
+    let footerHeight = footer.length > 0 ? layout.$(footer).height() : 0
     let content = ReactDOM.findDOMNode(this.refs.content)
     let contentInner = ReactDOM.findDOMNode(this.refs.contentInner)
-    let footerHeight = footer.length > 0 ? layout.$(footer).height() : 0
-    let contentScrollHeight = layout.scrollHeight(contentInner)
-    let contentHeight = layout.$(contentInner).height()
-    if (this.resizeState.needResize || this.contentHeight !== contentHeight || this.contentScrollHeight !== contentScrollHeight) {
-      this.contentScrollHeight = contentScrollHeight
-      this.contentHeight = contentHeight
-      contentInner = layout.$('.content-inner')
-      if (this.contentScrollHeight + footerHeight < h) {
+    if (this.props.app && this.props.app.hasSimscroll) {
+      let contentScrollHeight = layout.scrollHeight(contentInner)
+      let contentHeight = layout.$(contentInner).height()
+      if (this.needUpdateScroll || this.resizeState.needResize || this.contentHeight !== contentHeight || this.contentScrollHeight !== contentScrollHeight) {
+        this.contentScrollHeight = contentScrollHeight
+        this.contentHeight = contentHeight
+        contentInner = layout.$('.content-inner')
+        if (this.contentScrollHeight + footerHeight < h) {
+          let newHeight = h - footerHeight - layout.getHeightWithoutContent(content) - layout.getHeightWithoutContent(node)
+          layout.$(content).height(newHeight)
+          if (contentInner.length > 0) {
+            contentInner.height(newHeight - layout.getHeightWithoutContent(contentInner))
+          }
+        } else {
+          layout.$(content).height('auto')
+          if (contentInner.length > 0) {
+            contentInner.height('auto')
+          }
+        }
+      }
+      if (!this.resizeState.needResize && !this.needUpdateScroll) return
+      this.needUpdateScroll = false
+      layout.addSimscroll(node, h, {'suppressScrollX': true})
+      this.hasSimscroll = true
+    } else if (this.props.app && !this.props.app.hasSimscroll) {
+      if (this.resizeState.needResize || this.needUpdateScroll || this.hasSimscroll) {
+        contentInner = layout.$('.content-inner')
         let newHeight = h - footerHeight - layout.getHeightWithoutContent(content) - layout.getHeightWithoutContent(node)
         layout.$(content).height(newHeight)
         if (contentInner.length > 0) {
           contentInner.height(newHeight - layout.getHeightWithoutContent(contentInner))
         }
-      } else {
-        layout.$(content).height('auto')
-        if (contentInner.length > 0) {
-          contentInner.height('auto')
-        }
+        layout.setHeight(node, h)
       }
+      if (this.hasSimscroll) {
+        layout.addSimscroll(node, h, {'suppressScrollX': true, 'scrollTop': 0})
+        layout.destrySimscroll(node)
+        this.hasSimscroll = false
+      }
+      if (this.needUpdateScroll) this.needUpdateScroll = false
     }
-    if (!this.resizeState.needResize && !this.needUpdateScroll) return
-    this.needUpdateScroll = false
-    layout.addSimscroll(node, h, {'suppressScrollX': true})
   }
 
   render () {

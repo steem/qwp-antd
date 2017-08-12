@@ -137,7 +137,7 @@ const LeftMenu = ({ siderFold, hasHeaderNav, locationChangedTag, darkTheme, hand
 
   let navMenus
   if (hasHeaderNav) {
-    navMenus = uri.getCurrentAcls(menu)
+    navMenus = uri.getAclsByPath(menu)
   } else {
     navMenus = menu
   }
