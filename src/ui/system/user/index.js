@@ -31,14 +31,16 @@ const User = ({ location, dispatch, user, loading, app }) => {
     fetchData: {org: uri.param('org')},
     tables: moduleSettings.tables.userList,
   }
+  const isLoading = loading.effects['user/init'] || loading.effects['user/onEnter']
   return (
     <div className="content-inner">
+      {isLoading ? <Loader spinning={isLoading} /> :
       <Row gutter={24} className={styles.colPadding}>
         <Col span={4}><OrgList {...orgListProps}/></Col>
         <Col span={20}>
-          {moduleSettings.tables.userList ? <UserTable {...userTableProps} /> : <Loader spinning={loading.effects['user/init']} />}
+          {moduleSettings.tables.userList ? <UserTable {...userTableProps} /> : <Error error={l('Failed to load user table')} />}
         </Col>
-      </Row>
+      </Row>}
     </div>
   )
 }
