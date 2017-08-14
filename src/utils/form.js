@@ -89,7 +89,7 @@ module.exports = {
     }
   },
 
-  createOkHander (validateFields, getFieldsValue, onOk) {
+  createOkHander (validateFields, getFieldsValue, onOk, dataKey) {
     return () => {
       let ret = false
       validateFields((errors) => {
@@ -97,10 +97,12 @@ module.exports = {
           return
         }
         ret = true
-        const data = {
+        if (!dataKey) dataKey = 'f'
+        let data = {}
+        data[dataKey] = {
           ...getFieldsValue(),
         }
-        onOk({ f: data })
+        onOk(data)
       })
       return ret
     }

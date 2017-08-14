@@ -444,6 +444,8 @@ function qwp_db_init_order_by(&$options) {
     if ($sort_field) {
         $sort = P("sort");
         if (!$sort) $sort = P('sortOrder');
+        if ($sort === 'ascend') $sort = 'asc';
+        else if ($sort === 'descend') $sort = 'desc';
         $sort = array(
             array($sort_field, $sort)
         );

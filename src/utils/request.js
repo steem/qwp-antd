@@ -5,6 +5,7 @@ import jsonp from 'jsonp'
 import lodash from 'lodash'
 import pathToRegexp from 'path-to-regexp'
 import { message } from 'antd'
+import { l } from './localization'
 
 const fetch = (options) => {
   let {
@@ -33,7 +34,6 @@ const fetch = (options) => {
   } catch (e) {
     message.error(e.message)
   }
-
   if (fetchType === 'JSONP') {
     return new Promise((resolve, reject) => {
       jsonp(url, {
@@ -54,19 +54,14 @@ const fetch = (options) => {
 
   switch (method.toLowerCase()) {
     case 'get':
-      return axios.get(url, {
-        params: cloneData,
-      })
-    case 'delete':
-      return axios.delete(url, {
-        data: cloneData,
-      })
     case 'post':
-      return axios.post(url, cloneData)
+      return axios.post(url, qs.stringify(data))
+    case 'delete':
+      return axios.delete(url, qs.stringify(data))
     case 'put':
-      return axios.put(url, cloneData)
+      return axios.put(url, qs.stringify(data))
     case 'patch':
-      return axios.patch(url, cloneData)
+      return axios.patch(url, qs.stringify(data))
     default:
       return axios(options)
   }
@@ -111,7 +106,7 @@ export default function request (options) {
       msg = data.message || statusText
     } else {
       statusCode = 600
-      msg = error.message || 'Network Error'
+      msg = error.message || l('Network Error')
     }
     return { success: false, statusCode, message: msg }
   })

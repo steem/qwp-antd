@@ -8,110 +8,106 @@ import { l } from 'utils/localization'
 import { HorizontalFormGenerator } from 'components/Helper/FormGenerator'
 import styles from './index.less'
 
-const FormItem = Form.Item
-
 class LoginForm extends React.Component {
-  constructor (props) {
-    super(props)
-  }
-  render () {
+  render() {
     const formProps = {
-      formName: "login",
-      fields: [
-        {
-          id: "user",
-          input: "text",
-          placeholder: l("Username"),
-          inputProps: {
-            size: 'large',
-            onPressEnter: this.props.handleOk
-          },
-          addonBefore:{
-            id: "area",
-            select: [{
-              name: l("Beijing"),
-              value: "bj"
-            },{
-              name: l("Shenzhen"),
-              value: 'sz'
-            }],
-            defaultValue: 'bj',
-            placeholder: l("Please select area")
-          }
-        },{
-          id: "pwd",
-          input: "password",
-          placeholder: l("Password"),
-          inputProps: {
-            size: 'large',
-            onPressEnter: this.props.handleOk
-          },
-        },{
-          id: "chk",
-          checkboxGroup: true,
-          placeholder: l("Password"),
-          inputProps: {
-            options: ['Apple', 'Pear', 'Orange'],
-            value: ['Apple', 'Pear', 'Orange'],
-            defaultValue: ['Apple', 'Orange'],
-          },
-        },{
-          id: "role",
+      formName: 'login',
+      fields: [{
+        id: 'user',
+        input: 'text',
+        placeholder: l('Username'),
+        inputProps: {
+          size: 'large',
+          onPressEnter: this.props.handleOk,
+        },
+        addonBefore: {
+          id: 'area',
           select: [{
-            name: l("User"),
-            value: "user"
-          },{
-            name: l("Administrator"),
-            value: 'admin'
+            name: l('Beijing'),
+            value: 'bj',
+          }, {
+            name: l('Shenzhen'),
+            value: 'sz',
           }],
-          defaultValue: 'user',
-          placeholder: l("Please select role"),
-          inputProps: {
-            multiple: true,
-            size: 'large',
-            onPressEnter: this.props.handleOk
-          },
-        },{
-          inputGroup: [{
-            id: "option1",
-            input: "text",
-            placeholder: l("Opt1"),
-            inputProps: {
-              onPressEnter: this.props.handleOk
-            },
-          },{
-            id: "option2",
-            input: "text",
-            placeholder: l("Opt2"),
-            inputProps: {
-              onPressEnter: this.props.handleOk
-            },
-          },{
-            id: "option3",
-            input: "text",
-            placeholder: l("Opt3"),
-            inputProps: {
-              onPressEnter: this.props.handleOk
-            },
-          },{
-            id: "option4",
-            input: "text",
-            placeholder: l("Opt4"),
-            inputProps: {
-              onPressEnter: this.props.handleOk
-            },
-          }],
-          span: 6,
-          itemProps: {
-            labelCol: { span: 6 },
-            wrapperCol: { span: 24 },
-          }
+          defaultValue: 'bj',
+          placeholder: l('Please select area'),
+        }
+      }, {
+        id: 'pwd',
+        input: 'password',
+        placeholder: l('Password'),
+        inputProps: {
+          size: 'large',
+          onPressEnter: this.props.handleOk,
+        },
+      }, {
+        id: 'chk',
+        checkboxGroup: true,
+        placeholder: l('Password'),
+        inputProps: {
+          options: ['Apple', 'Pear', 'Orange'],
+          value: ['Apple', 'Pear', 'Orange'],
+          defaultValue: ['Apple', 'Orange'],
+        },
+      }, {
+        id: 'role',
+        select: [{
+          name: l('User'),
+          value: 'user',
+        }, {
+          name: l('Administrator'),
+          value: 'admin',
         }],
+        defaultValue: 'user',
+        placeholder: l('Please select role'),
+        inputProps: {
+          multiple: true,
+          size: 'large',
+          onPressEnter: this.props.handleOk,
+        },
+      }, {
+        inputGroup: [{
+          id: 'option1',
+          input: 'text',
+          placeholder: l('Opt1'),
+          inputProps: {
+            onPressEnter: this.props.handleOk,
+          },
+        }, {
+          id: 'option2',
+          input: 'text',
+          placeholder: l('Opt2'),
+          inputProps: {
+            onPressEnter: this.props.handleOk,
+          },
+        }, {
+          id: 'option3',
+          input: 'text',
+          placeholder: l('Opt3'),
+          inputProps: {
+            onPressEnter: this.props.handleOk,
+          },
+        }, {
+          id: 'option4',
+          input: 'text',
+          placeholder: l('Opt4'),
+          inputProps: {
+            onPressEnter: this.props.handleOk,
+          },
+        }],
+        span: 6,
+        itemProps: {
+          labelCol: {
+            span: 6,
+          },
+          wrapperCol: {
+            span: 24,
+          },
+        }
+      }],
       ...this.props,
     }
-    return (
-      <HorizontalFormGenerator {...formProps}/>
-    )
+    return (<HorizontalFormGenerator {...formProps} />)
   }
 }
 
@@ -125,8 +121,15 @@ const Passport = ({
   },
   app,
 }) => {
-  const { loginLoading } = passport
-  const handleOk = createOkHander(validateFieldsAndScroll, getFieldsValue, (data) => { dispatch({ type: 'passport/login', payload: data }) })
+  const {
+    loginLoading
+  } = passport
+  const handleOk = createOkHander(validateFieldsAndScroll, getFieldsValue, (data) => {
+    dispatch({
+      type: 'passport/login',
+      payload: data
+    })
+  })
   const formProps = {
     getFieldDecorator,
     validateFieldsAndScroll,
@@ -164,4 +167,10 @@ Passport.propTypes = {
   app: PropTypes.object,
 }
 
-export default connect(({ app, passport }) => ({ app, passport }))(Form.create()(Passport))
+export default connect(({
+  app,
+  passport
+}) => ({
+  app,
+  passport
+}))(Form.create()(Passport))

@@ -23,7 +23,8 @@ const User = ({ location, dispatch, user, loading, app }) => {
         query: {
           org,
         },
-      }))}
+    }))},
+    appSettings: app.appSettings,
   }
 
   let userTableProps = {

@@ -162,7 +162,7 @@ class AppContainer extends React.Component {
       error: `You don't have the permission, please contact your service administraotr`
     }
     let layoutClassName = classnames(styles.layout, { [styles.noFooter]: !showFooter }, { [styles.fold]: isNavbar ? false : siderFold }, { [styles.withnavbar]: !hasSiderBar || isNavbar })
-
+    const isLoading = loading.effects['app/init'] || loading.effects['app/navChanged']
     return (
     <div loc={localeChangedTag}>
       <Helmet>
@@ -172,7 +172,7 @@ class AppContainer extends React.Component {
         {iconFontJS && <script src={iconFontJS}></script>}
         {iconFontCSS && <link rel="stylesheet" href={iconFontCSS} />}
       </Helmet>
-      {loading.effects['app/init'] ? <Loader spinning={loading.effects['app/init']} /> : <div className={layoutClassName}>
+      {isLoading ? <Loader spinning={isLoading} /> : <div className={layoutClassName}>
           {hasSiderBar && !isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
             <Sider {...siderProps} />
           </aside> : ''}

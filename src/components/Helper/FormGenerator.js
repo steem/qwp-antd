@@ -115,6 +115,8 @@ function createInput (f, fr) {
       return fr(f.id)(<TimePicker  {...createInputProps(f)} />)
     } else if (f.upload) {
       return fr(f.id)(<FGUpload {...f} />)
+    } else if (f.content) {
+      return f.content
     }
     return (
       <div>Input type error</div>

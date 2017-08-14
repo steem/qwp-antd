@@ -1,5 +1,7 @@
 const Mock = require('mockjs')
-let { queryArray, NOTFOUND, orgData } = require('../common')
+const fs = require('fs')
+const _ = require('lodash')
+let { queryArray, NOTFOUND, orgData, P } = require('../common')
 
 module.exports = {
   ops: {
@@ -11,7 +13,7 @@ module.exports = {
       res.status(200).end()
     },
     del (req, res) {
-      const { id } = req.params
+      const id = P(req, 'id')
       const data = queryArray(orgData, id, 'id')
       if (data) {
         orgData = orgData.filter((item) => item.id !== id)
@@ -21,23 +23,26 @@ module.exports = {
       }
     },
     dels (req, res) {
-      const { ids } = req.body
-      orgData = orgData.filter((item) => !ids.some(_ => _ === item.id))
+      let ids = P(req, 'ids')
+      if (ids) {
+        if (_.isString(ids)) ids = ids.split(',')
+        orgData = orgData.filter((item) => !ids.some(_ => _ === item.id))
+      }
       res.status(204).end()
     },
     edit (req, res) {
-      const { id } = req.params
-      const editItem = req.body
+      const id = P(req, 'id')
+      const editItem = P(req, 'f')
       let isExist = false
-
-      orgData = orgData.map((item) => {
-        if (item.id === id) {
-          isExist = true
-          return Object.assign({}, item, editItem)
-        }
-        return item
-      })
-
+      if (editItem) {
+        orgData = orgData.map((item) => {
+          if (item.id === id) {
+            isExist = true
+            return Object.assign({}, item, editItem)
+          }
+          return item
+        })
+      }
       if (isExist) {
         res.status(201).end()
       } else {
@@ -45,10 +50,9 @@ module.exports = {
       }
     },
     list (req, res) {
-      const { query } = req
-      let { pageSize, page, ...other } = query
-      pageSize = pageSize || 10
-      page = page || 1
+      const pageSize = P(req, 'pageSize', 10)
+      const page = P(req, 'page', 1)
+      const other = P(req, 's')
 
       let newData = orgData
       for (let key in other) {

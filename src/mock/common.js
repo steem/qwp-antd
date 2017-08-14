@@ -1,4 +1,5 @@
 const Mock = require('mockjs')
+const _ = require('lodash')
 
 const queryArray = (array, key, keyAlias = 'key') => {
   if (!(array instanceof Array)) {
@@ -179,6 +180,13 @@ let usersListData = Mock.mock({
   }, ],
 })
 
+function P (req, name, defaultValue) {
+  const { query, body } = req
+  if (body && !_.isUndefined(body[name])) return body[name]
+  if (query && !_.isUndefined(query[name])) return query[name]
+  return defaultValue
+}
+
 let userData = usersListData.data
 
 module.exports = {
@@ -188,4 +196,5 @@ module.exports = {
   inDebug: () => false,
   orgData,
   userData,
+  P,
 }

@@ -8,6 +8,7 @@ let {
   NOTFOUND,
   userData,
   lang,
+  P,
 } = require('../common')
 const {
   EnumRoleType,
@@ -47,9 +48,7 @@ module.exports = {
       }
     },
     get(req, res) {
-      const {
-        id
-      } = req.params
+      const id = P(req, 'id')
       const data = queryArray(userData, id, 'id')
       if (data) {
         res.status(200).json(data)
@@ -68,9 +67,7 @@ module.exports = {
       res.status(200).end()
     },
     del(req, res) {
-      const {
-        id
-      } = req.params
+      const id = P(req, 'id')
       const data = queryArray(userData, id, 'id')
       if (data) {
         userData = userData.filter((item) => item.id !== id)
@@ -80,27 +77,27 @@ module.exports = {
       }
     },
     dels(req, res) {
-      const {
-        ids
-      } = req.body
-      userData = userData.filter((item) => !ids.some(_ => _ === item.id))
+      let ids = P(req, 'ids')
+      if (ids) {
+        if (_.isString(ids)) ids = ids.split(',')
+        userData = userData.filter((item) => !ids.some(_ => _ === item.id))
+      }
       res.status(204).end()
     },
     edit(req, res) {
-      const {
-        id
-      } = req.params
-      const editItem = req.body
+      const id = P(req, 'id')
+      const editItem = P(req, 'f')
       let isExist = false
 
-      userData = userData.map((item) => {
-        if (item.id === id) {
-          isExist = true
-          return Object.assign({}, item, editItem)
-        }
-        return item
-      })
-
+      if (editItem) {
+        userData = userData.map((item) => {
+          if (item.id === id) {
+            isExist = true
+            return Object.assign({}, item, editItem)
+          }
+          return item
+        })
+      }
       if (isExist) {
         res.status(201).end()
       } else {
@@ -108,16 +105,11 @@ module.exports = {
       }
     },
     list(req, res) {
-      const {
-        query
-      } = req
-      let {
-        pageSize,
-        page,
-        ...other
-      } = query
-      pageSize = pageSize || 10
-      page = page || 1
+      const pageSize = P(req, 'pageSize', 10)
+      const page = P(req, 'page', 1)
+      const other = P(req, 's')
+      const sortField = P('req', 'sortField')
+      const sortOrder = P('req', 'sortOrder')
 
       let newData = userData
       for (let key in other) {
@@ -141,11 +133,11 @@ module.exports = {
             return true
           })
         }
-        if (newData.length > 0 && query.sortField && typeof (newData[0][query.sortField]) !== 'undefined') {
-          let desc = query.sortOrder === 'desc'
+        if (newData.length > 0 && sortField && typeof (newData[0][sortField]) !== 'undefined') {
+          let desc = sortOrder === 'desc'
           newData.sort(function (a, b) {
-            if (desc) return a[query.sortField] - b[query.sortField]
-            return b[query.sortField] - a[query.sortField]
+            if (desc) return a[query.sortField] > b[query.sortField]
+            return b[query.sortField] > a[query.sortField]
           })
         }
       }
@@ -157,18 +149,20 @@ module.exports = {
     },
 
     pwd(req, res) {
-      const editItem = req.body
+      const editItem = P(req, 'f')
       let isExist = false
 
-      adminUsers = adminUsers.map((item) => {
-        if (item.id === editItem.id) {
-          isExist = true
-          return Object.assign({}, item, {
-            password: editItem.pwd1
-          })
-        }
-        return item
-      })
+      if (editItem) {
+        adminUsers = adminUsers.map((item) => {
+          if (item.id === editItem.id) {
+            isExist = true
+            return Object.assign({}, item, {
+              password: editItem.pwd1
+            })
+          }
+          return item
+        })
+      }
       let data = {
         success: isExist
       }
