@@ -24,13 +24,24 @@ const User = ({ location, dispatch, user, loading, app }) => {
           org,
         },
     }))},
-    appSettings: app.appSettings,
+    appSettings: moduleSettings,
   }
 
   let userTableProps = {
     location,
-    fetchData: {org: uri.param('org')},
     tables: moduleSettings.tables.userList,
+    appSettings: moduleSettings,
+    dispatch,
+    loading,
+    user,
+  }
+  const org = uri.param('org')
+  if (org) {
+    userTableProps.fetchData = {
+      s: {
+        org,
+      }
+    }
   }
   const isLoading = loading.effects['user/init'] || loading.effects['user/onEnter']
   return (

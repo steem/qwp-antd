@@ -8,6 +8,9 @@ import { classnames, request } from 'utils'
 import styles from './List.less'
 import layout from 'utils/layout'
 import { isPaginationEqual } from 'utils'
+import { l } from 'utils/localization'
+import { createOkHander } from 'utils/form'
+import { HorizontalFormGenerator } from 'components/Helper/FormGenerator'
 
 class List extends React.Component {
   constructor (props) {
@@ -26,7 +29,7 @@ class List extends React.Component {
       clickedKeyId: props.clickedKeyId || null,
       scroll: undefined,
       pager: {
-        top: 8
+        top: 8,
       },
       isPopoverVisible: props.isPopoverVisible,
     }
@@ -101,17 +104,10 @@ class List extends React.Component {
     }
     let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) || 
                        (nextProps.fetch && !lodash.isEqual(nextProps.fetch, this.props.fetch)) ||
-                       (nextProps.fetchData && !lodash.isEqual(this.props.fetchData, nextProps.fetchData))
-    let controlPopover = (nextProps.isPopoverVisible === true || nextProps.isPopoverVisible === false) && nextProps.isPopoverVisible !== this.state.isPopoverVisible
+                       (nextProps.fetchData && !lodash.isMatch(this.props.fetchData, nextProps.fetchData))
     if (needLoadData) {
       this.props = nextProps
-      let state = this.createNewState(false, false, false, nextProps)
-      if (controlPopover) state.isPopoverVisible = nextProps.isPopoverVisible
-      this.setState(state, this.fetch)
-    } else if (controlPopover) {
-      this.setState({
-        isPopoverVisible: nextProps.isPopoverVisible,
-      })
+      this.setState(this.createNewState(false, false, false, nextProps), this.fetch)
     }
   }
 
@@ -149,9 +145,9 @@ class List extends React.Component {
     if (!this.state.pager) return
     let list = ReactDOM.findDOMNode(this.refs.QwpList)
     if (!list) return
-    let node = layout.$(event.target).closest('.ant-table-row')
-    if (node.length === 0) return
     list = layout.$(list)
+    let node = layout.$(event.target).closest('.ant-table-row')
+    if (node.length === 0) node = list.find('.ant-table-tbody')
     let top = node.offset().top - list.offset().top
     let pagerNode = layout.$(ReactDOM.findDOMNode(this.refs.QwpListPager))
     let delta = top + pagerNode.height() - list.height()
@@ -210,13 +206,76 @@ class List extends React.Component {
   }
 
   onSearch () {
-    if (this.props.onSearch) this.props.onSearch()
+    if (!this.state.isPopoverVisible) {
+      let list = ReactDOM.findDOMNode(this.refs.QwpList)
+      if (list) {
+        list = layout.$(list)
+        let searchContent = ReactDOM.findDOMNode(this.refs.searchContent)
+        if (searchContent) {
+          searchContent = layout.$(searchContent)
+          searchContent.css('top', list.find('.ant-table-tbody').offset().top - list.offset().top + 'px')
+          searchContent.width(list.width() - 8)
+        }
+      }
+    }
+    this.setState({
+      isPopoverVisible: !this.state.isPopoverVisible,
+    })
   }
 
-  handleSearchPopoverVisibleChange (visible) {
+  handleSearchOk (data) {
     this.setState({
-      isPopoverVisible: visible,
-    })
+      fetchData: {
+        ...this.state.fetchData,
+        ...data,
+      },
+      isPopoverVisible: false,
+    }, this.fetch)
+  }
+
+  onResetSearchContent () {
+    this.props.searchContent.form.resetFields()
+  }
+
+  createSearchContent (col, searchContent) {
+    let scFn = lodash.isFunction(searchContent)
+    col.title = (<div>{col.title}<div className={styles.headerBtns}>
+      <Button onClick={scFn ? searchContent : this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />
+    </div></div>)
+    if (!lodash.isUndefined(this.searchContentInner)) return
+    if (!scFn) {
+      const {
+        form,
+        appSettings,
+        formItems,
+      } = searchContent
+      const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue, 
+        this.handleSearchOk.bind(this), 's')
+      let formProps = { ...formItems }
+      formProps.fields.push({
+        content: (<div>
+          <Button className={styles.btnMarginRight} type="primary" size="small" onClick={handleOk}>
+            {l('Search')}
+          </Button>
+          <Button type="primary" size="small" htmlType="reset" onClick={this.onResetSearchContent.bind(this)}>
+            {l('Clear')}
+          </Button>
+        </div>),
+        itemProps: {
+          className: styles.searchBtns,
+        },
+      })
+      formProps.getFieldDecorator = form.getFieldDecorator
+      formProps.validateFieldsAndScroll = form.validateFieldsAndScroll
+      formProps.getFieldsValue = form.getFieldsValue
+      formProps.resetFields = form.resetFields
+      formProps.noFormItemLayout = true
+      formProps.appSettings = appSettings
+      formProps.handleOk = handleOk
+      this.searchContentInner = (<HorizontalFormGenerator {...formProps} />)
+    } else {
+      this.searchContentInner = ''
+    }
   }
 
   render () {
@@ -243,14 +302,7 @@ class List extends React.Component {
     let col = {
       title: this.props.header || '',
     }
-
-    if (searchContent) {
-      col.title = (<div>{col.title}<div className={styles.headerBtns}>
-        <Popover placement="bottomLeft" trigger="click" content={searchContent} overlayClassName={styles.listSearchPopover} onVisibleChange={this.handleSearchPopoverVisibleChange.bind(this)} visible={this.state.isPopoverVisible}>
-          <Button onClick={this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />
-        </Popover>
-      </div></div>)
-    }
+    if (searchContent) this.createSearchContent(col, searchContent)
     if (filter) {
       const { filters, filterMultiple, filterDropdown } = filter
       col.filters = filters
@@ -277,6 +329,9 @@ class List extends React.Component {
     }
     return (<div ref="QwpList" className="qwp-list" onMouseMove={this.onMouseMove.bind(this)}>
       {this.state.pager && <div ref="QwpListPager" className="qwp-list-pager" style={{ top: this.state.pager.top || 8 }}><SimplePager {...pagerProps}/></div>}
+      <div ref="searchContent" className={styles.searchContent} style={{ display: this.state.isPopoverVisible ? 'block' : 'none' }}>
+        {this.searchContentInner}
+      </div>
       <Table
         className={className}
         size="middle"

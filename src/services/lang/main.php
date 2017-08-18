@@ -39,6 +39,30 @@ function qwp_try_load_lang_for_module($name, &$lang) {
     }
     require_once($lang_file);
 }
+function qwp_load_all_lang(&$all_lang)
+{
+    global $language;
+    
+    $all_lang = array();
+    $lang_dir = QWP_LANG_ROOT . '/' . $language;
+    $files = scandir($lang_dir);
+    if (!$files || count($files) === 2) return;
+    $prefix = QWP_MODULE_SEP === '/' ? '/' : '';
+    foreach ($files as $file) {
+        if (is_dot_dir($file)) continue;
+        $lang = null;
+        $lang_file = $lang_dir . '/' . $file;
+        if (file_exists($lang_file)) {
+            require_once($lang_file);
+            if ($lang) {
+                $file = file_name_without_ext($file);
+                if ($file === 'global') $path = '/';
+                else $path = $prefix . str_replace('-', '/', $file);
+                $all_lang[] = array($path, $lang);
+            }
+        }
+    }
+}
 function qwp_load_lang_for_module($name) {
     global $lang_txts, $language, $loaded_lang;
 

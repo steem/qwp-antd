@@ -83,6 +83,7 @@ const Header = ({ user, logout, hasSiderBar, locationChangedTag, subSystems, pas
   const headerNavProps = {
     items: appSettings.headerNav,
     locationChangedTag,
+    barClassName: classnames(styles.navItem, styles.linkSpace)
   }
   return (
     <div className={classnames(styles.header, "user-menu-popup")}>

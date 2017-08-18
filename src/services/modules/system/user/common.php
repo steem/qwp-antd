@@ -12,7 +12,7 @@ function get_user_data_modal(&$modal) {
             array('isMale', '', '10', true, true),
             array('phone', 'Phone', '20', true),
             array('email', 'Email', '20', true),
-            array('address', 'Address', '30', true),
+            array('address', 'Address', '22', true),
             array('createTime', 'CreateTime', '20'),
             array('', '', '20', false, 'operation'),
             'id',

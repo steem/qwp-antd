@@ -153,11 +153,13 @@ function qwp_render_app_settings(&$app_settings = null, $m = null)
     if ($MODULE) {
         $prefix = 'form_';
         $app_root = $MODULE_ROOT;
-        $lang = null;
-        qwp_try_load_lang_for_module($MODULE_URI, $lang);
-        if ($lang) {
-            if (!$app_settings['lang']) $app_settings['lang'] = array();
-            $app_settings['lang'][] = array($MODULE_URI, $lang);
+        if (!QWP_PACK_ALL_LANG) {
+            $lang = null;
+            qwp_try_load_lang_for_module($MODULE_URI, $lang);
+            if ($lang) {
+                if (!$app_settings['lang']) $app_settings['lang'] = array();
+                $app_settings['lang'][] = array($MODULE_URI, $lang);
+            }
         }
         if ($PAGE) $prefix = $PAGE . '_' . $prefix;
         qwp_render_get_form_rules($app_root, $prefix, $app_settings);

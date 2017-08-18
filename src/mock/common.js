@@ -25,6 +25,11 @@ const NOTFOUND = {
   documentation_url: 'http://localhost:8000/request',
 }
 
+const INVALID_PARAMS = {
+  message: 'Invalid parameters',
+  documentation_url: 'http://localhost:8000/request',
+}
+
 const orgIds = [
   "320000198808308579",
   "320000197401148345",
@@ -192,6 +197,7 @@ let userData = usersListData.data
 module.exports = {
   queryArray,
   NOTFOUND,
+  INVALID_PARAMS,
   lang: 'zh',
   inDebug: () => false,
   orgData,

@@ -25,8 +25,7 @@ function component(...args) {
 }
 
 function current() {
-  if (typeof(window) === 'undefined') return null
-  return window.location.pathname
+  return typeof(window) === 'undefined' ? '' : window.location.pathname
 }
 
 function ops ({ ops, p, m, mock }) {

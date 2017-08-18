@@ -64,7 +64,7 @@ module.exports = {
                 required: true,
                 _msg: 'Password confirmation is required',
               }
-            }
+            },
           },
           acls: [{
             "name": "dashboard",

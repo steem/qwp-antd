@@ -1,12 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { Table } from 'antd'
+import { Table, Button, Row, Col, Form } from 'antd'
 import { request } from 'utils'
 import layout from 'utils/layout'
 import lodash from 'lodash'
 import styles from './DataTable.less'
 import { isPaginationEqual } from 'utils'
+import { l } from 'utils/localization'
+import { createOkHander } from 'utils/form'
+import { HorizontalFormGenerator, MultiColHorizontalFormGenerator } from 'components/Helper/FormGenerator'
 
 class DataTable extends React.Component {
   constructor (props) {
@@ -172,13 +175,130 @@ class DataTable extends React.Component {
     }).then(this.onUpdateData.bind(this))
   }
 
+  onSearch (data) {
+    if (this.inlineSearchContentInner) {
+      this.setState({
+        fetchData: {
+          ...this.state.fetchData,
+          ...data,
+        },
+      }, this.fetch)
+      return
+    }
+    if (!this.state.isPopoverVisible) {
+      let tableNode = ReactDOM.findDOMNode(this.refs.dataTable)
+      if (tableNode) {
+        tableNode = layout.$(tableNode)
+        let searchContent = ReactDOM.findDOMNode(this.refs.searchContent)
+        if (searchContent) {
+          searchContent = layout.$(searchContent)
+          searchContent.css('top', tableNode.find('.ant-table-tbody').offset().top - tableNode.offset().top + 'px')
+          searchContent.width(tableNode.width() - 8)
+        }
+      }
+    }
+    this.setState({
+      isPopoverVisible: !this.state.isPopoverVisible,
+    })
+  }
+
+  handleSearchOk (data) {
+    this.setState({
+      fetchData: {
+        ...this.state.fetchData,
+        ...data,
+      },
+      isPopoverVisible: false,
+    }, this.fetch)
+  }
+
+  onResetSearchContent () {
+    this.props.searchContent.form.resetFields()
+  }
+
+  createSearchContent (searchContent) {
+    if (!lodash.isUndefined(this.searchContentInner) || !lodash.isUndefined(this.inlineSearchContentInner)) return
+    if (!lodash.isFunction(searchContent)) {
+      const {
+        form,
+        appSettings,
+        formItems,
+      } = searchContent
+      const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue, 
+        searchContent.inline ? this.onSearch.bind(this) : this.handleSearchOk.bind(this), 's')
+      let formProps = { ...formItems }
+      if (searchContent.inline) {
+        //<Button onClick={lodash.isFunction(searchContent) ? searchContent : this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />
+        //{this.inlineSearchContentInner && <Button size="small" shape="circle" icon="close" htmlType="reset" onClick={this.onResetSearchContent.bind(this)} />}
+        formProps.fields.push({
+          content: (<Button.Group size="medium">
+            <Button className={styles.btnMarginRight} type="primary" onClick={handleOk} icon="search" />
+            <Button type="default" htmlType="reset" onClick={this.onResetSearchContent.bind(this)} icon="close" />
+          </Button.Group>),
+          itemProps: {
+            className: styles.searchBtns,
+          },
+        })
+        formProps.hasFeedback = false
+      } else {
+        formProps.fields.push({
+          content: (<div>
+            <Button className={styles.btnMarginRight} type="primary" size="small" onClick={handleOk}>
+              {l('Search')}
+            </Button>
+            <Button type="primary" size="small" htmlType="reset" onClick={this.onResetSearchContent.bind(this)}>
+              {l('Clear')}
+            </Button>
+          </div>),
+          itemProps: {
+            style: { marginRight: 0 },
+          },
+        })
+      }
+      formProps.getFieldDecorator = form.getFieldDecorator
+      formProps.validateFieldsAndScroll = form.validateFieldsAndScroll
+      formProps.getFieldsValue = form.getFieldsValue
+      formProps.resetFields = form.resetFields
+      formProps.noFormItemLayout = true
+      formProps.appSettings = appSettings
+      formProps.handleOk = handleOk
+      if (searchContent.inline) {
+        formProps.layout = 'inline'
+        this.inlineSearchContentInner = (<HorizontalFormGenerator {...formProps} />)
+      } else {
+        this.searchContentInner = (<MultiColHorizontalFormGenerator {...formProps} />)
+      }
+    } else {
+      this.searchContentInner = ''
+      this.inlineSearchContentInner = ''
+    }
+  }
+
   render () {
-    const { fetch, columns, ...tableProps } = this.props
+    const { 
+      fetch, 
+      columns, 
+      searchContent,
+      operations,
+      ...tableProps
+    } = this.props
     const { loading, dataSource, pagination } = this.state
     if (this.state.columns) tableProps.columns = this.state.columns
     else if (columns) tableProps.columns = columns
+    if (searchContent) this.createSearchContent(searchContent)
     return (
       <div className="qwp-data-table" ref="dataTable">
+        <Row style={{ display: searchContent || operations ? 'block' : 'none' }} className={styles.dataTableHeader}>
+          <Col span={12} style={{ display: operations ? 'block' : 'none' }}>
+            {operations}
+          </Col>
+          <Col span={12} style={{ display: searchContent ? 'block' : 'none', textAlign: 'right' }}>
+            {this.inlineSearchContentInner ? this.inlineSearchContentInner : <Button onClick={lodash.isFunction(searchContent) ? searchContent : this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />}
+          </Col>
+        </Row>
+        <div ref="searchContent" className={styles.searchContent} style={{ display: this.searchContentInner && this.state.isPopoverVisible ? 'block' : 'none' }}>
+          {this.searchContentInner}
+        </div>
         <Table
           {...tableProps}
           bordered

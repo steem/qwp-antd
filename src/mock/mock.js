@@ -26,14 +26,18 @@ function appSettings(req, res) {
   })
 }
 
+const moduleMaps = {
+  '/system/user': 'user',
+}
+
 function mockFns(req, res) {
-  const {
+  let {
     m,
     p,
     op
   } = req.query
   let fn = false
-
+  if (m && moduleMaps[m]) m = moduleMaps[m]
   if (m && mocks[m]) {
     if (op) {
       if (mocks[m].ops && mocks[m].ops[op]) {

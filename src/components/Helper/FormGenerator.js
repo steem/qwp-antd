@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form, Select, InputNumber, DatePicker, TimePicker, Switch, Radio, Checkbox,
-         Cascader, Slider, Button, Col, Upload, Icon, Input, Rate, TreeSelect } from 'antd'
+         Cascader, Slider, Button, Row, Col, Upload, Icon, Input, Rate, TreeSelect } from 'antd'
 import { fieldRuleFn } from 'utils/form'
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
@@ -21,6 +21,7 @@ function createInputProps (f) {
   let inputProps = f.inputProps ? { ...f.inputProps } : {}
   if (f.placeholder) inputProps.placeholder = f.placeholder
   if (f.defaultValue) inputProps.defaultValue = f.defaultValue
+  if (!inputProps.size) inputProps.size = 'large'
   return inputProps
 }
 
@@ -123,12 +124,13 @@ function createInput (f, fr) {
     )
 }
 
-function createFormItems (fields, fr, formItemLayout) {
+function createFormItems (fields, fr, formItemLayout, hasFeedback) {
   return fields.map((f) => {
     let itemProps = f.itemProps || {}
     if (f.label) itemProps.label = f.label
+    if (hasFeedback !== false) itemProps.hasFeedback = "1"
     return (
-      <FormItem {...itemProps} hasFeedback {...formItemLayout}>
+      <FormItem {...itemProps} {...formItemLayout}>
         {createInput(f, fr)}
       </FormItem>
     )
@@ -142,12 +144,70 @@ class HorizontalFormGenerator extends React.Component {
       appSettings,
       fields,
       formName,
+      formItemLayout,
+      noFormItemLayout,
+      layout,
+      hasFeedback,
+      values,
+      ...formProps,
     } = this.props
-    const formItemLayout = this.props.noFormItemLayout ? {} : this.props.formItemLayout || defaultFormItemLayout
-    let fr = fieldRuleFn(appSettings, formName, getFieldDecorator)
-    const items = createFormItems(fields, fr, formItemLayout)
+    const formItemLayoutProps = noFormItemLayout ? {} : formItemLayout || defaultFormItemLayout
+    let fr = fieldRuleFn(appSettings, formName, getFieldDecorator, values)
+    const items = createFormItems(fields, fr, formItemLayoutProps, hasFeedback)
     return (
-      <Form layout="horizontal">
+      <Form layout={layout || "horizontal"} {...formProps}>
+        {items}
+      </Form>
+    )
+  }
+}
+
+const defaultMultiFormItemLayout = {
+  labelCol: {
+    span: 10,
+  },
+  wrapperCol: {
+    span: 14,
+  },
+}
+
+function createRows (row, fr, formItemLayout, hasFeedback) {
+  if (row.fields) {
+    return (
+      <Row gutter={row.gutter || 16}>
+        <Col sm={row.sm || 8}>
+          {createFormItems(row.fields, fr, formItemLayout, hasFeedback)}
+        </Col>
+      </Row>
+    )
+  }
+  return (
+    <Row>
+      <Col span={12} offset={12} style={{ textAlign: 'right' }}>
+        {row.content}
+      </Col>
+  </Row>
+  )
+}
+
+class MultiColHorizontalFormGenerator extends React.Component {
+  render() {
+    const {
+      getFieldDecorator,
+      appSettings,
+      rows,
+      formName,
+      formItemLayout,
+      noFormItemLayout,
+      hasFeedback,
+      values,
+      ...formProps
+    } = this.props
+    const formItemLayoutProps = noFormItemLayout ? {} : formItemLayout || defaultMultiFormItemLayout
+    let fr = fieldRuleFn(appSettings, formName, getFieldDecorator, values)
+    const items = rows.map(row => createRows(row, fr, formItemLayout, hasFeedback))
+    return (
+      <Form layout="horizontal" {...formProps}>
         {items}
       </Form>
     )
@@ -156,5 +216,6 @@ class HorizontalFormGenerator extends React.Component {
 
 module.exports = {
   HorizontalFormGenerator,
+  MultiColHorizontalFormGenerator,
 }
 

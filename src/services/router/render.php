@@ -94,9 +94,16 @@ function qwp_render_root_app_settings() {
         'validators' => get_input_rules(),
     );
     $lang = null;
-    qwp_try_load_lang_for_module('global', $lang);
-    if ($lang) {
-        $app_settings['lang'][] = array('/', $lang);
+    if (QWP_PACK_ALL_LANG) {
+        qwp_load_all_lang($lang);
+        if ($lang) {
+            $app_settings['lang'] = $lang;
+        }
+    } else {
+        qwp_try_load_lang_for_module('global', $lang);
+        if ($lang) {
+            $app_settings['lang'][] = array('/', $lang);
+        }
     }
     qwp_load_lang_for_module('passport');
     if (isset($lang_txts) && $lang_txts) $app_settings['lang'][] = array('/', $lang_txts);

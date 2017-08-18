@@ -31,6 +31,7 @@ define('QWP_JUST_SERVICE', true);
 define('QWP_IN_MOCK_TEST', true);
 define('QWP_APP_SETTINGS_OP', '$');
 define('QWP_ENABLE_HEADER_NAV', true);
+define('QWP_PACK_ALL_LANG', false);
 
 define('QWP_CLIENT_UI_ROOT', QWP_ROOT . '/../ui');
 define('PRODUCT_NAME_LONG', 'QWP');

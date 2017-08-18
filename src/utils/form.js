@@ -79,12 +79,13 @@ module.exports = {
     validators = v
   },
 
-  fieldRuleFn (appSettings, formName, fn) {
+  fieldRuleFn (appSettings, formName, fn, values) {
     return (name) => {
       let r = {}
       if (appSettings.formRules && appSettings.formRules[formName] && appSettings.formRules[formName][name]) {
         r = appSettings.formRules[formName][name]
       }
+      if (values && values[name]) r.initialValue = values[name]
       return fn(name, r)
     }
   },
@@ -109,7 +110,7 @@ module.exports = {
   },
 
   convertFormRules (settings) {
-    if (!settings.formRules) return
+    if (!settings || !settings.formRules) return
     for (let p in settings.formRules) {
       let f = settings.formRules[p]
       for (let rs in f) {
@@ -139,7 +140,7 @@ module.exports = {
               r.validator = createMultiRegExValidatorFn()
               r.rs = validators[item]
             } else {
-              r = new RegExp(validators[item])
+              r.pattern = new RegExp(validators[item])
             }
             if (validatorDesc[item]) r.message = l(validatorDesc[item])
           } else {

@@ -6,6 +6,7 @@ const L = {
 let {
   queryArray,
   NOTFOUND,
+  INVALID_PARAMS,
   userData,
   lang,
   P,
@@ -37,13 +38,41 @@ module.exports = {
                 ["isMale", "", "10", true, true],
                 ["phone", "Phone", "20", true],
                 ["email", "Email", "20", true],
-                ["address", "Address", "30", true],
+                ["address", "Address", "22", true],
                 ["createTime", "CreateTime", "20"],
                 ["", "", "20", false, "operation"]
               ]
             }
           },
-          formRules: [],
+          formRules: [
+            createUser: {
+              name: {
+                required: true,
+                rangelength: [6, 16],
+              },
+              nickName: {
+                required: true,
+                rangelength: [6, 16],
+              },
+              phone: {
+                required: true,
+                rangelength: [6, 16],
+                digits: true,
+              },
+              age: {
+                required: true,
+                digits: true,
+              },
+              email: {
+                required: true,
+                email: true,
+              },
+              address: {
+                required: true,
+                rangelength: [3, 128],
+              },
+            }
+          ],
         }
       }
     },
@@ -57,14 +86,17 @@ module.exports = {
       }
     },
     create(req, res) {
-      const newData = req.body
-      newData.createTime = Mock.mock('@now')
-      newData.avatar = newData.avatar || Mock.Random.image('100x100', Mock.Random.color(), '#757575', 'png', newData.nickName.substr(0, 1))
-      newData.id = Mock.mock('@id')
+      const newData = P(req, 'f')
 
-      userData.unshift(newData)
-
-      res.status(200).end()
+      if (newData) {
+        newData.createTime = Mock.mock('@now')
+        newData.avatar = newData.avatar || Mock.Random.image('100x100', Mock.Random.color(), '#757575', 'png', newData.nickName.substr(0, 1))
+        newData.id = Mock.mock('@id')
+        userData.unshift(newData)
+        res.status(200).end()
+      } else {
+        res.status(404).json(INVALID_PARAMS)
+      }
     },
     del(req, res) {
       const id = P(req, 'id')

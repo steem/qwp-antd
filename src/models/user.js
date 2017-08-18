@@ -6,6 +6,8 @@ import { config } from 'utils'
 import showOpsNotification from 'utils/notification'
 import { localization } from 'utils'
 import _ from 'lodash'
+const { l } = localization
+import { convertFormRules } from 'utils/form'
 
 const { prefix } = config
 
@@ -13,6 +15,7 @@ export default modelExtend(model, {
   namespace: 'user',
 
   state: {
+    _t: 0,
     currentItem: {},
     modalVisible: false,
     modalType: 'create',
@@ -37,6 +40,7 @@ export default modelExtend(model, {
       const appRes = yield call(userService.$)
       if (appRes.success && appRes.data) {
         const { lang, ...moduleSettings } = appRes.data
+        convertFormRules(moduleSettings)
         if (lang) localization.set(lang, put)
         yield put({
           type: 'updateState',
@@ -58,7 +62,6 @@ export default modelExtend(model, {
       const { selectedRowKeys } = yield select(_ => _.user)
       if (data.success) {
         yield put({ type: 'updateState', payload: { selectedRowKeys: selectedRowKeys.filter(_ => _ !== payload) } })
-        yield put({ type: 'query' })
       } else {
         throw data
       }
@@ -68,7 +71,6 @@ export default modelExtend(model, {
       const data = yield call(usersService.remove, payload)
       if (data.success) {
         yield put({ type: 'updateState', payload: { selectedRowKeys: [] } })
-        yield put({ type: 'query' })
       } else {
         throw data
       }
@@ -76,12 +78,13 @@ export default modelExtend(model, {
 
     *create ({ payload }, { call, put }) {
       const data = yield call(userService.create, payload)
-      if (data.success) {
-        yield put({ type: 'hideModal' })
-        yield put({ type: 'query' })
-      } else {
-        throw data
-      }
+      yield put({
+        type: 'updateState',
+        payload: {
+          _t: (new Date()).getTime(),
+        },
+      })
+      showOpsNotification(data, l('Create user'), l('New user has been created successfully'))
     },
 
     *update ({ payload }, { select, call, put }) {
@@ -90,7 +93,6 @@ export default modelExtend(model, {
       const data = yield call(userService.update, newUser)
       if (data.success) {
         yield put({ type: 'hideModal' })
-        yield put({ type: 'query' })
       } else {
         throw data
       }
@@ -99,14 +101,6 @@ export default modelExtend(model, {
   },
 
   reducers: {
-
-    showModal (state, { payload }) {
-      return { ...state, ...payload, modalVisible: true }
-    },
-
-    hideModal (state) {
-      return { ...state, modalVisible: false }
-    },
 
   },
 })

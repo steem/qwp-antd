@@ -21,6 +21,18 @@
     display: flex;
     padding-right: 16px;
 
+    .headerNavDropdown {
+      display: none;
+    }
+
+    .headerNavItems {
+      display: block;
+
+      :global .ant-menu {
+        line-height: 43px;
+      }
+    }
+
     @media (max-width: 767px) {
       :global .ant-menu-root {
         .ant-menu-item {
@@ -28,6 +40,14 @@
             display: none!important;
           }
         }
+      }
+
+      .headerNavDropdown {
+        display: block;
+      }
+
+      .headerNavItems {
+        display: none;
       }
     }
   }
@@ -78,3 +98,18 @@
 
 }
 
+.headerNavMenus {
+  :global .ant-popover-inner-content {
+    padding: 8px 0;
+
+    .ant-menu-item {
+      padding: 0 32px
+    }
+  }
+}
+
+@media (min-width: 767px) {
+  .headerNavMenus {
+    display: none;
+  }
+}
