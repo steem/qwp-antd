@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { Menu, Icon } from 'antd'
 import { Link } from 'dva/router'
@@ -93,7 +92,7 @@ class Menus extends React.Component {
 
   }
   onSizeChanged () {
-    let node = ReactDOM.findDOMNode(this.refs.leftMenu)
+    let node = this.leftMenu
     if (!node) return
     let h = layout.calcFullFillHeight(node, 48, true)
     layout.addSimscroll(node, h, {'suppressScrollX': true})
@@ -119,7 +118,7 @@ class Menus extends React.Component {
       menuProps.openKeys = this.state.openKeys || defaultOpenKeys
     }
     return (
-      <div ref="leftMenu" className="qwp-left-menu">
+      <div ref={n => this.leftMenu = n} className="qwp-left-menu">
         <Menu
           {...menuProps}
           mode={siderFold ? 'vertical' : 'inline'}

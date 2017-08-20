@@ -6,8 +6,7 @@ import uri from 'utils/uri'
 import layout from 'utils/layout'
 import { createOkHander } from 'utils/form'
 import { HorizontalFormGenerator } from 'components/Helper/FormGenerator'
-
-const confirm = Modal.confirm
+import AutoSizeDialog from 'components/Dialog'
 
 class CreateUserForm extends React.Component {
   render() {
@@ -41,9 +40,6 @@ class CreateUserForm extends React.Component {
       getFieldDecorator: this.props.form.getFieldDecorator,
       validateFieldsAndScroll: this.props.form.validateFieldsAndScroll,
       getFieldsValue: this.props.form.getFieldsValue,
-      values:{
-        name:'aaa',
-      },
       ...this.props,
     }
     return (<HorizontalFormGenerator {...formProps} />)
@@ -51,34 +47,31 @@ class CreateUserForm extends React.Component {
 }
 
 class UserDialog extends React.Component {
-  componentDidMount () {
-
-  }
-
   render () {
-    const { 
-      appSettings, 
-      form,
-    } = this.props
-    const {
+    let {
       onOk,
-      maxHeight,
-      maximized,
-      heightIsMaximized,
-      ...dialogProps
+      autoSize,
+      formData,
+      create,
+      appSettings,
+      form,
+      ...dialogProps,
     } = this.props
-    
+
     const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue, onOk)
     const formProps = {
       form,
       appSettings,
       handleOk,
+      values: formData,
     }
-
+    dialogProps.autoSize = 300
+    dialogProps.title = create ? l('Create a new user') : l('Edit user information')
+    dialogProps.onOk = handleOk
     return (
-      <Modal title="Create a new user" {...dialogProps} onOk={handleOk} okText={l('Ok')} cancelText={l('Cancel')}>
+      <AutoSizeDialog {...dialogProps}>
         <CreateUserForm {...formProps}/>
-      </Modal>
+      </AutoSizeDialog>
     )
   }
 }

@@ -17,6 +17,65 @@ body {
 }
 
 :global {
+
+  .vertical-center-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vertical-center-modal .ant-modal {
+    top: 0;
+    padding-bottom: 0;
+
+    .ant-modal-body {
+      overflow: hidden!important;
+      max-height: none!important;
+    }
+  }
+
+  .qwp-table-perations {
+    .ant-btn {
+      padding: 0 6px;
+    }
+  }
+
+  .btn-danger {
+    color: #fff;
+    background-color: #c82333;
+    border-color: #bd2130;
+
+    &:hover, &:focus {
+      color: #fff;
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+  }
+
+  .btn-secondary {
+    color: #fff;
+    background-color: #868e96;
+    border-color: #868e96;
+
+    &:hover, &:focus {
+      color: #fff;
+      background-color: #727b84;
+      border-color: #6c757d;
+    }
+  }
+
+  .btn-warning {
+    color: #111;
+    background-color: #ffc107;
+    border-color: #ffc107;
+
+    &:hover, &:focus {
+      color: #111;
+      background-color: #e0a800;
+      border-color: #d39e00
+    }
+  }
+
   .roate-270 {
     transform:rotate(270deg);
     -ms-transform:rotate(270deg);

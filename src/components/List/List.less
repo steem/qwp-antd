@@ -1,7 +1,23 @@
-:global {
-  .qwp-list {
-    border: 1px solid #d9d9d9;
+.qwpList {
+  border: 1px solid #d9d9d9;
 
+  &.showSearch {
+    :global {
+      .qwp-list-pager {
+        display: none!important;
+      }
+    }
+  }
+
+  &:hover {
+    :global {
+      .qwp-list-pager {
+        display: block;
+      }
+    }
+  }
+
+  :global {
     .ant-table-selection-column, .ant-table-row-expand-icon-cell {
       min-width: 16px!important;
       width: 16px!important;
@@ -24,8 +40,8 @@
       position: absolute;
       top: 8px;
       display: none;
-      right: -9px;
-      width: 22px;
+      right: -15px;
+      width: 28px;
       margin: 0;
       background: white;
       z-index: 10;
@@ -33,29 +49,11 @@
       border-left: 0!important;
     }
 
-
-    &:hover {
-      .qwp-list-pager {
-        display: block;
-      }
-    }
-
     .ant-table-body {
       overflow-y: hidden!important;
 
       .qwp-list-cell {
         cursor: pointer;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background-color: transparent;
-      }
-
-      &:hover {
-                
-        &::-webkit-scrollbar-thumb {
-          background-color: rgba(0, 0, 0, 0.2);
-        }
       }
     }
   }
@@ -72,6 +70,11 @@
 
 .headerBtns {
   float: right;
+}
+
+.headerBtn {
+  padding-left: 3px!important;
+  padding-right: 3px!important;
 }
 
 .listSearchPopover {
@@ -94,4 +97,25 @@
 
 .btnMarginRight {
   margin-right: 6px;
+}
+
+.orderMenu {
+  padding: 6px 0 6px 0;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: .25rem;
+}
+
+.sortFieldItem {
+  padding-right: 16px;
+
+  :global {
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.sortFieldItemSelected {
+  color: #108ee9;
+  font-weight: bold!important;
 }

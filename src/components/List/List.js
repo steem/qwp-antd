@@ -1,8 +1,7 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import lodash from 'lodash'
-import { Table, Icon, Button, Popover } from 'antd'
+import { Table, Icon, Button, Popover, Menu, Dropdown } from 'antd'
 import SimplePager from 'components/SimplePager'
 import { classnames, request } from 'utils'
 import styles from './List.less'
@@ -31,7 +30,11 @@ class List extends React.Component {
       pager: {
         top: 8,
       },
-      isPopoverVisible: props.isPopoverVisible,
+      isSearchVisible: props.isSearchVisible,
+    }
+    if (props.sort) {
+      this.state.fetchData.sortField = props.sort.field
+      this.state.fetchData.sortOrder = props.sort.order || 'desc'
     }
   }
 
@@ -48,14 +51,14 @@ class List extends React.Component {
   }
 
   checkWindowResize () {
-    let node = ReactDOM.findDOMNode(this.refs.QwpList)
+    let node = this.QwpList
     if (!node) return
     this.resizeState = layout.getResizeState(node, this.resizeState)
     if (this.resizeState.needResize) this.onSizeChanged()
   }
 
   onSizeChanged () {
-    let node = ReactDOM.findDOMNode(this.refs.QwpList)
+    let node = this.QwpList
     if (!node) return
     let h
     if (this.props.autoHeight !== false) {
@@ -102,7 +105,7 @@ class List extends React.Component {
       this.props = nextProps
       return
     }
-    let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) || 
+    let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) ||
                        (nextProps.fetch && !lodash.isEqual(nextProps.fetch, this.props.fetch)) ||
                        (nextProps.fetchData && !lodash.isMatch(this.props.fetchData, nextProps.fetchData))
     if (needLoadData) {
@@ -143,13 +146,17 @@ class List extends React.Component {
 
   onMouseMove (event) {
     if (!this.state.pager) return
-    let list = ReactDOM.findDOMNode(this.refs.QwpList)
+    let list = this.QwpList
     if (!list) return
     list = layout.$(list)
     let node = layout.$(event.target).closest('.ant-table-row')
-    if (node.length === 0) node = list.find('.ant-table-tbody')
+    if (node.length === 0) {
+      node = layout.$(event.target).closest('.ant-table-header')
+      if (node.length === 0) return;
+      node = list.find('.ant-table-tbody')
+    }
     let top = node.offset().top - list.offset().top
-    let pagerNode = layout.$(ReactDOM.findDOMNode(this.refs.QwpListPager))
+    let pagerNode = layout.$(this.QwpListPager)
     let delta = top + pagerNode.height() - list.height()
     if (delta > 0) {
       top -= delta
@@ -178,6 +185,7 @@ class List extends React.Component {
       dataSource: this.props.dataKey ? result[this.props.dataKey] : result.data,
       pagination,
     }, this.onSizeChanged)
+    if (this.props.onDataUpdated) this.props.onDataUpdated()
   }
 
   fetch () {
@@ -197,20 +205,12 @@ class List extends React.Component {
     }).then(this.onUpdateData.bind(this))
   }
 
-  onFilter () {
-
-  }
-
-  onChange (selectedRowKeys, selectedRows) {
-
-  }
-
   onSearch () {
-    if (!this.state.isPopoverVisible) {
-      let list = ReactDOM.findDOMNode(this.refs.QwpList)
+    if (!this.state.isSearchVisible) {
+      let list = this.QwpList
       if (list) {
         list = layout.$(list)
-        let searchContent = ReactDOM.findDOMNode(this.refs.searchContent)
+        let searchContent = this.searchContent
         if (searchContent) {
           searchContent = layout.$(searchContent)
           searchContent.css('top', list.find('.ant-table-tbody').offset().top - list.offset().top + 'px')
@@ -219,7 +219,7 @@ class List extends React.Component {
       }
     }
     this.setState({
-      isPopoverVisible: !this.state.isPopoverVisible,
+      isSearchVisible: !this.state.isSearchVisible,
     })
   }
 
@@ -229,7 +229,7 @@ class List extends React.Component {
         ...this.state.fetchData,
         ...data,
       },
-      isPopoverVisible: false,
+      isSearchVisible: false,
     }, this.fetch)
   }
 
@@ -237,10 +237,55 @@ class List extends React.Component {
     this.props.searchContent.form.resetFields()
   }
 
-  createSearchContent (col, searchContent) {
+  onSort() {
+    this.setState({
+      fetchData: {
+        ...this.state.fetchData,
+        sortOrder: this.state.fetchData.sortOrder === 'desc' ? 'asc' : 'desc',
+      },
+    }, this.fetch)
+  }
+
+  changeSortField(item) {
+    if (item.key === this.state.fetchData.sortField) return
+      this.setState({
+        fetchData: {
+          ...this.state.fetchData,
+          sortField: item.key,
+        },
+      }, this.fetch)
+  }
+
+  createSearchContent (col, searchContent, sort) {
     let scFn = lodash.isFunction(searchContent)
+    let sortItems
+    if (sort && sort.fields) {
+      let sortField = this.state.fetchData.sortField
+      let menus = (
+        <Menu onClick={this.changeSortField.bind(this)} className={styles.orderMenu}>
+          {
+            sort.fields.map(item => {
+              let selected = sortField === item.id
+              return (<Menu.Item key={item.id} className={classnames(styles.sortFieldItem, {[styles.sortFieldItemSelected] : selected})}>
+                  <Icon type={selected ? "check" : "tag-o"} />
+                  {selected ? l('Current') : l('Order by')}: {item.name}
+                </Menu.Item>)
+            })
+          }
+        </Menu>
+      )
+      sortItems = (
+        <Dropdown overlay={menus} trigger={['click']}>
+          <Button title={l('Change sort field')} className={styles.headerBtn} type="ghost" icon="bars" />
+        </Dropdown>
+      )
+    }
     col.title = (<div>{col.title}<div className={styles.headerBtns}>
-      <Button onClick={scFn ? searchContent : this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />
+      <Button.Group size="small">
+        <Button className={styles.headerBtn} onClick={scFn ? searchContent : this.onSearch.bind(this)} type="ghost" icon="search" />
+        {sortItems}
+        {sort && <Button title={l('Change sort order')} className={styles.headerBtn} onClick={this.onSort.bind(this)} type="ghost" icon={this.state.fetchData.sortOrder === 'desc' ? 'arrow-down' : 'arrow-up'} />}
+      </Button.Group>
     </div></div>)
     if (!lodash.isUndefined(this.searchContentInner)) return
     if (!scFn) {
@@ -249,7 +294,7 @@ class List extends React.Component {
         appSettings,
         formItems,
       } = searchContent
-      const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue, 
+      const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue,
         this.handleSearchOk.bind(this), 's')
       let formProps = { ...formItems }
       formProps.fields.push({
@@ -279,7 +324,7 @@ class List extends React.Component {
   }
 
   render () {
-    let { fetch, 
+    let { fetch,
       header,
       dataIndex,
       render,
@@ -287,29 +332,23 @@ class List extends React.Component {
       onRowDoubleClick,
       autoHeight,
       name,
-      filter,
       noPagination,
       className,
       selectionType,
       searchContent,
+      sort,
       ...tableProps,
     } = this.props
     const { loading, pagination } = this.state
 
     if (selectionType) {
-      tableProps.rowSelection = {type: selectionType}
-    }    
+      if (lodash.isString(selectionType)) tableProps.rowSelection = {type: selectionType}
+      else tableProps.rowSelection = selectionType
+    }
     let col = {
       title: this.props.header || '',
     }
-    if (searchContent) this.createSearchContent(col, searchContent)
-    if (filter) {
-      const { filters, filterMultiple, filterDropdown } = filter
-      col.filters = filters
-      if (filterDropdown) col.filterDropdown = filterDropdown
-      if (filterMultiple) col.filterMultiple = filterMultiple
-      col.onFilter = this.onFilter
-    }
+    if (searchContent) this.createSearchContent(col, searchContent, sort)
     if (dataIndex) col.dataIndex = dataIndex
     if (render) col.render = render
     col.className = 'qwp-list-cell'
@@ -327,9 +366,9 @@ class List extends React.Component {
         onSwitchPage: this.switchPage,
       }
     }
-    return (<div ref="QwpList" className="qwp-list" onMouseMove={this.onMouseMove.bind(this)}>
-      {this.state.pager && <div ref="QwpListPager" className="qwp-list-pager" style={{ top: this.state.pager.top || 8 }}><SimplePager {...pagerProps}/></div>}
-      <div ref="searchContent" className={styles.searchContent} style={{ display: this.state.isPopoverVisible ? 'block' : 'none' }}>
+    return (<div ref={n => this.QwpList = n} className={classnames(styles.qwpList, {[styles.showSearch]: this.state.isSearchVisible})} onMouseMove={this.onMouseMove.bind(this)}>
+      {this.state.pager && <div ref={n => this.QwpListPager = n} className="qwp-list-pager" style={{ top: this.state.pager.top || 8 }}><SimplePager {...pagerProps}/></div>}
+      <div ref={n => this.searchContent = n} className={styles.searchContent} style={{ display: this.state.isSearchVisible ? 'block' : 'none' }}>
         {this.searchContentInner}
       </div>
       <Table
@@ -337,7 +376,6 @@ class List extends React.Component {
         size="middle"
         loading={loading}
         {...tableProps}
-        onChange={this.onChange}
         dataSource={this.state.dataSource}
         scroll={this.state.scroll}
       />

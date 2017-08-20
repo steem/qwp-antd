@@ -1,6 +1,5 @@
 import modelExtend from 'dva-model-extend'
 import * as userService from '../requests/user'
-import * as usersService from '../requests/users'
 import { model } from './common'
 import { config } from 'utils'
 import showOpsNotification from 'utils/notification'
@@ -16,10 +15,9 @@ export default modelExtend(model, {
 
   state: {
     _t: 0,
-    currentItem: {},
-    modalVisible: false,
-    modalType: 'create',
-    selectedRowKeys: [],
+    lastCreateUserData: 0,
+    selectedOrgs: [],
+    selectedUsers: [],
     moduleSettings: {
       tables: {},
     },
@@ -57,45 +55,45 @@ export default modelExtend(model, {
 
     },
 
-    *'delete' ({ payload }, { call, put, select }) {
-      const data = yield call(userService.remove, { id: payload })
-      const { selectedRowKeys } = yield select(_ => _.user)
+    *'delete' ({ payload }, { call, put }) {
+      const data = yield call(userService.remove, payload)
       if (data.success) {
-        yield put({ type: 'updateState', payload: { selectedRowKeys: selectedRowKeys.filter(_ => _ !== payload) } })
-      } else {
-        throw data
+        yield put({
+          type: 'updateState',
+          payload: {
+            _t: (new Date()).getTime(),
+          },
+        })
       }
-    },
-
-    *'multiDelete' ({ payload }, { call, put }) {
-      const data = yield call(usersService.remove, payload)
-      if (data.success) {
-        yield put({ type: 'updateState', payload: { selectedRowKeys: [] } })
-      } else {
-        throw data
-      }
+      showOpsNotification(data, l('Delete users'), l('Users are deleted successfully'))
     },
 
     *create ({ payload }, { call, put }) {
       const data = yield call(userService.create, payload)
+      let state = {
+        lastCreateUserData: data.success ? 0 : payload.f,
+      }
+      if (data.success) {
+        state._t = (new Date()).getTime()
+      }
       yield put({
         type: 'updateState',
-        payload: {
-          _t: (new Date()).getTime(),
-        },
+        payload: state,
       })
       showOpsNotification(data, l('Create user'), l('New user has been created successfully'))
     },
 
     *update ({ payload }, { select, call, put }) {
-      const id = yield select(({ user }) => user.currentItem.id)
-      const newUser = { ...payload, id }
-      const data = yield call(userService.update, newUser)
+      const data = yield call(userService.update, payload)
       if (data.success) {
-        yield put({ type: 'hideModal' })
-      } else {
-        throw data
+        yield put({
+          type: 'updateState',
+          payload: {
+            _t: (new Date()).getTime(),
+          },
+        })
       }
+      showOpsNotification(data, l('Edit user information'), l('User information is updated successfully'))
     },
 
   },

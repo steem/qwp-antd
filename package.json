@@ -20,12 +20,12 @@
     "react-perfect-scrollbar": "^0.2.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",    
+    "babel-cli": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-dev-expression": "^0.2.1",
     "babel-plugin-import": "^1.1.1",
     "babel-plugin-transform-runtime": "^6.9.0",
-    "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.9.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-istanbul": "^4.1.4",
@@ -57,7 +57,8 @@
     "envify": "^4.1.0",
     "browserify": "^14.4.0",
     "browserify-shim": "^3.8.14",
-    "coveralls": "^2.13.1"
+    "coveralls": "^2.13.1",
+    "cli": "^1.0.1"
   },
   "pre-commit": [
     "lint"
@@ -66,7 +67,8 @@
     "dev": "set BROWSER=none&&set HOST=0.0.0.0&&roadhog server",
     "lint": "eslint --fix --ext .js src",
     "build": "roadhog build",
-    "test": "cross-env NODE_ENV=test nyc mocha --no-timeouts --reporter mochawesome"
+    "test": "cross-env NODE_ENV=test nyc mocha --no-timeouts --reporter mochawesome",
+    "scaffold": "./node_modules/.bin/babel-node tools/scaffold.js"
   },
   "nyc": {
     "include": [

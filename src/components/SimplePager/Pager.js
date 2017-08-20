@@ -1,11 +1,9 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import layout from 'utils/layout'
-import { Icon, Input, InputNumber } from 'antd'
+import { Icon, Input, InputNumber, Button, message } from 'antd'
 import styles from './Pager.less'
 import { classnames } from 'utils'
 import { l } from 'utils/localization'
-import { message } from 'antd'
 
 class SimplePager extends React.Component {
   constructor (props) {
@@ -16,14 +14,14 @@ class SimplePager extends React.Component {
     }
   }
   componentDidMount () {
-    let node = ReactDOM.findDOMNode(this.refs.pageSize)
+    let node = this.pageSizeNode
     if (node) {
       node = layout.$(node).attr('title', l('Record count per page'))
     }
   }
   handleBtnClicks (event) {
     if (!this.props.onSwitchPage) return
-    let node = layout.$(event.target).closest('a')
+    let node = layout.$(event.target).closest('button')
     let op = node.data('ops')
     if (!op) return
     if (op === 'first') {
@@ -48,7 +46,7 @@ class SimplePager extends React.Component {
     this.setState({
       expand: true,
     })
-    let node = ReactDOM.findDOMNode(this.refs.simplePager)
+    let node = this.simplePager
     if (node) {
       node = layout.$(node).closest('.qwp-list-pager')
       node.css({width: '55px', right: '-42px'})
@@ -69,10 +67,10 @@ class SimplePager extends React.Component {
     this.setState({
       expand: false,
     })
-    let node = ReactDOM.findDOMNode(this.refs.simplePager)
+    let node = this.simplePager
     if (node) {
       node = layout.$(node).closest('.qwp-list-pager')
-      node.css({width: '22px', right: '-9px'})
+      node.css({width: '28px', right: '-15px'})
     }
   }
   handlePageSize (value) {
@@ -85,17 +83,17 @@ class SimplePager extends React.Component {
     let title = l('Total items: {total}, current page: {current}, total page: {totalPage}', {total: this.props.total || 0, current: this.props.current || 0, totalPage: this.props.totalPage})
     let pageText = l('Page')
     return (
-      <div ref="simplePager" onMouseLeave={this.onLeave.bind(this)} onClick={this.handleBtnClicks.bind(this)} className={classnames(styles.hand, {[styles.expand]: this.state.expand})}>
-        <span title={title}><Icon type="info-circle-o" /></span><br />
-        <a data-ops="first" title={l('First page')}><Icon type="step-forward" className="roate-270" /></a><br />
-        <a data-ops="previous" title={l('Previous page')}><Icon type="caret-up" /></a><br />
-        <a title={l('Reload current page')} onClick={this.refresh.bind(this)}><Icon type="reload" /></a><br />
-        <a data-ops="next" title={l('Next page')}><Icon type="caret-down" /></a><br />
-        <a data-ops="last" title={l('Last page')}><Icon type="step-backward" className="roate-270" /></a><br />
-        <a title={l('Goto page')} className={styles.switchPage} onClick={this.clickNumber.bind(this)}><Icon type="edit" /></a>
+      <div ref={n => this.simplePager = n} onMouseLeave={this.onLeave.bind(this)} onClick={this.handleBtnClicks.bind(this)} className={classnames(styles.hand, {[styles.expand]: this.state.expand})}>
+        <Button size="small" title={title} icon="info-circle-o"/><br />
+        <Button size="small" data-ops="first" title={l('First page')}><Icon type="step-forward" className="roate-270" /></Button><br />
+        <Button size="small" data-ops="previous" title={l('Previous page')} icon="caret-up"/><br />
+        <Button type="primary" size="small" title={l('Reload current page')} onClick={this.refresh.bind(this)} icon="reload"/><br />
+        <Button size="small" data-ops="next" title={l('Next page')} icon="caret-down"/><br />
+        <Button size="small" data-ops="last" title={l('Last page')}><Icon type="step-backward" className="roate-270"/></Button><br />
+        <Button size="small" title={l('Goto page')} className={styles.switchPage} onClick={this.clickNumber.bind(this)} icon="edit"/>
         <div className={styles.pageSetting}>
-          <Input ref="curPage" title={title} defaultValue={this.props.current} type="text" onPressEnter={this.switchPage.bind(this)}/><br />
-          <InputNumber ref="pageSize" size="small" min={10} step={10} max={200} defaultValue={this.props.pageSize} onChange={this.handlePageSize.bind(this)} />
+          <Input title={title} defaultValue={this.props.current} type="text" onPressEnter={this.switchPage.bind(this)}/><br />
+          <InputNumber ref={n => this.pageSizeNode = n} size="small" min={10} step={10} max={200} defaultValue={this.props.pageSize} onChange={this.handlePageSize.bind(this)} />
         </div>
       </div>
     )

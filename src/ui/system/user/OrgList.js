@@ -7,12 +7,26 @@ import { l } from 'utils/localization'
 import styles from './OrgList.less'
 
 let OrgListWithSearchForm = React.createClass({
+  updateModalOrgSelection(selectedOrgs) {
+    this.props.dispatch({
+      type: 'user/updateState',
+      payload: {
+        selectedOrgs,
+      },
+    })
+  },
+
+  onSelectionChanged(selectedOrgs, selectedRows) {
+    this.updateModalOrgSelection(selectedOrgs)
+  },
+
+  onDataUpdated() {
+    this.updateModalOrgSelection([])
+  },
+
   render () {
     const {
-      onDeleteItem,
-      onEditItem,
-      isMotion,
-      onRowClick,
+      user,
       location,
       form,
       appSettings,
@@ -38,28 +52,43 @@ let OrgListWithSearchForm = React.createClass({
       }
     }
     let props = {
-      selectionType: 'checkbox',
+      header: l('Organizations'),
+      selectionType: {
+        type: 'checkbox',
+        onChange: this.onSelectionChanged,
+        selectedRowKeys: user.selectedOrgs,
+      },
+      sort: {
+        order: 'desc',
+        field: 'id',
+        fields: [{
+          id: 'id',
+          name: l('ID'),
+        }, {
+          id: 'name',
+          name: l('Name'),
+        },],
+      },
       fetch: uri.ops({
         m: 'org',
         ops: 'list',
         mock: true,
       }),
       dataIndex: 'name',
-      ...listProps,
       searchContent,
-      onRowClick: onRowClick,
+      onDataUpdated: this.onDataUpdated,
+      clickedKeyId: location.query.org || -1,
     }
-    return (<List { ...props} />)
+    return (<List {...listProps} { ...props} />)
   }
 })
 
 OrgListWithSearchForm.propTypes = {
-  onDeleteItem: PropTypes.func,
-  onEditItem: PropTypes.func,
-  isMotion: PropTypes.bool,
   location: PropTypes.object,
   appSettings: PropTypes.object,
   form: PropTypes.object,
+  user: PropTypes.object,
+  dispatch: PropTypes.func,
 }
 
 export default Form.create()(OrgListWithSearchForm)

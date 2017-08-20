@@ -86,6 +86,7 @@ module.exports = {
         r = appSettings.formRules[formName][name]
       }
       if (values && values[name]) r.initialValue = values[name]
+      else if (!lodash.isUndefined(r.initialValue)) delete r.initialValue
       return fn(name, r)
     }
   },

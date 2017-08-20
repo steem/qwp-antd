@@ -13,16 +13,6 @@ module.exports = {
       res.status(200).end()
     },
     del (req, res) {
-      const id = P(req, 'id')
-      const data = queryArray(orgData, id, 'id')
-      if (data) {
-        orgData = orgData.filter((item) => item.id !== id)
-        res.status(204).end()
-      } else {
-        res.status(404).json(NOTFOUND)
-      }
-    },
-    dels (req, res) {
       let ids = P(req, 'ids')
       if (ids) {
         if (_.isString(ids)) ids = ids.split(',')
@@ -53,8 +43,10 @@ module.exports = {
       const pageSize = P(req, 'pageSize', 10)
       const page = P(req, 'page', 1)
       const other = P(req, 's')
-
+      const sortField = P(req, 'sortField')
+      const sortOrder = P(req, 'sortOrder')
       let newData = orgData
+
       for (let key in other) {
         if ({}.hasOwnProperty.call(other, key)) {
           newData = newData.filter((item) => {
@@ -74,6 +66,14 @@ module.exports = {
             return true
           })
         }
+      }
+
+      if (newData.length > 0 && sortField && !_.isUndefined(newData[0][sortField])) {
+        let desc = sortOrder === 'desc' || sortOrder === 'descend'
+        newData.sort(function (a, b) {
+          if (desc) return a[sortField] > b[sortField]
+          return b[sortField] > a[sortField]
+        })
       }
 
       res.status(200).json({

@@ -15,11 +15,11 @@ export async function $ (params) {
   })
 }
 
-export async function query (params) {
-  let ops = 'get'
+export async function list (params) {
+  let ops = 'list'
   return request({
     url: uri.ops({ ops, ...baseUri }),
-    method: 'post',
+    method: 'get',
     data: params,
   })
 }

@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { Table, Button, Row, Col, Form } from 'antd'
 import { request } from 'utils'
@@ -33,10 +32,11 @@ class DataTable extends React.Component {
   calcColumnsWidth () {
     let cols = []
     if (!this.props.columns) return false
-    let node = ReactDOM.findDOMNode(this.refs.dataTable)
+    let node = this.dataTable
     if (!node) return cols
+    node = layout.$(node).find('.ant-table-body > table')
     let total = 0
-    let width = layout.$(node).width()
+    let width = node.width()
     let tw = 0
 
     for (let item of this.props.columns) {
@@ -68,17 +68,17 @@ class DataTable extends React.Component {
   }
 
   checkWindowResize () {
-    let node = ReactDOM.findDOMNode(this.refs.dataTable)
+    let node = this.dataTable
     if (!node) return
     this.resizeState = layout.getResizeState(node, this.resizeState)
     if (this.resizeState.needResize) this.onSizeChanged()
   }
 
   setScrollBarSize () {
-    let dataTable = ReactDOM.findDOMNode(this.refs.dataTable)
+    let dataTable = this.dataTable
     if (!dataTable) return
     let state = {}
-    if (this.props.autoHeight !== false) {  
+    if (this.props.autoHeight !== false) {
       let node = dataTable.querySelector('.ant-table-body')
       let empty = dataTable.querySelector('.ant-table-placeholder')
       if (empty) empty = layout.$(empty).is(':visible')
@@ -95,7 +95,7 @@ class DataTable extends React.Component {
   }
 
   onSizeChanged () {
-    let dataTable = ReactDOM.findDOMNode(this.refs.dataTable)
+    let dataTable = this.dataTable
     if (!dataTable) return
     this.setState({
       columns: this.calcColumnsWidth(),
@@ -131,7 +131,7 @@ class DataTable extends React.Component {
       this.props = nextProps
       return
     }
-    let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) || 
+    let needLoadData = (nextProps.pagination && !isPaginationEqual(nextProps.pagination, this.state.pagination)) ||
                        (nextProps.fetch && !lodash.isEqual(nextProps.fetch, this.props.fetch)) ||
                        (nextProps.fetchData && !lodash.isMatch(this.props.fetchData, nextProps.fetchData))
     if (needLoadData) {
@@ -156,6 +156,7 @@ class DataTable extends React.Component {
       dataSource: this.props.dataKey ? result[this.props.dataKey] : result.data,
       pagination,
     }, this.onSizeChanged)
+    if (this.props.onDataUpdated) this.props.onDataUpdated()
   }
 
   fetch = () => {
@@ -185,11 +186,11 @@ class DataTable extends React.Component {
       }, this.fetch)
       return
     }
-    if (!this.state.isPopoverVisible) {
-      let tableNode = ReactDOM.findDOMNode(this.refs.dataTable)
+    if (!this.state.isSearchVisible) {
+      let tableNode = this.dataTable
       if (tableNode) {
         tableNode = layout.$(tableNode)
-        let searchContent = ReactDOM.findDOMNode(this.refs.searchContent)
+        let searchContent = this.searchContentNode
         if (searchContent) {
           searchContent = layout.$(searchContent)
           searchContent.css('top', tableNode.find('.ant-table-tbody').offset().top - tableNode.offset().top + 'px')
@@ -198,7 +199,7 @@ class DataTable extends React.Component {
       }
     }
     this.setState({
-      isPopoverVisible: !this.state.isPopoverVisible,
+      isSearchVisible: !this.state.isSearchVisible,
     })
   }
 
@@ -208,7 +209,7 @@ class DataTable extends React.Component {
         ...this.state.fetchData,
         ...data,
       },
-      isPopoverVisible: false,
+      isSearchVisible: false,
     }, this.fetch)
   }
 
@@ -224,36 +225,37 @@ class DataTable extends React.Component {
         appSettings,
         formItems,
       } = searchContent
-      const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue, 
+      const handleOk = createOkHander(form.validateFieldsAndScroll, form.getFieldsValue,
         searchContent.inline ? this.onSearch.bind(this) : this.handleSearchOk.bind(this), 's')
       let formProps = { ...formItems }
-      if (searchContent.inline) {
-        //<Button onClick={lodash.isFunction(searchContent) ? searchContent : this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />
-        //{this.inlineSearchContentInner && <Button size="small" shape="circle" icon="close" htmlType="reset" onClick={this.onResetSearchContent.bind(this)} />}
-        formProps.fields.push({
-          content: (<Button.Group size="medium">
-            <Button className={styles.btnMarginRight} type="primary" onClick={handleOk} icon="search" />
-            <Button type="default" htmlType="reset" onClick={this.onResetSearchContent.bind(this)} icon="close" />
-          </Button.Group>),
-          itemProps: {
-            className: styles.searchBtns,
-          },
-        })
-        formProps.hasFeedback = false
-      } else {
-        formProps.fields.push({
-          content: (<div>
-            <Button className={styles.btnMarginRight} type="primary" size="small" onClick={handleOk}>
-              {l('Search')}
-            </Button>
-            <Button type="primary" size="small" htmlType="reset" onClick={this.onResetSearchContent.bind(this)}>
-              {l('Clear')}
-            </Button>
-          </div>),
-          itemProps: {
-            style: { marginRight: 0 },
-          },
-        })
+      if (!formProps.fields[formProps.fields.length - 1].sentinel) {
+        if (searchContent.inline) {
+          formProps.fields.push({
+            content: (<Button.Group size="medium">
+              <Button className={styles.btnMarginRight} type="primary" onClick={handleOk} icon="search" />
+              <Button type="default" htmlType="reset" onClick={this.onResetSearchContent.bind(this)} icon="close" />
+            </Button.Group>),
+            itemProps: {
+              className: styles.searchBtns,
+            },
+            sentinel: true
+          })
+          formProps.hasFeedback = false
+        } else {
+          formProps.fields.push({
+            content: (<div>
+              <Button className={styles.btnMarginRight} type="primary" size="small" onClick={handleOk}>
+                {l('Search')}
+              </Button>
+              <Button type="primary" size="small" htmlType="reset" onClick={this.onResetSearchContent.bind(this)}>
+                {l('Clear')}
+              </Button>
+            </div>),
+            itemProps: {
+              style: { marginRight: 0 },
+            },
+          })
+        }
       }
       formProps.getFieldDecorator = form.getFieldDecorator
       formProps.validateFieldsAndScroll = form.validateFieldsAndScroll
@@ -275,9 +277,9 @@ class DataTable extends React.Component {
   }
 
   render () {
-    const { 
-      fetch, 
-      columns, 
+    const {
+      fetch,
+      columns,
       searchContent,
       operations,
       ...tableProps
@@ -287,7 +289,7 @@ class DataTable extends React.Component {
     else if (columns) tableProps.columns = columns
     if (searchContent) this.createSearchContent(searchContent)
     return (
-      <div className="qwp-data-table" ref="dataTable">
+      <div className="qwp-data-table" ref={n => this.dataTable = n}>
         <Row style={{ display: searchContent || operations ? 'block' : 'none' }} className={styles.dataTableHeader}>
           <Col span={12} style={{ display: operations ? 'block' : 'none' }}>
             {operations}
@@ -296,7 +298,7 @@ class DataTable extends React.Component {
             {this.inlineSearchContentInner ? this.inlineSearchContentInner : <Button onClick={lodash.isFunction(searchContent) ? searchContent : this.onSearch.bind(this)} type="primary" size="small" shape="circle" icon="search" />}
           </Col>
         </Row>
-        <div ref="searchContent" className={styles.searchContent} style={{ display: this.searchContentInner && this.state.isPopoverVisible ? 'block' : 'none' }}>
+        <div ref={n => this.searchContentNode = n} className={styles.searchContent} style={{ display: this.searchContentInner && this.state.isSearchVisible ? 'block' : 'none' }}>
           {this.searchContentInner}
         </div>
         <Table

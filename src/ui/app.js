@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import pathToRegexp from 'path-to-regexp'
 import { connect } from 'dva'
@@ -32,14 +31,14 @@ class AppContainer extends React.Component {
   }
 
   checkWindowResize () {
-    let node = ReactDOM.findDOMNode(this.refs.container)
+    let node = this.container
     if (!node) return
     this.resizeState = layout.getResizeState(node, this.resizeState)
     let h = layout.calcFullFillHeight(node)
     let footer = layout.$('#footer')
     let footerHeight = footer.length > 0 ? layout.$(footer).height() : 0
-    let content = ReactDOM.findDOMNode(this.refs.content)
-    let contentInner = ReactDOM.findDOMNode(this.refs.contentInner)
+    let content = this.content
+    let contentInner = this.contentInner
     if (this.props.app && this.props.app.hasSimscroll) {
       let contentScrollHeight = layout.scrollHeight(contentInner)
       let contentHeight = layout.$(contentInner).height()
@@ -84,7 +83,7 @@ class AppContainer extends React.Component {
   }
 
   render () {
-    let { 
+    let {
       children,
       dispatch,
       app,
@@ -179,9 +178,9 @@ class AppContainer extends React.Component {
           <div className={styles.main}>
             {hasHeader ? <Header {...headerProps} /> : ''}
             {hasBread ? <Bread {...breadProps} /> : ''}
-            <div className={styles.container} ref="container" id="container">
-              <div className={styles.content} ref="content">
-                <div ref="contentInner">
+            <div className={styles.container} ref={n => this.container = n} id="container">
+              <div className={styles.content} ref={n => this.content = n}>
+                <div ref={n => this.contentInner = n}>
                 {errorProps ? <Error {...errorProps} /> : children}
                 </div>
               </div>

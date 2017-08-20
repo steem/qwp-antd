@@ -1,4 +1,5 @@
 const Mock = require('mockjs')
+const _ = require('lodash')
 const L = {
   en: require('./data/lang/en/user'),
   zh: require('./data/lang/zh/user'),
@@ -99,17 +100,7 @@ module.exports = {
       }
     },
     del(req, res) {
-      const id = P(req, 'id')
-      const data = queryArray(userData, id, 'id')
-      if (data) {
-        userData = userData.filter((item) => item.id !== id)
-        res.status(204).end()
-      } else {
-        res.status(404).json(NOTFOUND)
-      }
-    },
-    dels(req, res) {
-      let ids = P(req, 'ids')
+      let ids = P(req, 'f')
       if (ids) {
         if (_.isString(ids)) ids = ids.split(',')
         userData = userData.filter((item) => !ids.some(_ => _ === item.id))
@@ -140,8 +131,8 @@ module.exports = {
       const pageSize = P(req, 'pageSize', 10)
       const page = P(req, 'page', 1)
       const other = P(req, 's')
-      const sortField = P('req', 'sortField')
-      const sortOrder = P('req', 'sortOrder')
+      const sortField = P(req, 'sortField')
+      const sortOrder = P(req, 'sortOrder')
 
       let newData = userData
       for (let key in other) {
@@ -165,11 +156,11 @@ module.exports = {
             return true
           })
         }
-        if (newData.length > 0 && sortField && typeof (newData[0][sortField]) !== 'undefined') {
-          let desc = sortOrder === 'desc'
+        if (newData.length > 0 && sortField && !_.isUndefined(newData[0][sortField])) {
+          let desc = sortOrder === 'desc' || sortOrder === 'descend'
           newData.sort(function (a, b) {
-            if (desc) return a[query.sortField] > b[query.sortField]
-            return b[query.sortField] > a[query.sortField]
+            if (desc) return a[sortField] > b[sortField]
+            return b[sortField] > a[sortField]
           })
         }
       }
