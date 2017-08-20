@@ -8,6 +8,7 @@
 -   自动填充前端表单数据
 -   前端和后端共享国际化语言文件
 -   用户权限控制（开发阶段可按目录自动生成所有权限）
+-   前端和后端代码分离，后端services代码可用任意语言编写
 -   根据用户权限自动调整页面布局
 -   完整的CRUD样例
 -   提供Notification和用户信息菜单样例
@@ -91,7 +92,6 @@ class LoginForm extends React.Component {
 ``` php
 <?php
 $form_rule = array(
-    'cssSelector' => '#form-signin',
     'name' => 'login',
     'rules' => array(
         'user' => array(
@@ -181,7 +181,10 @@ npm run build
 npm run lint
 ```
 
-项目部署 [#269](https://github.com/zuiidea/antd-admin/issues/269)
+项目部署
+由于路由需要rewrite支持，请参考
+[#269](https://github.com/zuiidea/antd-admin/issues/269)
+后台serivce部分也可以通过jsonp方式独立部署
 
 ## 截屏
 
