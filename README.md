@@ -1,17 +1,22 @@
-# Antd Admin
+# QWP-Antd Admin
 
-[![React](https://img.shields.io/badge/react-^15.6.1-brightgreen.svg?style=flat-square)](https://github.com/facebook/react)
-[![Ant Design](https://img.shields.io/badge/ant--design-^2.11.2-yellowgreen.svg?style=flat-square)](https://github.com/ant-design/ant-design)
-[![dva](https://img.shields.io/badge/dva-^1.2.0-orange.svg?style=flat-square)](https://github.com/dvajs/dva)
+基于[qwp](https://github.com/steem/qwp)和[antd](https://github.com/dvajs/dva)的后台管理页面模板
 
-[![GitHub issues](https://img.shields.io/github/issues/zuiidea/antd-admin.svg?style=flat-square)](https://github.com/zuiidea/antd-admin)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/zuiidea/antd-admin/pulls)
-[![MIT](https://img.shields.io/dub/l/vibe-d.svg?style=flat-square)](http://opensource.org/licenses/MIT)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
+## QWP-特性
+-   前端和后端共享表单验证代码
+-   自动生成前端表单
+-   自动填充前端表单数据
+-   前端和后端共享国际化语言文件
+-   用户权限控制（开发阶段可按目录自动生成所有权限）
+-   根据用户权限自动调整页面布局
+-   完整的CRUD样例
+-   提供Notification和用户信息菜单样例
+-   列表控件样例（支持搜索、排序和分页）
+-   表格控件样例（支持搜索、排序和分页）
+-   对话框高度和宽度自适应
+-   采用react-perfect-scrollbar作为滚动条
 
-演示地址 <http://zuiidea.github.io/antd-admin>  \| [备用地址](http://47.92.30.98:8000)
-
-## 特性
+## Antd-特性
 
 -   基于[react](https://github.com/facebook/react)，[ant-design](https://github.com/ant-design/ant-design)，[dva](https://github.com/dvajs/dva)，[Mock](https://github.com/nuysoft/Mock) 企业级后台管理系统最佳实践。
 -   基于Antd UI 设计语言，提供后台管理系统常见使用场景。
@@ -19,36 +24,92 @@
 -   使用[roadhog](https://github.com/sorrycc/roadhog)本地调试和构建，其中Mock功能实现脱离后端独立开发。
 -   浅度响应式设计。
 
-## 更新日志
+详情请参考[dva](https://github.com/dvajs/dva)
 
-### 4.2.3
+## 自动生成表单代码样例
 
-`2017-07-07`
+``` javascript
+class LoginForm extends React.Component {
+  render() {
+    const formProps = {
+      formName: 'login',
+      fields: [{
+        id: 'user',
+        input: 'text',
+        placeholder: l('Username'),
+        inputProps: {
+          size: 'large',
+          onPressEnter: this.props.handleOk,
+        },
+        addonBefore: {
+          id: 'area',
+          select: [{
+            name: l('Beijing'),
+            value: 'bj',
+          }, {
+            name: l('Shenzhen'),
+            value: 'sz',
+          }],
+          defaultValue: 'bj',
+          placeholder: l('Please select area'),
+        }
+      }, {
+        id: 'pwd',
+        input: 'password',
+        placeholder: l('Password'),
+        inputProps: {
+          size: 'large',
+          onPressEnter: this.props.handleOk,
+        },
+      }, {
+        id: 'role',
+        select: [{
+          name: l('User'),
+          value: 'user',
+        }, {
+          name: l('Administrator'),
+          value: 'admin',
+        }],
+        defaultValue: 'user',
+        placeholder: l('Please select role'),
+        inputProps: {
+          multiple: true,
+          size: 'large',
+          onPressEnter: this.props.handleOk,
+        },
+      },],
+      ...this.props,
+    }
+    return (<HorizontalFormGenerator {...formProps} />)
+  }
+}
+```
 
--     新增用户按权限访问。[#384](https://github.com/zuiidea/antd-admin/issues/384)
+## 表单验证代码样例
 
-### 4.2.2
-
-`2017-06-01`
-
--     新增用户管理批量删除。[#320](https://github.com/zuiidea/antd-admin/issues/320)
-
-### 4.2.1
-
-`2017-05-12`
-
--     新增IconFont扩展方案,本地使用方案。[#270](https://github.com/zuiidea/antd-admin/issues/270) [Live](http://47.92.30.98:666/UIElement/iconfont)
--     新增常见场景使用loading。 [dva-loading](https://github.com/dvajs/dva-loading)
-
-### 4.2
-
-`2017-04-28`
-
--     修改user相关API使用`Restful`风格。
--     增加user页面多条件查询。[#266](https://github.com/zuiidea/antd-admin/issues/226)
--     修复菜单默认高亮。[#201](https://github.com/zuiidea/antd-admin/issues/201)
-
-      [More Change Log](https://github.com/zuiidea/antd-admin/wiki/Change-Log)
+``` php
+<?php
+$form_rule = array(
+    'cssSelector' => '#form-signin',
+    'name' => 'login',
+    'rules' => array(
+        'user' => array(
+            'required' => true,
+            'alphanumeric' => true,
+            'rangelength' => array(3, 32),
+        ),
+        'pwd' => array(
+            'required' => true,
+            'rangelength' => array(6, 32),
+            'password' => true,
+        ),
+        "option1" => array(
+            "required" => true,
+            "rangelength" => array(2, 3),
+        ),
+    ),
+);
+```
 
 ## 开发构建
 
@@ -60,10 +121,11 @@
 │ ├── /components/   # UI组件及UI相关方法
 │ │ ├── skin.less    # 全局样式
 │ │ └── vars.less    # 全局样式变量
-│ ├── /routes/       # 路由组件
+│ ├── /ui/           # UI界面
 │ │ └── app.js       # 路由入口
 │ ├── /models/       # 数据模型
-│ ├── /services/     # 数据接口
+│ ├── /requests/     # 数据接口
+│ ├── /services/     # 后台服务
 │ ├── /themes/       # 项目样式
 │ ├── /mock/         # 数据mock
 │ ├── /utils/        # 工具函数
@@ -76,6 +138,7 @@
 │ ├── index.js       # 入口文件
 │ └── index.html     
 ├── package.json     # 项目信息
+├── .babelrc        # Babel配置
 ├── .eslintrc        # Eslint配置
 └── .roadhogrc.js    # roadhog配置
 ```
@@ -83,13 +146,13 @@
 文件夹命名说明:
 
 -   components：组件（方法）为单位以文件夹保存，文件夹名组件首字母大写（如`DataTable`），方法首字母小写（如`layer`）,文件夹内主文件与文件夹同名，多文件以`index.js`导出对象（如`./src/components/Layout`）。
--   routes：页面为单位以文件夹保存，文件夹名首字母小写（特殊除外，如`UIElement`）,文件夹内主文件以`index.js`导出，多文件时可建立`components`文件夹（如`./src/routes/dashboard`），如果有子路由，依次按照路由层次建立文件夹（如`./src/routes/UIElement`）。
+-   ui：页面为单位以文件夹保存，`route.js`存放路由配置信息，如果没有此文件，则将无法路由，文件夹名首字母小写（特殊除外，如`UIElement`）,文件夹内主文件以`index.js`导出，多文件时可建立`components`文件夹（如`./src/ui/dashboard`），如果有子路由，依次按照路由层次建立文件夹（如`./src/ui/UIElement`）。
 
 ### 快速开始
 
 克隆项目文件:
 
-    git clone https://github.com/zuiidea/antd-admin.git
+    git clone https://github.com/steem/qwp-antd.git
 
 进入目录安装依赖:
 
@@ -118,18 +181,12 @@ npm run lint
 
 项目部署 [#269](https://github.com/zuiidea/antd-admin/issues/269)
 
-## 参考
-
-用户列表：<https://github.com/dvajs/dva/tree/master/examples/user-dashboard>
-
-dashboard设计稿：<https://dribbble.com/shots/3108122-Dashboard-Admin> （已征得作者同意）
-
 ## 截屏
 
-web
+导航
 
-![](assets/4.2.1-demo-1.gif)
+![](assets/navigation.gif)
 
-移动
+CRUD
 
-![](assets/4.2.1-demo-2.gif)
+![](assets/crud.gif)

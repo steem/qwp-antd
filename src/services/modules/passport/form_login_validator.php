@@ -18,8 +18,4 @@ $form_rule = array(
             "rangelength" => array(2, 3),
         ),
     ),
-    'actionMessage' => L('Login is in processing, please wait...'),
-    'invalidHandler'  => 'loginInvalidHandler',
-    'beforeSubmit' => 'loginBeforeSubmit',
-    'actionHandler' => 'loginActionHandler',
 );
