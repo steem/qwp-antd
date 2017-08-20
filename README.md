@@ -2,7 +2,7 @@
 
 基于[qwp](https://github.com/steem/qwp)和[antd](https://github.com/dvajs/dva)的后台管理页面模板
 
-## QWP-特性
+## 特性
 -   前端和后端共享表单验证代码
 -   自动生成前端表单
 -   自动填充前端表单数据
@@ -15,6 +15,7 @@
 -   表格控件样例（支持搜索、排序和分页）
 -   对话框高度和宽度自适应
 -   采用react-perfect-scrollbar作为滚动条
+-   按样例代码自动生成脚手架代码（待完成）
 
 ## Antd-特性
 
@@ -134,6 +135,7 @@ $form_rule = array(
 │ │ ├── config.js    # 项目常规配置
 │ │ ├── request.js   # 异步请求函数
 │ │ └── theme.js     # 项目需要在js中使用到样式变量
+│── /tools/          # 工具目录，比如自动生成代码
 │ ├── route.js       # 路由配置
 │ ├── index.js       # 入口文件
 │ └── index.html     
