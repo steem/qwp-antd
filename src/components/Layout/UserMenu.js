@@ -33,12 +33,31 @@ const UserMenuComponent = React.createClass({
     let userMenu = user.isLogined ? (
       <div className={styles.userMenu}>
         <div className={classnames(styles.menuUserImageItem, styles.textAlign)}>
-          <img src={userImage} className={classnames(styles.imgCircle, styles.menuUserImage)} alt="User Image" />
-          <p className={styles.menuUserImageDesc} style={ {textAlign: 'left', paddingLeft: 12} }>
-            {l("User name")}: {user.username} <br />
-            {l("Role")}: {user.roleName} <br />
-            <small>Create time: {user.createTime}</small>
-          </p>
+          <img src={userImage} className={classnames(styles.imgCircle, styles.menuUserImage)} alt={l('User Image')} />
+          <div style={{marginTop: 6}}>
+            <div className={classnames('ant-col-12', styles.textLeft)}>
+              {l("User name")}
+            </div>
+            <div className={classnames('ant-col-12', styles.textRight)}>
+              {user.username}
+            </div>
+          </div>
+          <div>
+            <div className={classnames('ant-col-12', styles.textLeft)}>
+              {l("Role")}
+            </div>
+            <div className={classnames('ant-col-12', styles.textRight)}>
+              {user.roleName}
+            </div>
+          </div>
+          <div className={styles.smallFont}>
+            <div className={classnames('ant-col-12', styles.textLeft)}>
+              {l("Create time")}
+            </div>
+            <div className={classnames('ant-col-12', styles.textRight)}>
+              {user.createTime}
+            </div>
+          </div>
         </div>
         <div className={styles.menuUserOps}>
           <div className={classnames("ant-col-8", styles.textCenter)}>
