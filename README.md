@@ -30,6 +30,7 @@
 
 ## 自动生成表单代码样例
 
+生成的表单根据appSettings里的表单规则自动设置表单验证
 ``` javascript
 class LoginForm extends React.Component {
   render() {

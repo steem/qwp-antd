@@ -105,9 +105,8 @@ class LoginForm extends React.Component {
           },
         }
       }],
-      ...this.props,
     }
-    return (<HorizontalFormGenerator {...formProps} />)
+    return (<HorizontalFormGenerator {...formProps} {...this.props}/>)
   }
 }
 

@@ -40,9 +40,8 @@ class CreateUserForm extends React.Component {
       getFieldDecorator: this.props.form.getFieldDecorator,
       validateFieldsAndScroll: this.props.form.validateFieldsAndScroll,
       getFieldsValue: this.props.form.getFieldsValue,
-      ...this.props,
     }
-    return (<HorizontalFormGenerator {...formProps} />)
+    return (<HorizontalFormGenerator {...formProps} {...this.props}/>)
   }
 }
 
