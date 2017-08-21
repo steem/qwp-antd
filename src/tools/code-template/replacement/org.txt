@@ -1,0 +1,20 @@
+import OrgList from './OrgList'
+```
+  let orgListProps = {
+    location,
+    dispatch,
+    appSettings: moduleSettings,
+    user,
+    onRowClick: (record, idx, org) => {
+      dispatch(routerRedux.push({
+        pathname: location.pathname,
+        query: {
+          org,
+        },
+    }))},
+  }
+```
+        <Col span={4}><OrgList {...orgListProps}/></Col>
+        <Col span={20}>
+```
+        </Col>

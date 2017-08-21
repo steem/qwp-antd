@@ -16,7 +16,7 @@
 -   表格控件样例（支持搜索、排序和分页）
 -   对话框高度和宽度自适应
 -   采用react-perfect-scrollbar作为滚动条
--   按样例代码自动生成脚手架代码（待完成）
+-   按样例代码自动生成脚手架代码
 
 ## Antd-特性
 
@@ -135,7 +135,7 @@ $form_rule = array(
 │ │ ├── config.js    # 项目常规配置
 │ │ ├── request.js   # 异步请求函数
 │ │ └── theme.js     # 项目需要在js中使用到样式变量
-│── /tools/          # 工具目录，比如自动生成代码
+│─├── /tools/          # 工具目录，比如自动生成代码
 │ ├── route.js       # 路由配置
 │ ├── index.js       # 入口文件
 │ └── index.html     
@@ -181,10 +181,17 @@ npm run build
 npm run lint
 ```
 
-项目部署
+自动生成代码：
+```bash
+npm run scaffold --module=system --object=customer --ops=create#del#edit#list --model=on --request=on --org=catagory
+```
+
+项目部署：
+
 由于路由需要rewrite支持，请参考
 [#269](https://github.com/zuiidea/antd-admin/issues/269)
-后台serivce部分也可以通过jsonp方式独立部署
+
+后台service部分也可以通过jsonp方式独立部署
 
 ## 截屏
 

@@ -28,6 +28,7 @@ function appSettings(req, res) {
 
 const moduleMaps = {
   '/system/user': 'user',
+  '/system/org': 'org',
 }
 
 function mockFns(req, res) {

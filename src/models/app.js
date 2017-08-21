@@ -1,6 +1,6 @@
 import modelExtend from 'dva-model-extend'
-import * as rqPassport from '../requests/passport'
-import * as rqApp from '../requests/app'
+import * as rqPassport from 'requests/passport'
+import * as rqApp from 'requests/app'
 import { routerRedux } from 'dva/router'
 import { convertFormRules, mergeFormRules, setValidators } from 'utils/form'
 import { model } from './common'

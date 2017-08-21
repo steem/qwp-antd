@@ -1,4 +1,4 @@
-import { login } from '../requests/passport'
+import { login } from 'requests/passport'
 import { routerRedux } from 'dva/router'
 import showOpsNotification from 'utils/notification'
 

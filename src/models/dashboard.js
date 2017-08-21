@@ -1,4 +1,4 @@
-import { myCity, queryWeather, query } from '../requests/dashboard'
+import { myCity, queryWeather, query } from 'requests/dashboard'
 import { parse } from 'qs'
 import showOpsNotification from 'utils/notification'
 

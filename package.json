@@ -68,7 +68,7 @@
     "lint": "eslint --fix --ext .js src",
     "build": "roadhog build",
     "test": "cross-env NODE_ENV=test nyc mocha --no-timeouts --reporter mochawesome",
-    "scaffold": "./node_modules/.bin/babel-node tools/scaffold.js"
+    "scaffold": "./node_modules/.bin/babel-node src/tools/scaffold.js"
   },
   "nyc": {
     "include": [

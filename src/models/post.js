@@ -1,5 +1,5 @@
 import modelExtend from 'dva-model-extend'
-import { query } from '../requests/posts'
+import { query } from 'requests/posts'
 import { pageModel } from './common'
 
 export default modelExtend(pageModel, {

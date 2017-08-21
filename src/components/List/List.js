@@ -63,7 +63,10 @@ class List extends React.Component {
     let h
     if (this.props.autoHeight !== false) {
       node = node.querySelector('.ant-table-body')
-      h = layout.calcFullFillHeight(node)
+      let empty = this.QwpList.querySelector('.ant-table-placeholder')
+      if (empty) empty = layout.$(empty).is(':visible')
+      h = 8
+      if (!empty) h = layout.calcFullFillHeight(node)
     } else if (this.props.height) {
       node = node.querySelector('.ant-table-body')
       h = this.props.height
@@ -359,6 +362,9 @@ class List extends React.Component {
     tableProps.onRowDoubleClick = this.handleRowDoubleClick
     tableProps.rowClassName = this.getRowClassName
     tableProps.pagination = false
+    tableProps.locale = {
+      emptyText: (<div><span><Icon type="info-circle-o" /> {l('Data record is empty')}</span><Button type="ghost" icon="reload" size="small" shape="circle-outline" onClick={this.fetch.bind(this)} /></div>),
+    }
     let pagerProps = {}
     if (this.state.pager) {
       pagerProps = {

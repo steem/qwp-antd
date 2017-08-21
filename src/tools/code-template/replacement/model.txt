@@ -1,0 +1,3 @@
+import registerModel from 'utils/registerModel'
+```
+      registerModel(app, require('../../../models/user'))

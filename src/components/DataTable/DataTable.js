@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Button, Row, Col, Form } from 'antd'
+import { Table, Button, Row, Col, Form, Icon } from 'antd'
 import { request } from 'utils'
 import layout from 'utils/layout'
 import lodash from 'lodash'
@@ -21,7 +21,7 @@ class DataTable extends React.Component {
       pagination: props.pagination || {
         showSizeChanger: true,
         showQuickJumper: true,
-        showTotal: total => `共 ${total} 条`,
+        showTotal: total => l('Total items: {0}', total),
         current: 1,
         pageSize: 30,
       },
@@ -288,6 +288,11 @@ class DataTable extends React.Component {
     if (this.state.columns) tableProps.columns = this.state.columns
     else if (columns) tableProps.columns = columns
     if (searchContent) this.createSearchContent(searchContent)
+    let props = {
+      locale: {
+        emptyText: (<div><span><Icon type="info-circle-o" /> {l('Data record is empty')}</span><Button type="ghost" icon="reload" size="small" shape="circle-outline" onClick={this.fetch.bind(this)} /></div>),
+      }
+    }
     return (
       <div className="qwp-data-table" ref={n => this.dataTable = n}>
         <Row style={{ display: searchContent || operations ? 'block' : 'none' }} className={styles.dataTableHeader}>
@@ -303,6 +308,7 @@ class DataTable extends React.Component {
         </div>
         <Table
           {...tableProps}
+          {...props}
           bordered
           size="middle"
           loading={loading}
