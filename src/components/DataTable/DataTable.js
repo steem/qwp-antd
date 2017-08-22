@@ -296,7 +296,7 @@ class DataTable extends React.Component {
     if (searchContent) this.createSearchContent(searchContent)
     let props = {
       locale: {
-        emptyText: (<div><span><Icon type="info-circle-o" /> {l('Data record is empty')}</span><Button type="ghost" icon="reload" size="small" shape="circle-outline" onClick={this.fetch.bind(this)} /></div>),
+        emptyText: (<div><span><Icon type="info-circle-o" /> {l('Data record is empty')}</span> <Button type="ghost" icon="reload" size="small" shape="circle-outline" onClick={this.fetch.bind(this)} /></div>),
       }
     }
     return (

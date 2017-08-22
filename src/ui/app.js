@@ -90,7 +90,7 @@ class AppContainer extends React.Component {
       loading,
       location
     } = this.props
-    const { locationChangedTag, showFooter, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isNavbar, siderBarComponentType, menu, siderList } = app
+    const { locationChangedTag, showFooter, localeChangedTag, appSettings, subSystems, hasHeader, notifications, hasBread, hasSiderBar, user, siderFold, darkTheme, isSideBarHidden, siderBarComponentType, menu, siderList } = app
     let { pathname } = location
     pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
     const { iconFontJS, iconFontCSS, logo } = config
@@ -124,7 +124,7 @@ class AppContainer extends React.Component {
       user,
       siderFold,
       darkTheme,
-      isNavbar,
+      isSideBarHidden,
       hasSiderBar,
       appSettings,
       subSystems,
@@ -160,7 +160,7 @@ class AppContainer extends React.Component {
     if (!hasPermission) errorProps = {
       error: `You don't have the permission, please contact your service administraotr`
     }
-    let layoutClassName = classnames(styles.layout, { [styles.noFooter]: !showFooter }, { [styles.fold]: isNavbar ? false : siderFold }, { [styles.withnavbar]: !hasSiderBar || isNavbar })
+    let layoutClassName = classnames(styles.layout, { [styles.fold]: hasSiderBar && (isSideBarHidden ? false : siderFold) }, { [styles.sideBarHidden]: !hasSiderBar || isSideBarHidden })
     const isLoading = loading.effects['app/init'] || loading.effects['app/navChanged']
     return (
     <div loc={localeChangedTag}>
@@ -172,7 +172,7 @@ class AppContainer extends React.Component {
         {iconFontCSS && <link rel="stylesheet" href={iconFontCSS} />}
       </Helmet>
       {isLoading ? <Loader spinning={isLoading} /> : <div className={layoutClassName}>
-          {hasSiderBar && !isNavbar ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
+          {hasSiderBar && !isSideBarHidden ? <aside className={classnames(styles.sider, { [styles.light]: !darkTheme })}>
             <Sider {...siderProps} />
           </aside> : ''}
           <div className={styles.main}>

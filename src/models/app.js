@@ -33,7 +33,7 @@ let app = modelExtend(model, {
     hasBread: false,
     siderFold: storage.get('siderFold') === 'true',
     darkTheme: storage.get('darkTheme') === 'true',
-    isNavbar: document.body.clientWidth < 769,
+    isSideBarHidden: document.body.clientWidth < 769,
     subSystems: [],
     error: false,
     notifications: [],
@@ -82,6 +82,10 @@ let app = modelExtend(model, {
           appSettings.default = defaultNav
           if (passportSettings.headerNav) appSettings.headerNav = passportSettings.headerNav
           else appSettings.headerNav = headerNav
+          newAcls.map(n => {
+            n.name = l(n.name)
+            return n
+          })
           defaultCompnent = defaultNav
           passportSettings.acls = newAcls
         }
@@ -173,9 +177,9 @@ let app = modelExtend(model, {
       payload,
     }, { put, select }) {
       const { app } = yield(select(_ => _))
-      const isNavbar = document.body.clientWidth < 769
-      if (isNavbar !== app.isNavbar) {
-        yield put({ type: 'handleNavbar', payload: isNavbar })
+      const isSideBarHidden = document.body.clientWidth < 769
+      if (isSideBarHidden !== app.isSideBarHidden) {
+        yield put({ type: 'updateState', payload: { isSideBarHidden } })
       }
     },
 
@@ -198,13 +202,6 @@ let app = modelExtend(model, {
       return {
         ...state,
         darkTheme: !state.darkTheme,
-      }
-    },
-
-    handleNavbar (state, { payload }) {
-      return {
-        ...state,
-        isNavbar: payload,
       }
     },
 

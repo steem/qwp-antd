@@ -30,13 +30,13 @@ const SideMenuSwitcher = React.createClass({
     const {
       darkTheme,
       hasSiderBar,
-      isNavbar,
+      isSideBarHidden,
       location,
       switchSider,
       siderFold,
     } = this.props
     return (
-      isNavbar && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<LeftMenu {...this.props} popMenu="1" />}>
+      isSideBarHidden && this.props.menu ? (<Popover placement="bottomLeft" onVisibleChange={this.handleVisibleChange} visible={this.state.visible} overlayClassName={styles.popovermenu} trigger="click" content={<LeftMenu {...this.props} popMenu="1" />}>
         <div className={classnames(styles.button, styles.navItem)}>
           <Icon type="bars" />
         </div>
@@ -47,15 +47,15 @@ const SideMenuSwitcher = React.createClass({
   },
 })
 
-const Header = ({ user, logout, hasSiderBar, locationChangedTag, subSystems, passwordModalProps, notifications, appSettings, switchSider, siderFold, darkTheme, isNavbar, location, siderBarComponentType, menu }) => {
-  
+const Header = ({ user, logout, hasSiderBar, locationChangedTag, subSystems, passwordModalProps, notifications, appSettings, switchSider, siderFold, darkTheme, isSideBarHidden, location, siderBarComponentType, menu }) => {
+
   let sideMenuProps
   if (hasSiderBar) {
     sideMenuProps = {
       siderFold,
       darkTheme,
       hasSiderBar,
-      isNavbar,
+      isSideBarHidden,
       location,
       hasHeaderNav : appSettings.enableHeaderNav,
       switchSider,
@@ -112,7 +112,7 @@ Header.propTypes = {
   switchSider: PropTypes.func,
   siderFold: PropTypes.bool,
   darkTheme: PropTypes.bool,
-  isNavbar: PropTypes.bool,
+  isSideBarHidden: PropTypes.bool,
   hasSiderBar: PropTypes.bool,
   location: PropTypes.object,
 }

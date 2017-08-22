@@ -6,8 +6,9 @@
 
     .ps__scrollbar-y-rail {
       left: 0!important;
-      z-index: 10; 
+      z-index: 10;
     }
+
   }
 
   .ant-card {
@@ -22,7 +23,7 @@
     margin-bottom: 12px;
   }
 
-  &.withnavbar {
+  &.sideBarHidden {
     .main {
       margin-left: 0;
     }
@@ -43,8 +44,16 @@
           .ps__scrollbar-y-rail {
             display: none!important;
           }
+
+          >.ant-menu-vertical {
+            position: fixed;
+            left: 0;
+            top: 96px;
+            width: 42px;
+            z-index: 1055;
+          }
         }
-        
+
         .ant-menu-root {
           width: 100%;
 
@@ -282,7 +291,7 @@
   .layout {
 
     .main {
-      
+
       .bread {
         padding: 0 12px;
       }
