@@ -1,10 +1,11 @@
 const qs = require('qs')
 const {
-  adminUsers
+  adminUsers,
 } = require('./data/passport')
 const {
   lang,
-  inDebug
+  inDebug,
+  P,
 } = require('../common.js')
 const L = {
   en: require('./data/lang/en/passport'),
@@ -18,14 +19,23 @@ module.exports = {
       const cookies = qs.parse(cookie.replace(/\s/g, ''), {
         delimiter: ';'
       })
-      const response = {
+      let response = {
         success: true,
         data: {
           lang: [
             ['/', L[lang]]
           ],
-          default: 'sample',
+/*
+          后台代码可利用此项来控制header导航条，默认前端自动选择所有一级权限作为headerNav
           headerNav: [{
+            name: 'portal',
+            icon: 'laptop',
+            path: '/portal',
+          },{
+            name: 'dashboard',
+            icon: 'laptop',
+            path: '/dashboard',
+          },{
             name: 'sample',
             icon: 'laptop',
             path: '/sample',
@@ -33,11 +43,7 @@ module.exports = {
             name: 'system',
             icon: 'laptop',
             path: '/system',
-          }, {
-            name: 'settings',
-            icon: 'laptop',
-            path: '/settings',
-          }],
+          }],*/
           formRules: {
             "login": {
               "user": {
@@ -66,9 +72,13 @@ module.exports = {
               }
             },
           },
-          acls: [{
+// 后端代码可用把权限列表保存在数据库，并设计好排序方式，按顺序输出即可控制模块在前端的显示顺序
+          "acls": [{
             "name": "dashboard",
             "path": "/dashboard"
+          }, {
+            "name": "portal",
+            "path": "/portal"
           }, {
             "name": "sample",
             "path": "/sample"
@@ -129,43 +139,51 @@ module.exports = {
             "name": "user",
             icon: 'user',
             "path": "/system/user"
-          }]
+          }],
+          "default": "sample",
         }
       }
-      let user = null
       if (inDebug() || cookies.token) {
         const token = inDebug() ? true : JSON.parse(cookies.token)
         if (inDebug() || (token && token.deadline > new Date().getTime())) {
-          user = {}
-          const userId = inDebug() ? 0 : token.id
-          const userItem = adminUsers.filter(_ => _.id === userId)
-          if (userItem.length > 0) {
-            user.permissions = userItem[0].permissions
-            user.username = userItem[0].username
-            user.id = userItem[0].id
-            user.roleName = userItem[0].permissions.roleName
-            user.createTime = userItem[0].createTime || (new Date()).toLocaleDateString()
+          response.data.user = {
+            "id": 1,
+            "username": "Admin",
+            "role": 1,
+            "roleName": "Admin",
+            "createTime": "2017/08/22 16:15:19"
           }
         }
       }
-      if (user) response.data.user = user
       res.json(response)
     },
     login(req, res) {
+      const loginData = P(req, 'f')
       const {
         user,
         pwd
-      } = req.body
-      const aUser = adminUsers.filter((item) => item.username === user)
+      } = loginData
+      let aUser
+      if (user === 'admin' && pwd === '123Qwe') {
+        aUser = {
+          id: 0
+        }
+      } else {
+        aUser = adminUsers.filter((item) => item.username === user && item.password === pwd)
+        if (aUser) {
+          if (aUser.length > 0) aUser = aUser[0]
+          else aUser = false
+        }
+      }
       let result = {
         success: false,
         message: 'Failed to login'
       }
-      if (aUser.length > 0 && aUser[0].password === pwd) {
+      if (aUser) {
         const now = new Date()
         now.setDate(now.getDate() + 1)
         res.cookie('token', JSON.stringify({
-          id: aUser[0].id,
+          id: aUser.id,
           deadline: now.getTime()
         }), {
           maxAge: 900000,

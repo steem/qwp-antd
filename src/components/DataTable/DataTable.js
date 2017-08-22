@@ -78,18 +78,24 @@ class DataTable extends React.Component {
     let dataTable = this.dataTable
     if (!dataTable) return
     let state = {}
+    let emptyRecord = layout.$(dataTable.querySelector('.ant-table-placeholder'))
+    let isEmpty = emptyRecord.length > 0 && emptyRecord.is(':visible')
     if (this.props.autoHeight !== false) {
       let node = dataTable.querySelector('.ant-table-body')
-      let empty = dataTable.querySelector('.ant-table-placeholder')
-      if (empty) empty = layout.$(empty).is(':visible')
       let h = 8
-      if (!empty) h = layout.calcFullFillHeight(node, dataTable.querySelector('.ant-table-pagination'))
+      if (isEmpty) emptyRecord.height(layout.calcFullFillHeight(emptyRecord) - layout.getHeightWithoutContent(emptyRecord))
+      else h = layout.calcFullFillHeight(node, dataTable.querySelector('.ant-table-pagination'))
       layout.addSimscroll(node, h)
       state.scroll = {y: h}
     } else if (this.props.height) {
       let node = dataTable.querySelector('.ant-table-body')
-      layout.addSimscroll(node, this.props.height)
-      state.scroll = {y: this.props.height}
+      let h = this.props.height
+      if (isEmpty) {
+        h = 8
+        emptyRecord.height(layout.calcFullFillHeight(emptyRecord) - layout.getHeightWithoutContent(emptyRecord))
+      }
+      layout.addSimscroll(node, h)
+      state.scroll = {y: h}
     }
     if (state.scroll) this.setState(state)
   }

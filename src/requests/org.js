@@ -1,8 +1,9 @@
 import { request, uri } from 'utils'
+let mock = true
 let baseUri = {
   m: uri.component('system', 'org'),
   p: null,
-  mock: true
+  mock,
 }
 
 export async function list (params) {

@@ -11,7 +11,7 @@ import AutoSizeDialog from 'components/Dialog'
 class CreateUserForm extends React.Component {
   render() {
     const formProps = {
-      formName: 'createUser',
+      name: 'createUser',
       fields: [{
         id: 'name',
         input: 'text',

@@ -61,17 +61,22 @@ class List extends React.Component {
     let node = this.QwpList
     if (!node) return
     let h
+    let emptyRecord = layout.$(this.QwpList.querySelector('.ant-table-placeholder'))
+    let isEmpty = emptyRecord.length > 0 && emptyRecord.is(':visible')
     if (this.props.autoHeight !== false) {
       node = node.querySelector('.ant-table-body')
-      let empty = this.QwpList.querySelector('.ant-table-placeholder')
-      if (empty) empty = layout.$(empty).is(':visible')
       h = 8
-      if (!empty) h = layout.calcFullFillHeight(node)
+      if (isEmpty) emptyRecord.height(layout.calcFullFillHeight(emptyRecord) - layout.getHeightWithoutContent(emptyRecord))
+      else h = layout.calcFullFillHeight(node)
     } else if (this.props.height) {
-      node = node.querySelector('.ant-table-body')
       h = this.props.height
+      node = node.querySelector('.ant-table-body')
+      if (isEmpty) {
+        emptyRecord.height(this.props.height)
+        h = 8
+      }
     }
-    if (h) {
+    if (lodash.isInteger(h)) {
       layout.addSimscroll(node, h)
       this.setState({
         scroll: {y: h}
@@ -156,7 +161,9 @@ class List extends React.Component {
     if (node.length === 0) {
       node = layout.$(event.target).closest('.ant-table-header')
       if (node.length === 0) return;
-      node = list.find('.ant-table-tbody')
+      let emptyNode = list.find('.ant-table-placeholder')
+      if (emptyNode.length > 0 && emptyNode.is(':visible')) node = emptyNode
+      else node = list.find('.ant-table-tbody')
     }
     let top = node.offset().top - list.offset().top
     let pagerNode = layout.$(this.QwpListPager)

@@ -45,7 +45,7 @@ module.exports = {
               ]
             }
           },
-          formRules: [
+          formRules: {
             createUser: {
               name: {
                 required: true,
@@ -73,9 +73,10 @@ module.exports = {
                 rangelength: [3, 128],
               },
             }
-          ],
+          },
         }
       }
+      res.json(response)
     },
     get(req, res) {
       const id = P(req, 'id')

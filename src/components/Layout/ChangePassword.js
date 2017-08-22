@@ -8,7 +8,7 @@ const FormItem = Form.Item
 import { dialogHelperFns, dialogBtns } from 'utils/dialogDefault'
 
 const ChangePasswordDialog = React.createClass({
-    getInitialState(){ 
+    getInitialState(){
       return {
           visible: false
       }
@@ -43,7 +43,7 @@ const ChangePasswordDialog = React.createClass({
 const ChangePasswordForm = React.createClass({
     render() {
       const formProps = {
-        formName: "changePassword",
+        name: "changePassword",
         fields: [
           {
             id: "pwd1",

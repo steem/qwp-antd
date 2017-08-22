@@ -12,9 +12,13 @@ function onEnterRouter (nextState, replace, dispatch, namespace, hasSimscroll) {
   })
   if (namespace) {
     dispatch({
-      type: namespace + '/onEnter',
+      type: `${namespace}/onEnter`,
     })
   }
+}
+
+function routerEnter(namespace, dispatch, hasSimscroll) {
+  return (nextState, replace) => onEnterRouter(nextState, replace, dispatch, namespace, hasSimscroll)
 }
 
 function addRouterEnterDispatch(routes, app) {
@@ -22,10 +26,7 @@ function addRouterEnterDispatch(routes, app) {
     if (r.childRoutes && r.childRoutes.length > 0) {
       addRouterEnterDispatch(r.childRoutes, app)
     } else {
-      let namespace = r.namespace
-      r.onEnter = function (nextState, replace) {
-        return onEnterRouter(nextState, replace, app._store.dispatch, namespace, r.hasSimscroll)
-      }
+      r.onEnter = routerEnter(r.namespace, app._store.dispatch, r.hasSimscroll)
     }
   }
 }

@@ -52,7 +52,7 @@ class FGUpload extends React.Component {
       <Upload {...inputProps}>{this.props.upload}</Upload>
     )
   }
-} 
+}
 
 class FGRadioGroup extends React.Component {
   render() {
@@ -143,7 +143,7 @@ class HorizontalFormGenerator extends React.Component {
       getFieldDecorator,
       appSettings,
       fields,
-      formName,
+      name,
       formItemLayout,
       noFormItemLayout,
       layout,
@@ -152,7 +152,7 @@ class HorizontalFormGenerator extends React.Component {
       ...formProps,
     } = this.props
     const formItemLayoutProps = noFormItemLayout ? {} : formItemLayout || defaultFormItemLayout
-    let fr = fieldRuleFn(appSettings, formName, getFieldDecorator, values)
+    let fr = fieldRuleFn(appSettings, name, getFieldDecorator, values)
     const items = createFormItems(fields, fr, formItemLayoutProps, hasFeedback)
     return (
       <Form layout={layout || "horizontal"} {...formProps}>
@@ -196,7 +196,7 @@ class MultiColHorizontalFormGenerator extends React.Component {
       getFieldDecorator,
       appSettings,
       rows,
-      formName,
+      name,
       formItemLayout,
       noFormItemLayout,
       hasFeedback,
@@ -204,7 +204,7 @@ class MultiColHorizontalFormGenerator extends React.Component {
       ...formProps
     } = this.props
     const formItemLayoutProps = noFormItemLayout ? {} : formItemLayout || defaultMultiFormItemLayout
-    let fr = fieldRuleFn(appSettings, formName, getFieldDecorator, values)
+    let fr = fieldRuleFn(appSettings, name, getFieldDecorator, values)
     const items = rows.map(row => createRows(row, fr, formItemLayout, hasFeedback))
     return (
       <Form layout="horizontal" {...formProps}>

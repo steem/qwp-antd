@@ -36,7 +36,7 @@ let OrgListWithSearchForm = React.createClass({
       form,
       appSettings,
       formItems:{
-        formName: 'org',
+        name: 'org',
         fields: [{
           id: 'name',
           input: 'text',

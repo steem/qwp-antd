@@ -19,7 +19,7 @@ const confirm = Modal.confirm
 let searchContent = {
   inline: true,
   formItems:{
-    formName: 'user',
+    name: 'user',
     fields: [{
       id: 'createTime',
       datePicker: true,

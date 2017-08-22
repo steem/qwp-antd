@@ -3,7 +3,7 @@ let mock = true
 
 export async function $ (m = null, p = null) {
   return request({
-    url: uri.ops({ ops: '$', p, m, mock: false }),
+    url: uri.ops({ ops: '$', p, m, mock }),
     method: 'get',
   })
 }

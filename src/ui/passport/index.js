@@ -11,7 +11,7 @@ import styles from './index.less'
 class LoginForm extends React.Component {
   render() {
     const formProps = {
-      formName: 'login',
+      name: 'login',
       fields: [{
         id: 'user',
         input: 'text',

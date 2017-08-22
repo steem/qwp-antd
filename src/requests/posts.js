@@ -1,8 +1,9 @@
 import { request, uri } from 'utils'
+let mock = true
 let baseUri = {
   m: 'posts',
   p: null,
-  mock: true
+  mock,
 }
 
 export async function query (params) {
