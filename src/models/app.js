@@ -140,20 +140,16 @@ let app = modelExtend(model, {
     *navChanged ({
       payload,
     }, { call, put, select }) {
-      const { menu, inited } = yield(select(_ => _.app))
-      if (!inited) return
-      let data = {
-        locationChangedTag: (new Date()).getTime(),
-        hasBread: uri.getAclsByPath(menu).length >= 2,
-        hasSiderBar: uri.hasSiderBar(menu),
-        showFooter: footerVisibility(),
-      }
+      const { menu, } = yield(select(_ => _.app))
       yield put({
         type: 'app/updateState',
         payload: {
-          ...data,
+          locationChangedTag: (new Date()).getTime(),
+          hasBread: menu && menu.length > 0 && uri.getAclsByPath(menu).length >= 2,
+          hasSiderBar: menu && menu.length > 0 && uri.hasSiderBar(menu),
+          showFooter: footerVisibility(),
           ...payload,
-        }
+        },
       })
     },
 
