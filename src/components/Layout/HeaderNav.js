@@ -11,7 +11,7 @@ function createMenu(items, handleClick, mode = 'horizontal') {
   let current = uri.current().split('/')[1]
   return (
     <Menu onClick={handleClick} selectedKeys={[current]} mode={mode}>
-      {items.map(item => (<Menu.Item key={item.name}><Link to={item.path}><Icon type={item.icon || 'appstore-o'} /><span>{l(item.name)}</span></Link></Menu.Item>))}
+      {items.map(item => (<Menu.Item key={item.path.split('/')[1]}><Link to={item.path}><Icon type={item.icon || 'appstore-o'} /><span>{l(item.name)}</span></Link></Menu.Item>))}
     </Menu>
   )
 }
