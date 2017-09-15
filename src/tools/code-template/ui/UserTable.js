@@ -51,9 +51,7 @@ function createColOptions(handleMenuClick, handleClickUser) {
         return (<Link title={l('Click to update user information')} onClick={e => handleClickUser(record)}>{text}</Link>)
       },
       isMale (text, record) {
-        return (<span>{text
-                ? 'Male'
-                : 'Female'}</span>)
+        return (<span>{ text ? 'Male' : 'Female' }</span>)
       },
       operation (text, record) {
         return (<DropOption onMenuClick={e => handleMenuClick(record, e)}
@@ -67,7 +65,7 @@ function createColOptions(handleMenuClick, handleClickUser) {
 }
 
 let UserTable = React.createClass({
-  getInitialState() {
+  getInitialState () {
     this.colOptions = createColOptions(this.handleMenuClick, this.showEditUserDialog)
     this.tableColumns = layout.getTableColumn(this.props.tables, this.colOptions)
     searchContent.form = this.props.form
@@ -78,19 +76,19 @@ let UserTable = React.createClass({
     }
   },
 
-  showCreateUserDialog() {
+  showCreateUserDialog () {
     this.setState({
       createUserDialogVisible: true,
     })
   },
 
-  hideCreateUserDialog() {
+  hideCreateUserDialog () {
     this.setState({
       createUserDialogVisible: false,
     })
   },
 
-  createUser(data) {
+  createUser (data) {
     this.hideCreateUserDialog()
     this.props.dispatch({
       type: 'user/create',
@@ -98,20 +96,20 @@ let UserTable = React.createClass({
     })
   },
 
-  showEditUserDialog(user) {
+  showEditUserDialog (user) {
     this.setState({
       editUserDialogVisible: true,
       selectedUser: user,
     })
   },
 
-  hideEditUserDialog() {
+  hideEditUserDialog () {
     this.setState({
       editUserDialogVisible: false,
     })
   },
 
-  editUser(data) {
+  editUser (data) {
     this.hideEditUserDialog()
     data.id = this.state.selectedUser.id
     this.props.dispatch({
@@ -120,7 +118,7 @@ let UserTable = React.createClass({
     })
   },
 
-  handleEditUser() {
+  handleEditUser () {
     if (this.props.user.selectedUserKeys.length === 0) {
       message.warning(l('No users are selected, please selected users first'))
       return
@@ -132,7 +130,7 @@ let UserTable = React.createClass({
     this.showEditUserDialog(this.state.selectedUser)
   },
 
-  updateModalUsersSelection(selectedUserKeys) {
+  updateModalUsersSelection (selectedUserKeys) {
     this.props.dispatch({
       type: 'user/updateState',
       payload: {
@@ -141,22 +139,22 @@ let UserTable = React.createClass({
     })
   },
 
-  onSelectionChanged(selectedUserKeys, selectedRows) {
+  onSelectionChanged (selectedUserKeys, selectedRows) {
     this.updateModalUsersSelection(selectedUserKeys)
     this.setState({
       selectedUser: selectedRows.length > 0 ? selectedRows[0] : 0
     })
   },
 
-  onDataUpdated() {
+  onDataUpdated () {
     this.updateModalUsersSelection([])
   },
 
-  handleDeleteUser() {
+  handleDeleteUser () {
     this.deleteUsers()
   },
 
-  deleteUsers(id, title) {
+  deleteUsers (id, title) {
     if (!id) {
       if (this.props.user.selectedUserKeys.length === 0) {
         message.warning(l('No users are selected, please selected users first'))
@@ -176,7 +174,7 @@ let UserTable = React.createClass({
     })
   },
 
-  handleMenuClick(record, e) {
+  handleMenuClick (record, e) {
     if (e.key === '1') {
       this.showEditUserDialog(record)
     } else if (e.key === '2') {

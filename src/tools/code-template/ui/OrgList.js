@@ -30,7 +30,7 @@ let OrgListWithSearchForm = React.createClass({
       location,
       form,
       appSettings,
-      ...listProps
+      ...listProps,
     } = this.props
     const searchContent = {
       form,

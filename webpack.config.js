@@ -31,6 +31,7 @@ module.exports = (webpackConfig) => {
     utils: `${__dirname}/src/utils`,
     config: `${__dirname}/src/utils/config`,
     enums: `${__dirname}/src/utils/enums`,
+    themes: `${__dirname}/src/themes`,
   }
 
   return webpackConfig

@@ -1,4 +1,6 @@
 const config = require('./config')
+const queryString = require('query-string')
+const _ = require('lodash')
 
 function join() {
   let p = '', sep = ''
@@ -10,13 +12,10 @@ function join() {
   }
   return p
 }
-
 function param(name, def) {
   if (typeof(window) === 'undefined') return def
-  let reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
-  let r = window.location.search.substr(1).match(reg)
-  if (r != null) return decodeURI(r[2])
-  return def
+  let q = queryString.parse(window.location.search)
+  return _.isUndefined(q[name]) ? def : q[name]
 }
 
 function component(...args) {
